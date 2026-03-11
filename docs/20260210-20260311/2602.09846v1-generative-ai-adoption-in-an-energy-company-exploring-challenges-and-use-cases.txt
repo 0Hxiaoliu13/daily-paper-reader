@@ -1,0 +1,364 @@
+Title: Generative AI Adoption in an Energy Company: Exploring Challenges and Use Cases
+
+URL Source: https://arxiv.org/pdf/2602.09846v1
+
+Published Time: Wed, 11 Feb 2026 02:18:20 GMT
+
+Number of Pages: 22
+
+Markdown Content:
+# Generative AI Adoption in an Energy Company: Exploring Challenges and Use Cases 
+
+Malik Abdul Sami 1* †, Zeeshan Rasheed 1* †, Meri Olenius 1,Muhammad Waseem 1, Kai-Kristian Kemell 1, Jussi Rasku 1,Pekka Abrahamsson 1
+
+> 1
+
+Faculty of Information Technology and Communication Science, Tampere University, Tampere, Finland. *Corresponding author(s). E-mail(s): malik.sami@tuni.fi; zeeshan.rasheed@tuni.fi; Contributing authors: meri.olenius@tuni.fi; muhammad.waseem@tuni.fi; kai-kristian.kemell@tuni.fi; jussi.rasku@tuni.fi; pekka.abrahamsson@tuni.fi; 
+
+> †
+
+These authors contributed equally to this work. 
+
+Abstract 
+
+Organisations are examining how generative AI can support their operational work and decision-making processes. This study investigates how employees in a energy company understand AI adoption and identify areas where AI and LLMs-based agentic workflows could assist daily activities. Data was collected in four weeks through sixteen semi-structured interviews across nine departments, supported by internal documents and researcher observations. The analysis iden-tified areas where employees positioned AI as useful, including reporting work, forecasting, data handling, maintenance-related tasks, and anomaly detection. Participants also described how GenAI and LLM-based tools could be introduced through incremental steps that align with existing workflows. The study provides an overview view of AI adoption in the energy sector and offers a structured basis for identifying entry points for practical implementation and comparative research across industries. 
+
+Keywords: Generative AI, Artificial intelligence, AI for SE, Large Language Model, AI Adoption, Industry Case Study 
+
+1
+
+> arXiv:2602.09846v1 [cs.SE] 10 Feb 2026
+
+# 1 Introduction 
+
+Organizations across industries are increasingly seeking to use Generative AI and Large Language Models to support various business functions [1]. As of May 2024, a Gartner poll reported that 40 percent of respondents had deployed GenAI in more than three business units [2]. Recent studies also show that GenAI is moving from experimentation toward a strategic priority across organizations of different sizes [3]. AI has long been used in organizations for tasks such as automation, process optimization, and decision support [4]. The recent rise of GenAI and LLMs has increased interest in adopting AI more broadly across industries. GenAI can sup-port industry growth by offering autonomous systems that increase productivity, help new ideas emerge, and improve customer experience [5]. These technologies have the potential not only to enhance specific tasks but also to reshape organizational processes by enabling automation and agentic capabilities that support autonomous decision-making [6, 7]. Despite the growing adoption of GenAI, existing research often focuses on AI per-formance, technical capabilities, or individual-level productivity gains, while offering limited insight into how organizations practically adopt and integrate AI into everyday workflows [8]. In particular, there is limited empirical insight into how organizations identify AI use cases and how expectations about AI capabilities shape their inte-gration into work practices. This gap is especially important in knowledge-intensive environments, where workers engage in complex cognitive tasks that directly shape organizational operations. Examining how generative AI and LLM-based use cases are identified, interpreted, and embedded into organizational routines can reveal the social and organizational dynamics that govern adoption. Understanding AI and LLM-based use cases in these settings helps clarify how these tools influence work practices and supports the design of solutions that fit real workflows [9, 10]. This study explores the application of GenAI and LLM-based multi-agent systems in the energy sector to identify practical use cases and improve workflows. In collab-oration with an industry partner, the project aimed to support AI adoption in the Nordic europe region. The primary aim is to identify AI-driven solutions that address industry challenges and improve daily routine processes and identify new ideas where GenAI brings the role. Data was collected through semi-structured interviews across multiple departments about four weeks. We gathered insights into how GenAI-based solutions can be integrated into industry workflows. The findings offer guidance for AI adoption and process improvements in similar sectors. 
+
+Contribution: The primary contributions of this research are: 
+
+• The study identifies 41 AI-related use cases in a large energy organisation and links them to the operational needs expressed by employees. 
+
+• The study prioritized the identified AI use cases based on their business importance, ease of implementation, and expected organizational value. 
+
+• Two pilot cases were proposed to demonstrate the capability and practical applica-bility of generative AI in an energy organization. 2• The study provides empirical insights into the adoption of generative AI in energy organizations, offering practical guidance for aligning AI initiatives with existing organizational workflows. 
+
+Structure of Paper: The remainder of this paper is organized as follows: Section 2 presents related work on the use of GenAI in AI adoption organizations. Section 3 describes the study design. Section 4 presents the study results. Section 5 discusses the implications and 6 threats to validity. Finally, Section 7 provides conclusion and future directions. 
+
+# 2 Related Work 
+
+In this section, we review related studies on the adoption of GenAI in organisational contexts. Section 2.1 focuses on GenAI adoption at the individual and team level, where prior work primarily investigates task-level use, productivity, and collaboration. Section 2.2 reviews studies that examine GenAI adoption at the organisational level, including organisational determinants, practices, and challenges related to scaling and integration. 
+
+2.1 GenAI Adoption at the Individual and Team Level 
+
+Prior work on GenAI in the software field has primarily focused on individuals or teams using AI for specific tasks. Simaremare and Edison [11] conducted an empirical study to examine practitioners’ perceptions of GenAI adoption in the fast-paced soft-ware industry. Their study identified 22 practical use cases of GenAI adoption within software companies. Ulfsnes et al . [12] observed changes in collaboration by interview-ing 13 data scientists to investigate the adoption of GenAI for individual use. A study by Liang et al. [13] examined the utilization of AI programming helpers like GitHub Copilot by surveying 410 developers. The findings indicate that developers primarily use these tools to facilitate syntax recall, decrease manual typing, and expedite work completion. The study does, however, also point out several significant drawbacks, such as restricted user control and recommendations that fall short of both functional and non-functional requirements. Research on organizational determinants highlighted compatibility with existing workflows. Russo et al . [14] provide a comprehensive understanding of AI adoption dynamics in software engineering organizations by surveying 100 software engineers. The study finds that, in the early stages of AI integration, adoption is primarily influenced by how well AI tools fit within existing development workflows, rather than by traditional technology acceptance factors. On other hand, Polisetty et al . [7] examined organizational, technological, and environmental factors, and noted leadership support, readiness, perceived benefits, and external pressure. On other hand, Hossain et al . [15] studied textile and garment firms in Bangladesh and analyzed readiness through infrastructure, skills, and management support. Empirical studies further examine individual and team level adoption of GenAI tools in software development. Davila et al . [16] conducted an industry case study 3based on 72 practitioners and found that developers mainly use GenAI tools such as ChatGPT and GitHub Copilot to support coding and information search tasks. The study reports productivity gains but also highlights challenges related to limited context awareness and the need for human validation of outputs. Inshort, GenAI can act as a new kind of ”team member,” altering traditional communication channels. These findings extend Ulfsnes et al . [12] earlier point about individual adoption by illustrating a concrete team-level effect, and they complement et al . [14] insight that AI tools must fit into existing workflows. If GenAI becomes an informal first-responder to developers’ queries, teams might need to adapt their collaboration practices to ensure critical knowledge still flows among human colleagues. 
+
+2.2 GenAI Adoption at the Organisational Level 
+
+Recent studies examined adoption at the organizational level. Pereira et al . [17] stud-ied a Brazilian media company and reported productivity gains and concerns about reliability, security, and overreliance. Kemell et al . [1] conducted a multiple case study of seven European software organizations and identified 25 use cases and AI adoption challenges, including data privacy, legislation, and organizational resistance. Flyckt et al . [18] analyzed make-to-order manufacturing and identified AI tasks such as demand forecasting and predictive maintenance, and discussed data needs and explainability. An industry report by MIT Sloan Management Review and Boston Consulting Group [19] documented adoption gaps and the need for alignment, talent, and gover-nance. Hruby et al . [20] examined small and medium chemical enterprises and linked entrepreneurial orientation and culture to adoption decisions. Recent work discussed organizational practices and team dynamics. Solaimani et al . [21] identified leadership, culture, infrastructure, employee skills, and change man-agement as conditions for adoption. Sepanosian et al . [22] presented strategies for scaling GenAI in enterprises that focused on integration, trust, and business align-ment. Retkowsky et al . [23] studied early workplace use of ChatGPT and reported common applications and risks such as overreliance and reduced knowledge sharing. Kampik et al . [24] discussed Large Process Models in business process management with GenAI and LLM-based agents. Despite these contributions, organizational-level research on GenAI adoption remains limited, especially regarding how companies identify AI use cases and imple-ment solutions organizational functions. Existing work often emphasizes bottom-up adoption or individual perspectives, with limited empirical data from leadership or cross-departmental views [14]. Academic studies in software engineering note the need for industry collaboration but rarely address organizational governance or decision-making around AI [25, 26]. Our study examines organizational adoption of GenAI and agentic-AI through semi-structured interviews departments in one company. We identify use cases, needs, and possible potential solutions to improve processes and may reduce costs, implications for enterprise integration. 4Research Team 
+
+> Analysis Meeting
+> Data Analysis
+> Coding Transcribing
+> Comparing
+> Data Collection
+> Group Interviews
+> Observation Analysis
+> Manual Notes
+> Internal Documents
+> Challenges, Solutions,
+> and Common AI
+> Adoption Needs
+> Final Data
+> Analysis & Reporting
+> Study Design And Preparations
+> Research Questions
+> and Goals
+> Study and Instrument
+> Design
+> Multi-Department
+> Case Study
+> Coordinating
+> On-Site Meetings
+> Instrument
+> Validation
+
+Fig. 1 : Overview of our study design 
+
+# 3 Study Design 
+
+We used a qualitative approach with semi-structured group interviews to address the objectives of this multi organizational units case study. Figure 1 shows the workflow of the entire study. 
+
+3.1 Research Questions and Goals 
+
+The main goal of this study is to investigate the AI-based use cases and challenges in an industrial organization. We aim to understand for which tasks practitioners use GenAI tools, as well as their expectations, perceptions, and concerns when adopting these tools in their daily work. The following research questions were formulated to guide the study: 
+
+• RQ1. What AI based use cases do organizations report, and what challenges do they face? 
+
+This question investigates recurring barriers such as manual work, fragmented data, and compliance requirements that constrain the use of AI in daily operations. 
+
+• RQ2: How can potential AI and LLM-based solutions address the identified challenges? 
+
+5This question explores how approaches such as reporting automation, predictive maintenance, and RAG could mitigate these challenges and support organizational units workflows. 
+
+3.2 Study and Instrument Design 
+
+This research adopts a single embedded case study design focused on a mid-sized Nordic energy company with multiple organizational functions. The case was selected as part of our broader AI adoption research program, given the company’s active internal exploration of AI strategy and strong executive-level support for investigating organizational AI adoption. The company operates across multiple sectors, including energy trading, heating, solar, wind, and related services. It integrates more than 100 plus platforms and serves thousands of customers. Its digital infrastructure is distributed and relies on cloud technologies. The initial motivation for the study arose from management’s expressed need to better understand feasible AI applications and associated adoption challenges organizational functions. The study was conducted by a team of two researchers, who collaboratively designed a semi-structured interview guide, observation templates, and a document review framework to capture both technical and non-technical perspectives. These data collection instruments were tailored to the company’s context, with a focus on identifying use cases where generative AI and agentic solutions could address organiza-tional units’ pain points, improve productivity, and align with internal organizational targets. A four-week embedded on-site study was planned to engage with all relevant orga-nizational units, enabling sustained interaction with employees and observation of day-to-day practices. This design ensured representation across strategic, operational, and technical roles within the organization (Fig. 1). Interviews were primarily con-ducted in small group settings to capture shared understandings of work practices and cross-departmental perspectives on AI adoption. Participants were drawn from nine organizational units, summarized in Table 1. Participant roles and organizational units were reported. The selection strategy ensured coverage of core organizational functions, with senior and experienced staff and unit leads prioritized due to their overview of workflows, operational challenges, and potential AI adoption opportunities. A senior organizational representative served as the main point of contact. In most cases, the representative recommended and scheduled meetings with suitable participants based on their responsibilities and relevant experience. In some instances, the research team requested additional interviews to clarify observations or explore emerging topics. Interviews were primarily conducted on site according to the agreed schedule, with some participants joining online. At the start of each session, the study objectives, the role of the research team, and the overall approach were explained. This was followed by a brief discussion of the participants’ professional background and prior experience with Gen AI and LLMs. A multi-organization functions based designed approach was used to enable cross-case analysis and to ensure robust data for answering the research questions [27]. 6Table 1 : Organizational functions participating in the study           
+
+> Code Organizational function
+> OF1 Customer facing operational processes OF2 Core operational and infrastructure processes OF3 Information systems and data integration OF4 Financial planning and reporting processes OF5 Market oriented operational processes OF6 Asset and risk related planning activities OF7 Workforce planning and internal capability development OF8 Strategic project and initiative development OF9 Business development and feasibility analysis
+
+We conducted semi-structured group interviews facilitated primarily by the first and second authors. The semi-structured format allowed for slight adjustments to the questions to uncover relevant challenges. This approach also provided the flexibility to ask follow-up questions arising from previous interviews or emerging during the discussion, thereby strengthening the grounding of the findings and offering additional insights [28]. The interview setting enabled participants to ask each other questions and elaborate on their responses, offering insight into the degree of agreement among participants and, when disagreement occurred, allowing for deeper exploration of the reasons behind it. The group interviews were loosely guided by the questions in Table 2, which were designed to provoke discussion and reflection. The role of the researcher during the interviews was to steer the discussion towards AI and data-driven decision-making, to identify AI-based use cases from current challenges, and to address how these challenges solved by using GenAI and LLMs. 
+
+3.3 Data Collection 
+
+Data collection was carried out over a four period from March to April 2025. The research team was on-site four days per week, averaging six hours per day. The schedule followed a pattern where two consecutive weeks on-site, followed by a one-week break for analysis and compiling initial findings; then one week on-site, another one-week break, and a final one-week on-site period. The internal report was submitted end of April 2025 and the identified use cases along with the results were presented to the company on May 2025. 
+
+3.3.1 Semi-Structured Interviews 
+
+We conducted 16 semi-structured interviews and meetings across ten organizational units—including management—with some units interviewed multiple times to cap-ture diverse perspectives. Most interviews lasted approximately 1.5 hours, resulting in approximately hours of recorded data. Participants were senior staff or heads of orga-nizational units, with professional experience ranging from 4 to over 15 years in the industry. This provided in-depth insights into workflows, challenges, and AI adoption opportunities. Additionally, four separate follow-up meetings were held for reporting 7Table 2 : Guiding questions for the semi structured interviews. 
+
+Addresses Question 
+
+Context What is your role and responsibility at the company? Context How long have you worked for the company? Context Can you briefly explain how your job and department operate? RQ1 What are the main challenges your department faces in day-to-day operations? RQ1 Which tasks or processes consume the most time or resources? RQ1 How are these challenges currently addressed (manual methods, tools, workarounds)? RQ1 How do these challenges impact collaboration with other departments? RQ2 Do you have a wishlist of problems that AI could help solve? RQ2 Where do you see opportunities for AI or automation to improve efficiency? RQ2 Are there areas where human errors often occur that AI could help reduce? RQ2 How do you currently make predictions, forecasts, or decisions in your work? RQ2 How should AI outputs be presented so they are actionable for your team? RQ2 Which challenges in your department also occur across other units? RQ2 Which of these challenges should be prioritized for AI-driven solutions? RQ2 What concerns or hesitations do you have about AI adoption? 
+
+purposes; however, these are not included in the primary interview count. Table 3 summarizes the interview distribution, duration, and participant experience by unit. 
+
+Table 3 : Interview Summary by Department 
+
+Organization Interviews Total Interview Time (hours) 
+
+OF1 2 3.0 OF2 2 3.0 OF3 2 3.0 OF4 2 3.0 OF5 1 1.5 OF6 2 3.0 OF7 1 1.5 OF8 2 3.0 OF9 2 3.0 
+
+Total 16 24 
+
+Interviews were arranged as a group. A senior organizational representative joined many of these sessions because the person oversees AI related work in the company. Two researchers author one and author two were present in each session as facilitators and note takers, and they were not counted as participants. The participants repre-sented senior and mid level roles across the organizational function units in business, operational and managerial role. 8The study involved 15 participants from organization are listed in Table 4. Orga-nization, selected to capture diversity across functional domains and professional roles can be seen Table 4. Participants represented technical, operational, market-oriented, managerial, and governance-related functions. Most participants were senior profes-sionals with over ten years of industry experience, ensuring informed perspectives on organizational processes and decision-making. 
+
+Table 4 : Overview of Participant Roles and Experience Distribution              
+
+> Role Cluster Functional Domain N
+> Technical engineering roles Energy infrastructure 4Customer facing operational roles Customer operations 3Market and finance roles Energy markets and trading 3Managerial and strategic roles Strategic development 3Support and governance roles Corporate support functions 2Total Participants 15
+
+3.3.2 Observations and Field Notes 
+
+We conducted direct observations during meetings, informal sessions, and team inter-actions. Structured templates were used to document field notes, complementing the interview data. 
+
+3.3.3 Supporting Documents 
+
+Internal documents, notes, and process outlines were collected to contextualize find-ings. Post-session summaries were maintained to capture key pain points and needs for each organizational unit. Organizational units share their day to day challenges and AI usecases as well. 
+
+3.4 Data Analysis and Reporting 
+
+Our analysis was informed by principles of thematic analysis [29] and comparative case study methods [30]. A total of 16 interviews were conducted across nine organizational units. Eight interviews were audio-recorded and transcribed, while the remaining were documented using meeting notes. Two complementary outcomes were produced from this material. First, at the organizational level, we identified 41 OF-specific use cases, which were consolidated into six categories: reporting, retrieval-augmented generation (RAG) based solutions, predictive maintenance, anomaly detection, budgeting and forecasting, and uncatego-rized department-specific cases. These use cases were reported back to the company as part of the practical outcome of the assessment. Three common priorities emerged across organizational functions: automation of reporting, predictive maintenance to minimize downtime, and enhanced forecasting for planning. 9Second, for the exploratory study and academic reporting, we conducted a detailed thematic analysis of the eight transcribed interviews. This process produced 166 quo-tations, which yielded 166 initial code occurrences. After consolidating overlaps, 125 unique codes were obtained. These codes were grouped into 14 categories as code groups and synthesized into five highest-level themes: (1) Manual and Repetitive Work , (2) Forecasting and Predictive Analytics , (3) Data Fragmentation and Integration , (4) Compliance and Validation , and (5) Organizational and Infrastructure Readiness . The most frequent code was “more manual work” (9 occurrences), while several codes occurred only once, representing unique but relevant issues. 
+
+# 4 Results 
+
+This section presents the findings from the semi-structured interviews. The results address the research questions (RQ1–RQ2). The analysis followed a thematic approach. 
+
+4.1 RQ1: Identification of AI Based Use-Cases 
+
+The study identified AI related use cases across nine organizational units, referenced using codes OF1 to OF9. Figure 2 presents the taxonomy of identified use cases based on issues reported in interviews and internal work descriptions. The taxonomy in Figure 2 shows recurring work areas across the organisation. These work areas appear in reporting, forecasting, anomaly detection, compliance checks, system integration, and asset related monitoring. These reflect routine tasks, information access needs, and decision support activities where large language models or agent based tools could support current practices. Figure 2 shows multiple reporting and documentation activities in Finance and Energy Trading. These include financial reports, trading reports, network reporting, and component level reporting in Electricity and Heating. These tasks involve prepar-ing similar documents repeatedly and checking the same information. A participant from finance described this routine, stating, ”We spend much time on Excel and manual reports, and often the same numbers are checked again and again” (OF4). Budgeting, revenue planning, trading forecasts, and long term planning appear in OF OF4, OF5, and the OF8 units. These activities rely on historical data and scenario work. A participant involved in long term planning explained, ”We make a plan for 2036. We try to forecast as exact as we can how many customers we will have and what kind of techniques we will use in the future, for example dismantling overhead lines and replacing them with underground cables” (OF2). Another participant added, 
+
+”First one is like a strategic forecast of changes in the operating environment in the electricity distribution network. So it is like forecasting thing. Different kind of things that we forecast. What is changing in our field here” (OF2). Data fragmentation and system integration issues appear in OF3. These include data ingestion, activity logs, data flow monitoring, and integration between internal 10 Taxonomy of Multi-Department Use Case Identification   
+
+> Reporting Predictive analytics
+> Anomaly detection
+> Compliance and controls
+> 4.5 Financial insights
+> 4.3
+> Fraud detection
+> 4.4
+> Data retrieval 4.1
+
+OF4   
+
+> Management Department
+> Financial report
+> Integration map maintenance
+> 3.1 3.3 Data ingestion platform
+
+OF3 
+
+OF5      
+
+> Budgeting and forecasting Reporting Email automation
+> Search and retrieval
+> Trading forecast 5.1 Trading report 5.4 Email automation 5.2
+> Compliance and Control
+> Reporting accuracy monitoring
+> 5.5 Email and file search
+> 5.3
+
+OF9  
+
+> Business planning and feasibility
+> 9.1 Early-stage feasibility assessment
+> 7.2
+> 7.1
+
+OF7  OF1  
+
+> 1.3
+> Phone calls
+> 1.2
+> 1.1 Rule-based chatbots
+> 1.4
+
+OF8  
+
+> Planning and operations Monitoring and maintenance
+> Pricing forecast
+> 8.5
+> 8.4
+> 8.3
+> 8.1
+
+OF6 
+
+> 6.1
+> Operations and optimization
+> Process optimization
+> Planning and compliance
+> Risk assessment and reporting
+> 6.2
+> 6.4
+> Budget planning forecast
+> System integration and planning
+> Security monitoring and risk management
+> Data and operations management
+
+Chatbots Support and Feedback 
+
+OF2       
+
+> Fault detection in distribution lines
+> 2.2
+> Development planning reports
+> 2.4
+> 2.3
+> 2.1 Component reporting
+> Network reporting
+> Technical reporting
+> Predictive maintenance
+> Feedback reviews License cost simulation 3.6
+> User activity monitoring
+> Data privacy risk analysis
+> 3.4
+> 3.2
+> Invoice validation 4.2
+> Sponsorship application processing
+> Employee survey analysis
+> Internal queries chatbot 7.3
+> Safety data monitoring
+> Workforce
+> allocation
+> Billing verification
+> Revenue planning
+> 5.6
+> Email handling
+> 3.5 Alerting system
+> 3.7 Security monitoring
+> Workforce and growth
+> 6.3 Asset optimization
+> Failure prediction 8.2
+> 6.5 Report review
+> Feedback and Follow up
+> 6.6
+
+Fig. 2 : Identification of multiple departments use cases systems. A participant from OF3 described this work, noting, ”We have error han-dling, but many processes we do not have because the amount of work is so big. It could be better if some system monitored and categorized the errors automatically” (OF3). Fraud detection, invoice validation, accuracy checks, and other control tasks appear in OF4. These tasks involve reviewing structured information and identifying irreg-ularities. A participant from OF4 stated, ”invoices often require corrections, which means extra work and double checking for compliance” (OF4). Operational monitoring, safety data, asset related information, and legacy systems appear in OF2, OF6, and Management. These reflect the current state of systems and internal workload. A participant from OF3 explained, ”There will not be more people to do this, maybe less. So anything manual or time consuming that we can reduce helps the workload” (OF6). 
+
+Summary . Across all OF, AI and LLM based use cases focus on routine automa-tion, data integration, and decision support. These uses aim to reduce manual work, improve access to information, and support forecasting and monitoring. As shown in Figure 2, these areas represent concrete opportunities to address long standing operational issues across the organisation. We prioritized the identified AI use cases based on their business importance, implementation ease, and expected organizational value. Table 5 summarizes the prioritized categories and corresponding use cases. Reporting-related use cases were assigned the highest priority because they directly support decision making by the 11 Table 5 : Prioritized AI Use Cases 
+
+Priority Category Sub category Use cases Department code 
+
+01 Reporting Progress, feedback and Trading Reports 5.4, 6.5, 6.6 E, D, F Financial reporting 4.5 DTechnical reporting 2.1, 2.3, 2.4 BRisk Assessment and compliance 6.4, 5.5 D, E 02 RAG and agentic RAG based solution Search and Retrieval 4.1, 5.3, 6.1, 6.3, 7.1 D, E, F, G Document Summariza-tion 7.2, 1.2 A, G Chatbots 1.4, 7.3 A, G Email Automation and prioritization 1.1, 5.2, 1.3 A, E 03 Predictive Main-tenance Predictive Analytic and Failure prediction 4.3, 2.2, 8.2 D, B, H 04 Anomaly Detection Alert, user activity, monitoring 3.5, 3.7, 8.1 C, H Privacy Risk Surveil-lance 3.2, 3.4 CFraud Detection 4.4 D05 Budgeting and Forecasting Budgeting 5.1, 5.6, 6.2, 6.3, 8.3, 8.4 E, F, H Billing verification and validation 4.2, 8.5, 3.6 D, C, H 06 Uncategorized Uncategorized use case 10.1 IIntegration Support 3.3 CProject Feasibility 3.1 C
+
+board of directors and senior management. Clear and timely reports help stakehold-ers understand ongoing activities, risks, and outcomes, which enables faster and more informed decisions. RAG and agentic RAG based solutions follow, as they support knowledge access and operational efficiency across organizational functions. Lower pri-ority categories address more specialized or supporting needs and are grouped under uncatgorized. 12 4.2 RQ2: Potential AI Solutions and Pilot Cases 
+
+In addition to challenges, the analysis identified solution oriented codes and quotations where participants linked AI to specific improvement areas. These references were less frequent than challenge related codes but showed how employees envisioned automa-tion, forecasting, integration, and compliance support. The findings are organized by theme. 
+
+Theme 1: Manual and Repetitive Work. 
+
+Employees described routine activities that require repeated checks, corrections, and information validation. These tasks take time and affect daily productivity. This theme covers how employees linked AI to routine tasks such as reporting, valida-tion, and repeated data checks. A participant from OF4 described a possible role for automation in checking processes, noting, “AI could do checking for us and we then approved” (OF4). A participant from OF2 described current reporting routines and reflected on AI’s possible contribution, explaining, ”Yes. Basically, this is the stuff that I report at the moment. There is a lot of that, but I am not sure if AI can help with this. I am not sure, but... Yes. AI can help everywhere” (OF2). These comments indicate that employees saw AI as useful for automating repet-itive reporting and verification tasks, though some expressed uncertainty about its scope. The codes show that reporting and validation are viewed as realistic areas for introducing AI based automation. 
+
+Theme 2: Forecasting and Predictive Analytics. 
+
+A participant from OF6 highlighted the potential for data driven prediction, stat-ing, ”Prediction might also get strong because the model can be trained” (OF5). Participants from OF5 described forecasting practices in long term planning. One participant explained, ”We make a plan for 2036. We try to forecast as exact as we can how many customers we will have and what kind of techniques we will use in the future, for example dismantling overhead lines and replacing them with underground cables” (OF9). Another participant added, ”First one is like a strategic forecast of changes in the operating environment in the electricity distribution network. So it is like forecasting thing. Different kind of things that we forecast. What is changing in our field here” (OF2). These statements show that participants linked AI to strengthening forecasting accuracy and scenario planning. The codes under this theme highlight forecasting and predictive maintenance as shared targets for AI driven improvement, consistent with the 41 department level use cases. 
+
+Theme 3: Data Fragmentation and Integration. Integration related codes were fewer but consistent across organizational functions. Participants emphasized the need for connected systems and automated monitoring of data flows. A participant from OF4 pointed out integration as a technical priority, stating, ”Integration between systems, integrations for these other systems” (OF4). Another participant from OF3 described the workload caused by manual monitoring, noting, ”We have error han-dling, but many processes we do not have because the amount of work is so big. It could be better if some system monitored and categorized the errors automatically” (OF3). 13 These statements show that participants expected automation to assist with system integration and error detection. The codes indicate that unified data access and auto-mated monitoring are seen as necessary for improving information flow organizational functions. 
+
+Theme 4: Compliance and Validation. 
+
+A participant from OF4 expressed interest in automated validation, explaining, ”I would like to see some kind at least reading. . . AI to train and detect” (OF4). Another participant from OF2 discussed the potential of anomaly detection, noting, “If we find anomalies, yeah, predict anomalies. So it can also help in that, not just to find, but to detect failures of the network by using GenAI. It affects a lot, also the prices that we can take from our customers” (OF2). Anomaly detection and validation were perceived as practical areas for AI imple-mentation. The codes suggest that participants saw potential in systems capable of identifying irregularities automatically to support compliance and operational reliability. 
+
+Theme 5: Organizational and Infrastructure Readiness. Readiness related statements focused on AI as a supportive tool that could assist with tasks with-out replacing existing systems. A participant from OF4 suggested that AI systems should operate incrementally, noting, ”Only just suggest you those issues or it would be easier if system assisted” (OF4). A participant from OF6 referred to workload con-cerns, explaining, ”There will not be more people to do this, maybe less. So anything manual or time consuming that we can reduce helps the workload” (OF6). Partici-pants expected gradual integration of AI into current processes rather than large scale replacements. The codes indicate that incremental adoption and workload reduction are viewed as practical steps toward readiness. 
+
+4.2.1 Pilot Cases 
+
+In this project, we developed two pilot cases to demonstrate the capabilities of GenAI and agentic-based systems and their practical applicability within the partner orga-nization. These pilot cases were designed to address real-world organizational needs and to explore how such systems could be integrated into existing workflows. The pilot cases are provided for demonstration purposes and were not part of a produc-tion deployment nor implemented for operational use within the company. Below, we present the two pilot cases along with their corresponding code implementations. 
+
+Pilot Case 1: Email Clone System Email remains one of the most widely adopted communication channels in industrial and enterprise environments, particu-larly for customer support and service-related interactions. Most industries dependent heavily on email to communicate with customers, which requires employing a large number of staff to manually read, respond to, and manage incoming messages. This manual process is time-consuming, labor-intensive, and costly, especially for organizations handling high volumes of customer emails. Based on the challenges identified during interviews with the partner company, we developed an intelligent email response generation system as the first pilot case. The goal of this system is to support and partially automate customer email handling while maintaining human oversight. The proposed system functions as an intelligent 14 email clone, where autonomous agents generate draft email responses based on the company’s historical communication data and internal knowledge base. To implement this solution, we adopted a RAG approach. All relevant company datasets, including prior email conversations and domain-specific documentation, were embedded and stored in a vector database. The system utilized the LangChain and LangGraph agentic frameworks to enable agents to search, retrieve, and reason over the stored data. Upon receiving an incoming email, the agents retrieve relevant contextual information and generate an appropriate response that aligns with the company’s communication style and policies. A key design feature of the system is the integration of human-in-the-loop supervi-sion. Rather than sending responses automatically, the generated emails are presented to a human operator for verification. The human can review, edit, and update the generated content before final approval. This design ensures reliability, accountabil-ity, and compliance with organizational standards, while also exemplifying effective human–AI collaboration where humans retain full control over the final output. To evaluate the performance of the proposed system, we assessed the quality of the generated email responses using BERTScore, comparing them against reference responses from the company dataset. Initial experimental results indicate that the system achieves an accuracy score of 89%, demonstrating its effectiveness in generating contextually relevant and semantically accurate email responses. These results suggest that the proposed solution can significantly reduce manual workload while maintaining high response quality. 
+
+Pilot Case 2: RAG-Based System for Autonomous Text and Data Retrieval 
+
+During interviews with the partner company, a major operational challenge iden-tified was the management and retrieval of large volumes of internal files and datasets. These resources are primarily handled manually, making it difficult and time-consuming for employees to locate specific documents or obtain information related to particular problems. When employees require a specific file or need insights from past data, they must manually search across multiple repositories, which reduces efficiency and increases the likelihood of errors or overlooked information. To address this challenge, we developed a RAG-based chatbot system as the second pilot case. The proposed system enables autonomous text and data retrieval by storing all company-provided datasets in a secure environment using vector-based represen-tations. This allows the system to efficiently index and retrieve relevant information from large and unstructured data collections. Employees can interact with the system through natural language queries to search for specific files, documents, or problem-related information. Upon receiving a query, the system retrieves the most relevant content from the stored datasets and generates a concise, context-aware response. In addition to providing textual answers, the system can also return references or direct links to the relevant files, enabling faster and more accurate access to required resources. This pilot case demonstrates how a RAG-based conversational system can signif-icantly reduce manual search efforts, improve knowledge accessibility, and enhance operational efficiency within the organization. The results indicate that the system 15 effectively supports employees in retrieving both information and associated datasets, thereby addressing a critical pain point identified by the company. 
+
+# 5 Discussion 
+
+5.1 Summary of Findings 
+
+This study examined organisational AI adoption needs in the energy sector through the identification of 41 use cases reported to the company, along with possible LLM-based solutions. The findings show how current work practices create clear entry points for AI. Participants described routine tasks, and they linked these conditions to con-crete areas where AI can assist. They viewed AI as support for reporting, forecasting, validation, and integration, and they expected small, practical improvements rather than large changes. The results indicate that employees can see where AI fits in their work. This provides a clear base for the practical implications that follow. 
+
+5.2 Implications For Practice 
+
+The results suggest that AI adoption should focus on cross-departmental priorities that align with existing practices. 
+
+Reporting. Manual reporting was identified as one of the most time-consuming tasks. Participants directly mentioned expectations that reporting could be automated through AI. Approaches based on retrieval-augmented generation can help unify access to dispersed documentation and reduce manual duplication 1. Such capabilities could allow reporting work to shift from data preparation to analysis and interpretation. 
+
+Forecasting and Predictive Maintenance. Forecasting and maintenance emerged as areas where participants expected models to provide more accurate and proactive insights. Participants described the need for more stable and transparent forecasting practices to support multi-horizon planning and coordination organiza-tional functions. Predictive maintenance was similarly emphasized, with participants noting that reactive maintenance creates operational disruptions. Deploying predic-tive maintenance capabilities across units such as Energy Trading and Electricity Distribution could support more stable operations and cost control. 
+
+Data Integration. Fragmentation across different data sources was identified as a barrier. Participants mentioned the need for integration between systems. This reflects findings from prior enterprise adoption research, where interoperability and system silos were identified as major constraints on scaling AI initiatives [1]. Standardized data access mechanisms may help organizations access distributed data in a uniform way. 
+
+Compliance and Validation. Validation tasks and audit preparation were high-lighted as repetitive burdens. Participants anticipated that AI could reduce compliance workload through anomaly detection and risk assessment support. Automating parts of compliance validation could allow staff to focus on interpretation and decision-making rather than manual verification. 
+
+> 1https://www.strative.ai/blogs/the-role-of-rag-in-automated-report-generation-2;
+
+16 Organizational and Infrastructure Readiness. Participant responses showed interest in using existing systems and resources as a foundation for adopting AI-based tools. Organizations can build readiness by developing data practices, strengthening internal coordination, and aligning AI use with established processes. Introducing automation incrementally through modular solutions that integrate with current work-flows may provide a practical adoption path without requiring extensive structural changes. Overall, these implications highlight that while technical capabilities exist, adoption depends on organizational readiness, cross-departmental coordination, and the ability to prioritize shared needs such as reporting, forecasting, and predictive maintenance. 
+
+5.3 Implications for Research 
+
+This study is conducted on the energy sector. The five identified themes, manual work, forecasting, data integration, compliance, and infrastructure readiness—translate into system-level needs that span departments. This suggests that AI adoption challenges in non-software organisations are also requirements-intensive, making them relevant for software engineering research. The findings also reinforce observations from earlier studies [1], which showed that adoption depends on organisational readiness, user trust, and infrastructure integra-tion. We identifiy the usecases and their possible solutions where, and how these can be mapped into technical use cases and organisational priorities. Future research should build on three directions. First, more detailed studies are needed to see how organisations turn identified use cases into actual system requirements and deployed solutions. Second, cross-sector comparisons can show which adoption barriers are unique to energy utilities and which are shared with manu-facturing or services. Third, replication with additional cases would allow stronger generalisation and cumulative evidence on AI adoption across complex organisations. 
+
+# 6 Threats to Validity 
+
+Our study is subject to some threats to validity, which are discussed here to provide a clear understanding of the limitations. 
+
+Construct Validity. Interview protocols and observation templates were designed to capture AI-related use cases and challenges. Eight interviews were audio-recorded with consent, while for the remaining interviews detailed notes were taken. This dif-ference in data quality may have influenced the richness of the coding. To mitigate bias, data sources also included internal artefacts and direct observations, which were used to cross-check interview findings. 
+
+Internal Validity. Interviews were the primary data source, supported by researcher notes and selected internal artefacts for context. The first and second authors conducted the data collection and led the coding work. To reduce inter-pretive bias, the authors held discussion sessions, compared coding decisions, and iteratively refined the codebook and themes. These procedures were used to increase the consistency and transparency of the analysis. 17 External Validity. The findings are based on a single industrial company, though data were collected across nine organizational units. Consequently, the results may not be generalizable to all organizations or sectors. Nevertheless, the identification of recurring themes—such as reporting automation, predictive maintenance, and forecasting—indicates that these findings may be transferable to similar multi-unit organizations in data-intensive industries. 
+
+Reliability. Most interviews were recorded and transcribed. In a few cases, where recording was not possible due to organisational constraints, detailed researcher notes were used. These notes followed a consistent structure and were reviewed immediately after each session. This variation introduces differences in the level of textual detail, which may influence reproducibility. To support reliability, the full coding structure, including codes, categories, and themes, can be provided as supplementary material. 
+
+Ethical Considerations. All participants provided informed consent prior to data collection. The study followed company NDA requirements. Sensitive oper-ational details and quotations that could reveal confidential business information were excluded or anonymised to ensure participant and organisational confidentiality. In addition to participant anonymization, organizational context was reported at a generalized level to prevent unintended identification. 
+
+# 7 Conclusion and Future Work 
+
+This study examined how employees in an energy organisation view the use of AI in their operational work. The interview analysis showed consistent interest in using AI to support reporting activities, forecasting tasks, data handling, and maintenance-related work. Participants described how GenAI and LLM-based tools could be introduced through incremental steps that build on existing workflows. This study contributes a multi-department, empirically grounded perspective on organisational GenAI adoption, showing how employees translate routine operational challenges into expectations for AI support. By connecting these articulated needs to concrete use cases and cross-departmental patterns, the study advances understanding of how AI adoption emerges within existing workflows rather than through top-down technological transformation. Future work can examine how these findings generalize to other organisational contexts, how AI-supported practices evolve during deployment, and how agentic sys-tems are integrated into daily operations. Longitudinal studies and multi-company investigations would be useful for understanding how adoption progresses over time. 
+
+# Author Contributions 
+
+Malik Abdul Sami and Zeeshan Rasheed contributed equally to this work. All authors contributed to the study design, data analysis, and manuscript preparation. 18 Data Availability 
+
+The data used in this study cannot be shared due to company policies and confi-dentiality agreements. Aggregated themes and coding schemes can be provided upon request. 
+
+# Declaration of Generative AI and AI-assisted Technologies 
+
+ChatGPT and Grammarly based AI tools were used for language editing and summa-rization to improve clarity and grammar. No generative AI was used for figures. All AI-assisted content was reviewed by the authors. 
+
+# Acknowledgment 
+
+We thank the project partners, the participating company, and all interviewees for their collaboration and support during this work. 
+
+# References 
+
+[1] Kemell, K.-K., Saarikallio, M., Nguyen-Duc, A., Abrahamsson, P.: Still just per-sonal assistants?–a multiple case study of generative ai adoption in software organizations. Information and Software Technology, 107805 (2025) [2] Gartner: Generative AI Deployment Trends. Accessed: 2025-08-04. https://www. gartner.com/en/insights/generative-ai-for-business [3] Weinberg, A.I.: A framework for the adoption and integration of generative ai in midsize organizations and enterprises (faigmoe). arXiv preprint arXiv:2510.19997 (2025) [4] Gupta, S., Modgil, S., Bhattacharyya, S., Bose, I.: Artificial intelligence for deci-sion support systems in the field of operations research: review and future scope of research. Annals of Operations Research 308 (1), 215–274 (2022) [5] Hosseini, S., Seilani, H.: The role of agentic ai in shaping a smart future: A systematic review. Array 26 , 100399 (2025) https://doi.org/10.1016/j.array.2025. 100399 [6] Leslie, D., Perini, A.M.: Future shock: Generative ai and the international ai policy and governance crisis. Harvard Data Science Review (Special Issue 5) (2024) [7] Polisetty, A., Chakraborty, D., G, S., Kar, A.K., Pahari, S.: What deter-mines ai adoption in companies? mixed-method evidence. Journal of Computer Information Systems 64 (3), 370–387 (2024) 19 [8] Khanfar, A.A., Kiani Mavi, R., Iranmanesh, M., Gengatharen, D.: Factors influ-encing the adoption of artificial intelligence systems: A systematic literature review. Management Decision (2025) [9] Abrah˜ ao, S., Grundy, J., Pezz` e, M., Storey, M.-A., Tamburri, D.A.: Software engineering by and for humans in an ai era. ACM Transactions on Software Engineering and Methodology 34 (5), 1–46 (2025) [10] Vial, G.: Understanding digital transformation: A review and a research agenda. Managing digital transformation, 13–66 (2021) [11] Simaremare, M., Edison, H.: The state of generative ai adoption from software practitioners’ perspective: An empirical study. In: 2024 50th Euromicro Confer-ence on Software Engineering and Advanced Applications (SEAA), pp. 106–113 (2024). IEEE [12] Ulfsnes, R., Moe, N.B., Stray, V., Skarpen, M.: Transforming software develop-ment with generative ai: Empirical insights on collaboration and workflow. In: Generative AI for Effective Software Development, pp. 219–234. Springer, ??? (2024) [13] Liang, J.T., Yang, C., Myers, B.A.: A large-scale survey on the usability of ai programming assistants: Successes and challenges. In: Proceedings of the 46th IEEE/ACM International Conference on Software Engineering, pp. 1–13 (2024) [14] Russo, D.: Navigating the complexity of generative ai adoption in software engi-neering. ACM Transactions on Software Engineering and Methodology 33 (5), 1–50 (2024) [15] Hossain, M.K., Srivastava, A., Oliver, G.C., Islam, M.E., Jahan, N.A., Karim, R., Kanij, T., Mahdi, T.H.: Adoption of artificial intelligence and big data analytics: an organizational readiness perspective of the textile and garment industry in bangladesh. Business process management journal 30 (7), 2665–2683 (2024) [16] Davila, N., Wiese, I., Steinmacher, I., Silva, L., Kawamoto, A., Favaro, G.J.P., Nunes, I.: An industry case study on adoption of ai-based programming assistants. In: Proceedings of the 46th International Conference on Software Engineering: Software Engineering in Practice, pp. 92–102 (2024) [17] Pereira, G.V., Jackson, V., Prikladnicki, R., Hoek, A., Fortes, L., Ara´ ujo, C., Coelho, A., Chelli, L., Ramos, D.: Exploring genai in software development: Insights from a case study in a large brazilian company. In: 2025 IEEE/ACM 47th International Conference on Software Engineering: Software Engineering in Practice (ICSE-SEIP), pp. 330–341 (2025). IEEE [18] Flyckt, J., Gorschek, T., Mendez, D., Lavesson, N.: Identifying key ai challenges in make-to-order manufacturing organisations: A multiple case study. Journal of 20 Systems and Software, 112559 (2025) [19] Ransbotham, S., Kiron, D., Gerbert, P., Reeves, M.: Reshaping business with artificial intelligence: Closing the gap between ambition and action. MIT sloan management review 59 (1) (2017) [20] Hruby, V.: Exploring ai adoption dynamics and entrepreneurial orientation in czech chemical smes: A pilot study perspective. Scientific Papers of the University of Pardubice, Series D: Faculty of Economics and Administration 32 (1) (2024) [21] Solaimani, S., Dabestani, R., Harrison-Prentice, T., Ellis, E., Kerr, M., Choud-hury, A., Bakhshi, N.: Exploration and prioritisation of critical success factors in adoption of artificial intelligence: a mixed-methods study. International Journal of Business Information Systems 45 (4), 429–453 (2024) [22] Sepanosian, T., Milosevic, Z., Blair, A.: Scaling ai adoption in finance: modelling framework and implementation study. In: International Conference on Enterprise Design, Operations, and Computing, pp. 221–236 (2024). Springer [23] Retkowsky, J., Hafermalz, E., Huysman, M.: Managing a chatgpt-empowered workforce: Understanding its affordances and side effects. Business Horizons 
+
+67 (5), 511–523 (2024) [24] Kampik, T., Warmuth, C., Rebmann, A., Agam, R., Egger, L.N., Gerber, A., Hoffart, J., Kolk, J., Herzig, P., Decker, G., et al.: Large process models: a vision for business process management in the age of generative ai. KI-K¨ unstliche Intelligenz, 1–15 (2024) [25] Coutinho, M., Marques, L., Santos, A., Dahia, M., Fran¸ ca, C., Souza Santos, R.: The role of generative ai in software development productivity: A pilot case study. In: Proceedings of the 1st ACM International Conference on AI-Powered Software, pp. 131–138 (2024) [26] Khojah, R., Werth, A., Broadhead, K.W., Dobrucki, L.W., Geiger, C., Ruben-stein, D.A.: Integrating generative artificial intelligence tools and competencies in biomedical engineering education. Biomedical Engineering Education, 1–17 (2025) [27] Yin, R.K.: Case study research and applications: Design and methods. (No Title) (2017) [28] Baxter, P., Jack, S., et al. : Qualitative case study methodology: Study design and implementation for novice researchers. The qualitative report 13 (4), 544–559 (2008) [29] Braun, V., Clarke, V.: Using thematic analysis in psychology. Qualitative research in psychology 3(2), 77–101 (2006) 21 [30] Eisenhardt, K.M.: Building theories from case study research. Academy of management review 14 (4), 532–550 (1989) 22

@@ -1,0 +1,797 @@
+Title: SAP-RPT-1Ev
+
+URL Source: https://arxiv.org/pdf/2602.19237v1
+
+Published Time: Tue, 24 Feb 2026 02:02:26 GMT
+
+Number of Pages: 16
+
+Markdown Content:
+Preprint — February 2026  
+
+> Page 1
+
+# Evaluating SAP RPT -1 for Enterprise Business Process 
+
+# Prediction: 
+
+# In -Context Learning vs. Traditional Machine Learning on 
+
+# Structured SAP Data 
+
+Amit Lal 
+
+Microsoft Corporation  
+
+> ORCID: 0009 -0003 -5957 -4789
+> February 2026
+
+Abstract 
+
+SAP RPT -1 is a relational pretrained transformer announced at SAP TechEd 2025 that promises 
+
+instant predictive analytics on structured business data through in -context learning, eliminating 
+
+the need for task -specific model training. While the underlying Co nTextTab architecture has been 
+
+evaluated on public benchmarks at NeurIPS 2025, no independent study has assessed RPT -1
+
+performance on realistic SAP enterprise scenarios. This paper presents the first practitioner -led 
+
+evaluation of the open -source variant ( sap -rpt -1-oss) across three SAP business process 
+
+prediction tasks: demand forecasting, data integrity classification, and financial risk prediction. 
+
+We benchmark RPT -1-OSS against established gradient boosted decision tree baselines 
+
+(XGBoost, LightGBM, Cat Boost) using synthetic datasets that mirror SAP table structures in SD, 
+
+MM, and FI/CO modules. Our experiments, deployed as interactive Hugging Face Spaces, reveal 
+
+that RPT -1-OSS achieves competitive performance on small -sample classification tasks (within 
+
+2–4% AUC -ROC of tuned XGBoost) while requiring zero training time, but falls behind on 
+
+regression tasks and larger datasets where gradient boosted trees maintain a clear advantage. 
+
+We propose a hybrid evaluation framework for SAP practitioners and discuss deployment 
+
+considerations for integrating tabular foundation models into enterprise SAP landscapes via SAP 
+
+AI Core and the Generative AI Hub. 
+
+Keywords: SAP RPT -1, tabular foundation models, in -context learning, enterprise AI, business 
+
+process prediction, gradient boosted trees, SAP S/4HANA, ConTextTab 
+
+# 1. Introduction 
+
+Enterprise resource planning systems, particularly SAP S/4HANA, generate vast quantities of 
+
+structured transactional data across finance, procurement, supply chain, and human resources 
+
+modules. Predictive analytics on this data has traditionally required b uilding dedicated machine 
+
+learning models for each business scenario -a process that demands significant data engineering 
+
+effort, domain expertise, and weeks of development time per use case. For organizations running 
+
+dozens of prediction scenarios across SAP modules, this approach scales poorly. 
+
+The emergence of tabular foundation models offers a fundamentally different paradigm. Rather 
+
+than training a separate model for each task, these models are pretrained on large corpora of 
+
+tabular data and can perform predictions on new datasets through in -context learning (ICL) -Preprint — February 2026  
+
+> Page 2
+
+providing labeled examples at inference time without any gradient updates. SAP’s RPT -1
+
+(Relational Pretrained Transformer), announced at SAP TechEd Berlin in November 2025, 
+
+represents the first enterprise -focused tabular foundation model purpose -built for business data 
+
+prediction [1]. The underlying architecture, ConTextTab, was presented as a spotlight poster at 
+
+NeurIPS 2025 [2], establishing strong results on public benchmarks including OpenML -CC18 and 
+
+the CARTE benchmark suite. 
+
+However, a critical gap exists between benchmark performance and enterprise applicability. The 
+
+ConTextTab evaluation used standardized academic datasets that differ substantially from real 
+
+SAP business tables in terms of schema complexity, feature cardinal ity, temporal dependencies, 
+
+and missing data patterns. No independent study has evaluated RPT -1 on tasks representative 
+
+of actual SAP business process prediction scenarios. 
+
+This paper addresses that gap through three contributions. First, we design three experimental 
+
+scenarios that mirror common SAP predictive analytics use cases: demand forecasting 
+
+(regression), data integrity classification, and financial risk prediction. S econd, we provide the first 
+
+independent benchmark of sap -rpt -1-oss against production -grade gradient boosted decision tree 
+
+(GBDT) baselines -XGBoost [3], LightGBM [4], and CatBoost [5] -on SAP -structured data. Third, 
+
+we deploy all experiments as interactive Hugging Face Spaces, enabling reproducibility and 
+
+providing SAP practitioners with an immediate way to explore RPT -1 capabilities on business -
+
+relevant tasks. This work builds on our pr ior research on AI -assisted SAP development [6] and AI 
+
+agent architectures for SAP ecosystems [7], extending the investigation from code generation to 
+
+structured data prediction. 
+
+# 2. Background and Related Work 
+
+2.1 Tabular Foundation Models 
+
+The application of deep learning to tabular data has a checkered history. Grinsztajn et al. [8] 
+
+demonstrated at NeurIPS 2022 that tree -based models still outperform deep learning on typical 
+
+tabular data, identifying irregular target functions and uninforma tive features as key challenges 
+
+for neural approaches. This finding echoed earlier results by Shwartz -Ziv and Armon [9], who 
+
+showed that well -tuned XGBoost remained the strongest baseline across diverse tabular tasks. 
+
+Despite these challenges, several transformer -based architectures have shown promise. 
+
+Gorishniy et al. [10] proposed the FT -Transformer, demonstrating that attention mechanisms over 
+
+feature tokens could match gradient boosted trees on specific datasets. Ar ik and Pfister [11] 
+
+introduced TabNet with attentive feature selection for interpretable tabular learning. The SAINT 
+
+architecture [12] combined self -attention with inter -sample attention via contrastive pretraining. 
+
+The paradigm shift toward foundation models for tabular data began with TabPFN [13], which 
+
+used prior -data fitted networks to achieve strong few -shot classification. The follow -up TabPFN 
+
+v2 [14], published in Nature, demonstrated that a single pretrained m odel could achieve accurate 
+
+predictions on small datasets across diverse domains. CARTE [15] introduced context -aware 
+
+representations for tabular data, enabling transfer learning across tables through entity 
+
+embeddings. Van Breugel and van der Schaar [16] argued in an ICML 2024 position paper that Preprint — February 2026  
+
+> Page 3
+
+tabular foundation models should be a research priority, noting the disconnect between the 
+
+economic importance of tabular data and the research attention it receives. 
+
+Separately, LLM -based approaches to tabular prediction have emerged. Hegselmann et al. [17] 
+
+proposed TabLLM, serializing tabular data into natural language for few -shot classification with 
+
+large language models. Fang et al. [18] provided a comprehensive su rvey of LLM approaches to 
+
+tabular data, covering prediction, generation, and understanding tasks. These approaches 
+
+typically sacrifice efficiency for the ability to leverage pretrained language knowledge about 
+
+column semantics. 
+
+2.2 SAP RPT -1 and ConTextTab Architecture 
+
+SAP RPT -1 is built on the ConTextTab architecture [2], a table -native transformer that processes 
+
+structured data through three key innovations. First, it employs specialized semantic embeddings 
+
+for different data modalities (text, date, numeric) using the all -MiniLM -L6 -v2 sentence transformer 
+
+for column names and categorical values. Second, it implements a 2D attention scheme with both 
+
+cross -column and cross -row attention, enabling the model to capture dependencies within 
+
+individual records and across the d ataset simultaneously. Third, it uses separate classification 
+
+and regression heads that output predictions directly from the attention representations. 
+
+The model was pretrained on the T4 dataset (Tremendous TabLib Trawl), a 1.34 TB corpus 
+
+containing approximately 3.1 million real -world tables from diverse domains [2]. This pretraining 
+
+enables in -context learning: at inference time, the model receives labe led examples as context 
+
+rows alongside unlabeled query rows, and produces predictions without any parameter updates. 
+
+The open -source variant, sap -rpt -1-oss, is released under Apache 2.0 on Hugging Face with a 
+
+64.6 MB checkpoint [19]. 
+
+SAP offers three model variants. The open -source sap -rpt -1-oss supports context sizes up to 
+
+8,192 rows and is suitable for research and prototyping. The commercial sap -rpt -1-small targets 
+
+low -latency use cases with approximately 2,000 context rows, while s ap -rpt -1-large supports up 
+
+to 65,536 context rows with 256 columns for maximum accuracy [20]. The commercial variants 
+
+are available through SAP AI Core and the Generative AI Hub on SAP Business Technology 
+
+Platform. Preprint — February 2026  
+
+> Page 4
+
+2.3 Business Process Prediction in SAP 
+
+Machine learning for business process prediction has been an active research area. Mehdiyev et 
+
+al. [21] applied deep learning to business process outcome prediction, demonstrating 
+
+improvements over traditional approaches. Rama -Maneiro et al. [22] benchmark ed deep learning 
+
+methods for predictive business process monitoring, finding that LSTMs and transformers showed 
+
+promise for next -activity and remaining -time prediction. Kratsch et al. [23] compared deep 
+
+learning with classical ML for process outcome predic tion, concluding that ensemble methods 
+
+remained competitive. 
+
+SAP S/4HANA ships approximately 24 embedded ML scenarios across modules, including 
+
+delivery delay prediction with roughly 130 input features in logistics, late payment prediction in 
+
+accounts receivable, demand forecasting through SAP Integrated Business Pl anning (IBP), and 
+
+predictive maintenance via SAP Predictive Asset Insights [24]. These scenarios typically require 
+
+dedicated model training and are available only in specific SAP product editions, limiting broader 
+
+adoption. RPT -1 promises to democratize su ch predictions through zero -training inference. Preprint — February 2026  
+
+> Page 5
+
+# 3. Experimental Framework 
+
+We designed three experiments that map to common SAP business process prediction scenarios. 
+
+Each experiment uses synthetically generated data that mirrors the schema, cardinality, and 
+
+statistical distributions found in production SAP tables. We chose synth etic data for two reasons: 
+
+first, real SAP customer data is subject to strict confidentiality constraints that prevent public 
+
+sharing; second, synthetic data allows precise control over dataset characteristics for reproducible 
+
+benchmarking. All three exper iments are deployed as interactive Hugging Face Spaces. Preprint — February 2026  
+
+> Page 6
+
+3.1 Experiment 1: SAP Forecast Showdown 
+
+The first experiment evaluates RPT -1-OSS on demand and revenue forecasting tasks typical of 
+
+SAP SD (Sales & Distribution) and MM (Materials Management) modules. The dataset simulates 
+
+sales order data with features including material group, plant, customer segment, order quantity, 
+
+pricing conditions, and temporal features (month, quarter, fiscal year). The prediction targets are 
+
+order quantity (regression) and revenue amount (regression). 
+
+This scenario tests RPT -1 on its core regression capability, where in -context learning must infer 
+
+seasonal patterns, customer purchasing behavior, and material -specific demand curves from 
+
+contextual examples alone -without explicit time -series modeling. 
+
+3.2 Experiment 2: Predictive Data Integrity 
+
+The second experiment applies RPT -1-OSS to data quality and anomaly detection on SAP master 
+
+and transactional data. Data integrity is a persistent challenge in SAP environments: duplicate 
+
+vendor records, inconsistent material classifications, incomplete co st center assignments, and 
+
+anomalous posting patterns collectively cost enterprises millions in reconciliation effort. The 
+
+dataset simulates records with features typical of SAP master data including material type, vendor 
+
+code, plant assignment, storage lo cation, purchasing group, and various status flags. The 
+
+prediction target is a binary integrity classification (pass/fail) along with multi -class anomaly 
+
+categorization. 
+
+This scenario is particularly relevant because data quality issues in SAP often manifest as subtle 
+
+statistical anomalies across multiple fields simultaneously -exactly the type of cross -column 
+
+pattern that RPT -1’s 2D attention mechanism is designed to detect. Preprint — February 2026  
+
+> Page 7
+
+3.3 Experiment 3: Finance Dashboard 
+
+The third experiment integrates RPT -1-OSS into a financial analytics dashboard using SAP FI/CO 
+
+(Financial Accounting and Controlling) data structures. The dataset simulates accounts 
+
+receivable records with features including customer account number, docume nt type, posting 
+
+date, payment terms, dunning level, credit limit utilization, days past due, and historical payment 
+
+behavior. The prediction targets include payment risk classification (low/medium/high) and days -
+
+to -payment regression. 
+
+This experiment tests both classification and regression in a single domain, reflecting how SAP 
+
+finance teams need multiple predictions from the same underlying data. It also evaluates RPT -
+
+1’s ability to handle the mixed data types (categorical codes, date s, currencies, percentages) 
+
+characteristic of SAP financial tables. Preprint — February 2026  
+
+> Page 8
+
+# 4. Methodology 
+
+4.1 Model Configuration 
+
+We evaluate four models across all experiments: 
+
+SAP RPT -1-OSS. We use the open -source checkpoint (sap -rpt -1-oss, 64.6 MB) from Hugging 
+
+Face with context_size=2048 and bagging=4 to accommodate GPU memory constraints on 
+
+Hugging Face Spaces infrastructure. Input is provided as pandas DataFrames with no 
+
+preprocessing -column names and values are embedded automatically by the model’s internal all -
+
+MiniLM -L6 -v2 encoder. For classification tasks, we use SAP_RPT_OSS_Classifier; for 
+
+regression, SAP_RPT_OSS_Regressor. 
+
+XGBoost (v2.0+). Our primary baseline, configured with hyperparameter search over max_depth 
+
+(3 –10), learning_rate (0.01 –0.3), n_estimators (100 –1000), subsample (0.6 –1.0), and 
+
+colsample_bytree (0.6 –1.0). Categorical features are label -encoded. Missing values are handled 
+
+na tively by XGBoost’s built -in sparsity -aware split finding [3]. 
+
+LightGBM (v4.0+). Configured with similar hyperparameter ranges. LightGBM’s histogram -based 
+
+algorithm and native categorical feature support make it particularly well -suited for SAP data with 
+
+high -cardinality categorical fields such as material numbers and vendor codes [4]. 
+
+CatBoost (v1.2+). Included for its ordered boosting algorithm and native handling of categorical 
+
+features without preprocessing [5]. We use default configurations with automatic handling of 
+
+categorical columns specified via cat_features parameter. 
+
+4.2 Evaluation Protocol 
+
+For each experiment, we employ stratified 5 -fold cross -validation (classification) or standard 5 -
+
+fold cross -validation (regression). GBDT baselines are trained with Bayesian hyperparameter 
+
+optimization (50 trials) within each fold. RPT -1-OSS receives the t raining fold as context examples 
+
+and predicts on the held -out fold without any parameter updates. 
+
+Classification metrics include AUC -ROC (primary), F1 -score (macro -averaged), precision, and 
+
+recall. Regression metrics include RMSE (primary), MAE, and R² score. Statistical significance is 
+
+assessed using the Wilcoxon signed -rank test across folds, followi ng the methodology 
+
+recommended by Demšar [25] for comparing classifiers over multiple datasets. 
+
+4.3 Dataset Characteristics                        
+
+> Experiment Records Features Task Type Classes SAP Module
+> Forecast Showdown 5,000 12 Regression N/A SD / MM
+> Predictive Integrity 3,000 15 Classification 2 (binary) MM / Master Data
+> Finance Dashboard 4,000 18 Both 3 (risk) FI / CO
+> Table 1. Dataset characteristics for the three experimental scenarios. Preprint —February 2026
+> Page 9
+
+# 5. Results 
+
+5.1 Classification Performance 
+
+On classification tasks (Experiments 2 and 3), RPT -1-OSS demonstrates competitive 
+
+performance relative to tuned GBDT baselines, particularly when context size is adequate to 
+
+represent the label distribution.                                     
+
+> Model AUC -ROC (↑) F1 Macro (↑) Precision (↑) Training Time
+> Predictive Integrity
+> RPT -1-OSS 0.912 ± 0.018 0.878 ± 0.021 0.885 ± 0.019 0 sec (ICL)
+> XGBoost 0.948 ± 0.012 0.921 ± 0.015 0.929 ± 0.014 ~45 sec
+> LightGBM 0.944 ± 0.014 0.916 ± 0.016 0.924 ± 0.015 ~30 sec
+> CatBoost 0.941 ± 0.013 0.913 ± 0.017 0.920 ± 0.016 ~60 sec
+> Finance Risk (3 -
+> class)
+> RPT -1-OSS 0.891 ± 0.022 0.842 ± 0.028 0.856 ± 0.025 0 sec (ICL)
+> XGBoost 0.932 ± 0.015 0.894 ± 0.019 0.901 ± 0.018 ~55 sec
+> LightGBM 0.928 ± 0.016 0.889 ± 0.020 0.896 ± 0.019 ~35 sec
+> CatBoost 0.935 ± 0.014 0.898 ± 0.018 0.905 ± 0.017 ~65 sec
+
+Table 2. Classification performance across SAP business process prediction tasks (mean ± std across 5 -
+
+fold CV). RPT -1-OSS achieves zero training time through in -context learning. 
+
+In the Predictive Integrity experiment (binary classification), RPT -1-OSS achieves an AUC -ROC 
+
+of 0.912, trailing the best GBDT baseline (XGBoost at 0.948) by 3.6 percentage points. This gap 
+
+narrows when we restrict context size to 500 rows (simulating smal l-data scenarios), where RPT -
+
+1-OSS maintains 0.901 AUC -ROC while XGBoost drops to 0.918 due to insufficient training data 
+
+for hyperparameter optimization. 
+
+For the Finance Dashboard three -class risk prediction, the gap widens slightly to 4.1 percentage 
+
+points (0.891 vs. 0.932). Multi -class tasks appear more challenging for RPT -1’s in -context 
+
+learning, likely because the model must infer multiple decision boun daries from contextual 
+
+examples simultaneously. CatBoost achieves the strongest performance (0.935) on this task, 
+
+likely benefiting from its native handling of the categorical payment terms and document type 
+
+features. 
+
+5.2 Regression Performance                                        
+
+> Model RMSE (↓) MAE (↓) R² (↑) Training Time
+> Forecast Showdown
+> RPT -1-OSS 1,247 ± 89 934 ± 72 0.781 ± 0.034 0 sec (ICL)
+> XGBoost 876 ± 54 641 ± 43 0.892 ± 0.021 ~50 sec
+> LightGBM 891 ± 58 658 ± 46 0.888 ± 0.023 ~32 sec Preprint —February 2026
+> Page 10
+> CatBoost 902 ± 61 672 ± 48 0.885 ± 0.024 ~58 sec
+> Finance Days -to -
+> Payment
+> RPT -1-OSS 8.4 ± 1.1 6.2 ± 0.9 0.812 ± 0.029 0 sec (ICL)
+> XGBoost 6.1 ± 0.7 4.5 ± 0.5 0.901 ± 0.019 ~48 sec
+> LightGBM 6.3 ± 0.8 4.7 ± 0.6 0.897 ± 0.021 ~30 sec
+> CatBoost 6.5 ± 0.8 4.8 ± 0.6 0.893 ± 0.022 ~55 sec
+
+Table 3. Regression performance. RPT -1-OSS shows a more pronounced gap on regression tasks 
+
+compared to classification. 
+
+Regression performance reveals a clearer separation. On the Forecast Showdown task, RPT -1-
+
+OSS achieves an R² of 0.781 versus XGBoost’s 0.892 -an 11.1 percentage point gap. The RMSE 
+
+difference is substantial (1,247 vs. 876), suggesting that RPT -1’s in -context learning struggles to 
+
+capture the precise numerical relationships required for accurate demand forecasting. 
+
+The Finance days -to -payment regression shows a similar pattern (R² of 0.812 vs. 0.901 for 
+
+XGBoost). This aligns with observations from the analytix consulting independent evaluation [26], 
+
+which found RPT -1-OSS excelled at regression on certain benchmark da tasets (Boston Housing, 
+
+California Housing) but showed greater variance across tasks. Our results suggest that SAP 
+
+business data with complex temporal and categorical interactions may be more challenging for 
+
+the current RPT -1 architecture than the cleaner benchmark datasets. Preprint — February 2026  
+
+> Page 11
+
+5.3 Impact of Context Size 
+
+A key advantage of RPT -1-OSS is its ability to leverage in -context examples without training. We 
+
+evaluated how performance scales with context size on the Predictive Integrity task:                     
+
+> Context Rows RPT -1 AUC XGB AUC Gap (Δ) RPT -1 Latency
+> 100 0.856 0.871 -0.015 ~2 sec
+> 500 0.901 0.918 -0.017 ~5 sec
+> 1,000 0.909 0.938 -0.029 ~12 sec
+> 2,048 0.912 0.948 -0.036 ~28 sec
+
+Table 4. AUC -ROC as a function of context size (Predictive Integrity task). The performance gap widens 
+
+as more data becomes available for GBDT training. 
+
+An interesting pattern emerges: at very small sample sizes (100 rows), RPT -1-OSS nearly 
+
+matches XGBoost (0.856 vs. 0.871, Δ = 0.015). As data increases, XGBoost improves faster than 
+
+RPT -1-OSS, widening the gap to 0.036 at 2,048 rows. This confirms the find ing from TabPFN v2 
+
+[14] that tabular foundation models are most valuable in data -scarce regimes -precisely the 
+
+scenario many SAP customers face when deploying ML in new modules or subsidiaries with 
+
+limited historical data. Preprint — February 2026  
+
+> Page 12
+
+# 6. Discussion 
+
+6.1 When to Use RPT -1 vs. Traditional ML 
+
+Our results suggest a clear decision framework for SAP practitioners. RPT -1-OSS is the preferred 
+
+choice for rapid prototyping, proof -of -concept development, and scenarios with limited training 
+
+data (fewer than 500 labeled examples). Its zero -training -time property makes it invaluable for 
+
+initial feasibility assessments -a practitioner can evaluate whether a prediction task is viable in 
+
+minutes rather than weeks. 
+
+Gradient boosted trees remain the preferred choice for production deployments where accuracy 
+
+is paramount, datasets exceed 1,000 rows, and the engineering investment in hyperparameter 
+
+tuning and feature engineering is justified. For SAP customers with matu re ML operations, the 3 –
+
+5% accuracy advantage of tuned GBDT models translates directly to business value in scenarios 
+
+like payment risk scoring or demand planning. 
+
+A hybrid workflow emerges as the most practical approach: use RPT -1-OSS for initial baseline 
+
+establishment and feasibility screening across multiple SAP modules, then invest in task -specific 
+
+GBDT models for the highest -value scenarios that pass the feasibi lity threshold. This mirrors how 
+
+language models are used for rapid prototyping before investing in fine -tuned models for 
+
+production. Preprint — February 2026  
+
+> Page 13
+
+6.2 Enterprise Deployment Considerations 
+
+Deploying RPT -1 in enterprise SAP landscapes involves several considerations beyond raw 
+
+accuracy. First, latency: RPT -1-OSS inference with 2,048 context rows requires approximately 28 
+
+seconds on a single GPU, which may be acceptable for batch predictions b ut is too slow for real -
+
+time transaction processing. The commercial sap -rpt -1-small variant is optimized for lower 
+
+latency. 
+
+Second, data governance: because RPT -1 requires context examples at inference time, sensitive 
+
+SAP data must be transmitted to the model endpoint. For SAP customers deploying through SAP 
+
+AI Core on BTP, data remains within the SAP trust boundary. For the op en -source variant on 
+
+external infrastructure, data residency and privacy requirements must be carefully evaluated. 
+
+Third, explainability: gradient boosted trees offer mature interpretability through SHAP values and 
+
+feature importance rankings, which are often required for audit and compliance in financial 
+
+applications. RPT -1 currently lacks comparable interpretability mechanisms, though the attention 
+
+weights in the 2D attention scheme may offer future avenues for explanation generation. 
+
+6.3 Limitations Preprint — February 2026  
+
+> Page 14
+
+Several limitations of this study should be noted. First, our experiments use synthetic data; 
+
+performance on production SAP data may differ due to more complex feature interactions, data 
+
+quality issues, and domain -specific patterns not captured in syntheti c generation. Second, we 
+
+evaluate only the open -source variant; the commercial sap -rpt -1-large with 65,536 context rows 
+
+may show different performance characteristics. Third, our regression evaluation is limited to point 
+
+estimates; RPT -1’s ability to produ ce calibrated uncertainty estimates -critical for financial risk 
+
+applications -was not assessed. Fourth, we do not evaluate fine -tuning approaches (LoRA [27], 
+
+QLoRA [28]) on the RPT -1 architecture, which could potentially close the accuracy gap with GBDT 
+
+models. 
+
+# 7. Conclusion and Future Work 
+
+This paper presents the first independent, practitioner -led evaluation of SAP RPT -1-OSS on 
+
+enterprise business process prediction tasks. Across three experiments spanning forecasting, 
+
+data integrity, and financial analytics, we find that RPT -1-OSS achieves 91 –96% of the accuracy 
+
+of tuned gradient boosted tree models while requiring zero training time. The model is most 
+
+competitive in data -scarce classification scenarios and least competitive on regression tasks with 
+
+complex numerical relationships. 
+
+These findings have direct implications for SAP practitioners. RPT -1 does not replace established 
+
+ML workflows; rather, it provides a powerful new tool for rapid feasibility assessment, prototyping, 
+
+and deployment in scenarios where the engineering investm ent for traditional ML is not yet 
+
+justified. The hybrid approach we propose -RPT -1 for screening, GBDT for production -offers a 
+
+practical path for enterprises seeking to expand their use of predictive analytics across SAP 
+
+modules. 
+
+Future work should address three directions. First, evaluating fine -tuning approaches on RPT -1
+
+using parameter -efficient methods [29, 30] to determine whether domain -specific adaptation can 
+
+close the accuracy gap with task -specific models. Second, extendin g the evaluation to the 
+
+commercial RPT -1 variants with larger context windows, which may show different performance 
+
+profiles on enterprise -scale datasets. Third, developing SAP -specific benchmarks -analogous to 
+
+what SuperGLUE provides for NLP -that enable systematic comparison of tabular foundation 
+
+models on representative enterprise tasks. All experimental code and interactive dashboards are 
+
+publicly available on Hugging Face [31]. Preprint — February 2026  
+
+> Page 15
+
+# References 
+
+[1] SAP SE, “SAP -RPT -1: Relational Pretrained Transformer AI Model for Predictive Business Insights,” 
+
+2025. https://www.sap.com/products/artificial -intelligence/sap -rpt.html 
+
+[2] M. Spinaci, M. Polewczyk, M. Schambach, and S. Thelin, “ConTextTab: A Semantics -Aware Tabular In -
+
+Context Learner,” in Advances in Neural Information Processing Systems (NeurIPS), Spotlight Poster, 
+
+2025. arXiv:2506.10707. 
+
+[3] T. Chen and C. Guestrin, “XGBoost: A Scalable Tree Boosting System,” in Proc. 22nd ACM SIGKDD, 
+
+pp. 785 –794, 2016. DOI: 10.1145/2939672.2939785. 
+
+[4] G. Ke et al., “LightGBM: A Highly Efficient Gradient Boosting Decision Tree,” in Advances in NeurIPS 
+
+30, pp. 3146 –3154, 2017. 
+
+[5] L. Prokhorenkova, G. Gusev, A. Vorobev, A. V. Dorogush, and A. Gulin, “CatBoost: Unbiased Boosting 
+
+with Categorical Features,” in Advances in NeurIPS 31, pp. 6639 –6649, 2018. arXiv:1706.09516. 
+
+[6] A. Lal, “AI -Assisted ABAP Development with Large Language Models: Architecture, Integration, and 
+
+Enterprise Deployment,” TechRxiv Preprint, 2026. DOI: pending. 
+
+[7] A. Lal, “AI Agents in SAP Ecosystems: A Survey of Architectures, Integration Mechanisms, and 
+
+Enterprise Deployment Patterns,” TechRxiv Preprint, 2026. DOI: pending. 
+
+[8] L. Grinsztajn, E. Oyallon, and G. Varoquaux, “Why do tree -based models still outperform deep learning 
+
+on typical tabular data?” in NeurIPS 2022, Datasets and Benchmarks Track. arXiv:2207.08815. 
+
+[9] R. Shwartz -Ziv and A. Armon, “Tabular Data: Deep Learning is Not All You Need,” Information Fusion, 
+
+vol. 81, pp. 84 –90, 2022. DOI: 10.1016/j.inffus.2021.11.011. 
+
+[10] Y. Gorishniy, I. Rubachev, V. Khrulkov, and A. Babenko, “Revisiting Deep Learning Models for Tabular 
+
+Data,” in Advances in NeurIPS 34, 2021. arXiv:2106.11959. 
+
+[11] S. Ö. Arik and T. Pfister, “TabNet: Attentive Interpretable Tabular Learning,” in AAAI 2021, vol. 35, no. 
+
+8, pp. 6679 –6687. arXiv:1908.07442. 
+
+[12] G. Somepalli, M. Goldblum, A. Schwarzschild, C. B. Bruss, and T. Goldstein, “SAINT: Improved Neural 
+
+Networks for Tabular Data via Row Attention and Contrastive Pre -Training,” arXiv:2106.01342, 2021. 
+
+[13] N. Hollmann, S. Müller, K. Eggensperger, and F. Hutter, “TabPFN: A Transformer That Solves Small 
+
+Tabular Classification Problems in a Second,” in ICLR 2023. arXiv:2207.01848. 
+
+[14] N. Hollmann et al., “Accurate predictions on small data with a tabular foundation model,” Nature, vol. 
+
+637, no. 8045, pp. 319 –326, 2025. DOI: 10.1038/s41586 -024 -08328 -6. 
+
+[15] M. J. Kim, L. Grinsztajn, and G. Varoquaux, “CARTE: Pretraining and Transfer for Tabular Learning,” 
+
+in ICML 2024. arXiv:2402.16785. 
+
+[16] B. van Breugel and M. van der Schaar, “Position: Why Tabular Foundation Models Should Be a 
+
+Research Priority,” in ICML 2024, pp. 48976 –48993. arXiv:2405.01147. 
+
+[17] S. Hegselmann et al., “TabLLM: Few -shot Classification of Tabular Data with Large Language Models,” 
+
+in AISTATS 2023, pp. 5549 –5581. arXiv:2210.10723. 
+
+[18] X. Fang et al., “Large Language Models on Tabular Data: Prediction, Generation, and Understanding -
+
+A Survey,” Transactions on Machine Learning Research, 2024. arXiv:2402.17944. 
+
+[19] SAP, “sap -rpt -1-oss,” Hugging Face Model Card, 2025. https://huggingface.co/SAP/sap -rpt -1-oss. 
+
+Apache 2.0 License. Preprint — February 2026  
+
+> Page 16
+
+[20] SAP SE, “A New Paradigm for Enterprise AI: In -Context Learning for Relational Data,” SAP Community 
+
+Blog, December 2025. https://community.sap.com/t5/technology -blog -posts -by -sap/a -new -paradigm -for -
+
+enterprise -ai -in -context -learning -for -relational -data/ ba -p/14260221. 
+
+[21] N. Mehdiyev, J. Evermann, and P. Fettke, “A Novel Business Process Prediction Model Using a Deep 
+
+Learning Method,” Business & Information Systems Engineering, vol. 62, no. 2, pp. 143 –157, 2020. DOI: 
+
+10.1007/s12599 -018 -0551 -3. 
+
+[22] E. Rama -Maneiro, J. C. Vidal, and M. Lama, “Deep Learning for Predictive Business Process 
+
+Monitoring: Review and Benchmark,” IEEE Transactions on Services Computing, vol. 16, no. 1, pp. 739 –
+
+756, 2023. DOI: 10.1109/TSC.2021.3139807. 
+
+[23] W. Kratsch, J. Manderscheid, M. Röglinger, and J. Seyfried, “Machine Learning in Business Process 
+
+Monitoring: A Comparison of Deep Learning and Classical Approaches,” Business & Information Systems 
+
+Engineering, 2021. DOI: 10.1007/s12599 -020 -00645 -0. 
+
+[24] NTT DATA Solutions, “Predict Delivery Delay in SAP S/4HANA Machine Learning,” 2023. 
+
+https://nttdata -solutions.com/us/blog/predict -delivery -delay -in -sap -s-4hana -machine -learning/. 
+
+[25] J. Demšar, “Statistical Comparisons of Classifiers over Multiple Data Sets,” Journal of Machine 
+
+Learning Research, vol. 7, pp. 1 –30, 2006. 
+
+[26] D. Kemper, “An alternative for classical machine learning? A closer look at SAP’s RPT -1,” analytix 
+
+consulting, December 2025. https://www.analytix.nl/post/an -alternative -for -classical -machine -learning -a-
+
+closer -look -at -sap -rpt -1/. 
+
+[27] E. J. Hu et al., “LoRA: Low -Rank Adaptation of Large Language Models,” in ICLR 2022. 
+
+arXiv:2106.09685. 
+
+[28] T. Dettmers, A. Pagnoni, A. Holtzman, and L. Zettlemoyer, “QLoRA: Efficient Finetuning of Quantized 
+
+LLMs,” in NeurIPS 2023 (Oral). arXiv:2305.14314. 
+
+[29] V. Lialin, V. Deshpande, and A. Rumshisky, “Scaling Down to Scale Up: A Guide to Parameter -Efficient 
+
+Fine -Tuning,” arXiv:2303.15647, 2023. 
+
+[30] Z. Han, C. Gao, J. Liu, J. Zhang, and S. Q. Zhang, “Parameter -Efficient Fine -Tuning for Large Models: 
+
+A Comprehensive Survey,” arXiv:2403.14608, 2024. 
+
+[31] A. Lal, “SAP RPT -1 Evaluation Spaces,” Hugging Face, 2026. https://huggingface.co/amitlal. 
+
+[32] A. Lal, AI in 2040: Navigating the Future with Artificial Intelligence. Amazon KDP, 2024. ISBN: 
+
+9798346459941.

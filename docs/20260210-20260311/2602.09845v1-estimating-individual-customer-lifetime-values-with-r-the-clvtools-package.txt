@@ -1,0 +1,1182 @@
+Title: Estimating Individual Customer Lifetime Values with R: The CLVTools Package
+
+URL Source: https://arxiv.org/pdf/2602.09845v1
+
+Published Time: Wed, 11 Feb 2026 02:06:38 GMT
+
+Number of Pages: 54
+
+Markdown Content:
+JSS Journal of Statistical Software 
+
+MMMMMM YYYY, Volume VV, Issue II. doi: 10.18637/jss.v000.i00 
+
+# Estimating Individual Customer Lifetime Values with R: The CLVTools Package 
+
+Markus Meierer 
+
+University of Geneva 
+
+Patrick Bachmann 
+
+ETH Zurich 
+
+Jeffrey Näf 
+
+University of Geneva 
+
+Patrik Schilter 
+
+University of Zurich 
+
+René Algesheimer 
+
+University of Zurich 
+
+Abstract 
+
+Customer lifetime value (CLV) describes a customer’s long-term economic value for a business. This metric is widely used in marketing, for example, to select customers for a marketing campaign. However, modeling CLV is challenging. When relying on customers’ purchase histories, the input data is sparse. Additionally, given its long-term focus, pre-diction horizons are often longer than estimation periods. Probabilistic models are able to overcome these challenges and, thus, are a popular option among researchers and prac-titioners. The latter also appreciate their applicability for both small and big data as well as their robust predictive performance without any fine-tuning requirements. Their popu-larity is due to three characteristics: data parsimony, scalability, and predictive accuracy. The R package CLVTools provides an efficient and user-friendly implementation frame-work to apply key probabilistic models such as the Pareto/NBD and Gamma-Gamma model. Further, it provides access to the latest model extensions to include time-invariant and time-varying covariates, parameter regularization, and equality constraints. This ar-ticle gives an overview of the fundamental ideas of these statistical models and illustrates their application to derive CLV predictions for existing and new customers. 
+
+Keywords : customer lifetime value, probabilistic models, latent attrition models, spending models, customer analytics, R.
+
+1. Introduction 
+
+What is the future value of an individual customer to a business? From a theoretical perspective, the concept of customer valuation and the use of customer lifetime value (CLV) as its key 
+
+> arXiv:2602.09845v1 [stat.CO] 10 Feb 2026
+
+2 CLVTools : Estimating Individual Customer Lifetime Values with R
+
+metric is well established (Gupta, Hanssens, Hardie, Kahn, Kumar, Lin, Ravishanker, and Sriram 2006). CLV describes the long-term economic value of individual customers to a business. Building on predictive models of purchase behavior, the revenue of each customer is estimated in future periods. If available, these predictions are adjusted by respective cost projections. Then, following the idea of discounted cash flows, these predictions serve as a basis to calculate the net present value of each customer’s future contributions to a business. The resulting metric informs and improves managerial decision-making. From a managerial perspective, the use of CLV in business practice is widespread. This is a consequence of marketers’ increasing focus on customer-centricity. As the key to personalized offers, such a marketing strategy recognizes the importance of value-based segmentation and, consequently, the prioritization of customers (Borle, Singh, and Jain 2008). Having access to individual-level estimates of CLV allows firms to identify the most valuable customers. This helps to define how many resources to spend to maintain the relationship, e.g., by providing personalized services (Gupta et al. 2006). This also means that marketing spend on unprofitable customers can be minimized. Thus, marketers can increase their operational efficiency (e.g., Reinartz and Kumar 2000). In general, the regular assessment of CLV enables comprehensive benchmarking and optimization of customer acquisition, retention, and win-back campaigns. Moreover, the customer equity metric, i.e. summing up the CLV across all customers, is an important part of estimating the financial value of a firm (McCarthy and Fader 2018). However, from a methodological point of view, predicting customer purchase behavior is not a straightforward task and has been an active area of research for decades (Fader, Hardie, and Sen 2014). In particular, this applies to settings where customers do not have a formal contractual relationship with a business. Among others, this is the case for most companies in the retail or hospitality industry. In such non-contractual business settings, customers do not announce when they stop doing business with a firm. This significantly increases the complexity of the modeling task at hand. Such a setup lacks a well-defined dependent variable that could serve as input for a common regression-type model. To reliably predict customers’ future behavior, a rigorous modeling approach would need to account for customers’ unobserved attrition, transaction frequency, and average spending. Providing a solution to this methodological challenge, practitioners and academics often turn to probabilistic models that capture customers’ non-stationary purchase behavior through these three processes (for a primer, see Meierer, Schilter, Näf, and Bachmann 2025b). To model customers’ attrition, transaction frequency, and spending process, the results of two separate models are usually combined. A first model is used to jointly model customers’ attrition and transaction frequency. This allows us to determine how many transactions a customer will make until the business relationship is ended. Such models are known as latent attrition models. A second model captures customers’ spending behavior, i.e., how much a customer spend on average per transaction. By combining the results of these two models it is possible to predict an individual customer’s value to a business. In their simplest form, these models only need customers’ transaction histories as input, i.e., a log file that includes the customer identifier, date, and value of the transaction. Despite this parsimoniousness, probabilistic approaches provide a remarkably robust assessment of customers’ future value across industries. Their real-world applicability has been shown for office supply firms (Schmittlein and Peterson 1994), high-tech manufacturers (Reinartz and Kumar 2003), and retailers (Abe 2009; Fader, Hardie, and Lee 2005a; Platzer and Reutterer 2016). In general, the probabilistic approach stands out from the alternatives. For one, it naturally accounts for customers’ latent attrition. Journal of Statistical Software 3In addition, the underlying formal model of customer purchase behavior has shown to be a reliable foundation for making predictions, even when the forecasting horizon is much longer than the estimation period. Moreover, the parsimonious data requirements and scalability of the maximum likelihood estimation procedures provide advantages for real-world applications. Finally, recent research has proposed extensions to model exogenous and endogenous covariates, such as customer characteristics or seasonality (e.g., Abe 2009; Bachmann, Meierer, and Näf 2021). These extensions improve predictive accuracy and allow users to infer the incremental impact of marketing activities. By modeling time-varying covariates, such as exposure to promotions, firms can evaluate how specific interventions affect the future value of customers. 
+
+CLVTools provides unified access to key probabilistic models to derive individual CLV predic-tions in a user-friendly way. First, the data preparation process for estimating these models is streamlined and required data transformations are abstracted away from the user. To generate the model inputs from transaction data, comparable packages require the user to execute a series of preparation steps scattered across various functions. Non-expert users lack understanding of the required sequence and variable definitions. In CLVTools all necessary data preparation is taken care of. Users only have to provide key definitions that characterize the transactional data of the specific business. Model-wise, basic models as well as their latest extensions, which enable users to accommodate time-invariant and -varying covariates, are implemented. Moreover, we allow users to impose additional specifications on the estimation process to infer correlations between key processes of customer behavior or to add L2 regular-ization and equality constraints for covariate parameters. No other software package currently offers similar capabilities. The proposed R package (R Core Team 2024) thereby facilitates access to key probabilistic modeling approaches for practitioners and researchers. The remainder of this paper is structured as follows. Section 2 compares existing software implementations. Next, Section 3 provides an overview of probabilistic models for predicting customer purchase behavior. Thereby, we first introduce the Pareto/NBD model, which has been called the “gold standard” to jointly model customer attrition and purchase frequency (Jerath, Fader, and Hardie 2011). We also outline recent modeling approaches to improve the flexibility in modeling customers’ latent attrition. Furthermore, we discuss the most popular spending model, i.e., the Gamma-Gamma model (Colombo and Jiang 1999; Fader, Hardie, and Lee 2005b). Combining the results of these two modeling tasks, the CLV for individual customers can be predicted. Bridging modeling theory and practice, Section 4 then discusses modeling guidance from the literature and practice. Building on this, Section 5 presents a case study from the retail industry to illustrate the application of CLVTools for predictive and inferential analyses. We conclude with directions for the future development of this R package. 
+
+2. Related Software Packages 
+
+While CLVTools provides unique features, it is not the first package to provide implementations of probabilistic models to predict individual CLV. The development of this R package was driven by two gaps in existing software. First, the lack of a unified interface makes model comparisons difficult. Second, the support for covariates is lacking for many model implementations. Beyond the obvious advantages, being able to model covariates also makes it possible to add further features which are highly sought after by applied scholars. This includes the possibility to add regularization and equality constraints on specific covariate parameters, as well as the ability to analyze the correlation between customers’ attrition and transaction process. 4 CLVTools : Estimating Individual Customer Lifetime Values with R
+
+Table 1 provides a comparison of related software. Within the R ecosystem, the BTYD package (Dziurzynski, Wadsworth, and McCarthy 2021) offers implementations of the most common latent attrition models and the BTYDplus package (Platzer 2021) provides implementations of additional latent attrition models, including one that is capable of considering time-invariant covariates. For Python , the package Lifetimes (Davidson-Pilon 2020) and its successor PyMC-Marketing (PyMC Labs 2024) provide basic functionality similar to the BTYD package. It is important to note that each of these packages supports different model types, and CLVTools 
+
+does not aim to fully subsume them. For example, BTYD and Lifetimes implement the BG/BB model, a discrete-time analog of the continuous-time Pareto/NBD model. BTYDplus offers extensions such as the Pareto/GGG model and a hierarchical Bayes version of the Pareto/NBD model. These specific models are not currently included in CLVTools , which currently focuses on continuous-time probabilistic models with closed-form marginal likelihoods. 
+
+Features BTYD 
+
+(R)
+
+BTYDplus 
+
+(R)
+
+CLVTools 
+
+(R)
+
+Lifetimes* 
+
+(Python )Usage of classes & generic methods no no yes yes Time-invariant covariates no yes yes no Time-varying covariates no no yes** no Correlation between processes no no yes** no Regularization for covariate param. no no yes no Equality constraints for covariate param. no no yes no Abstraction layer for data preparation no no yes no  
+
+> Notes: * Also applicable to its successor PyMC-Marketing . ** At the time of writing, derivations only exist for the Pareto/NBD model and its variants. Thus, these features are only implemented for these models.
+
+Table 1: Software packages implementing probabilistic models for CLV modeling 
+
+CLVTools builds on key lessons from surveying the functionality and workflow of these three packages. We provide all functionalities in a class-based (S4) framework and work with the canonical generic methods that R users are familiar with (Schilter, Meierer, Näf, and Bachmann 2025). It is also optimized to handle large datasets with millions of purchase records. It should not be ignored that CLVTools is made possible by key contributions offered in the following packages: data.table (Dowle and Srinivasan 2023), ggplot2 (Wickham 2016), lubridate 
+
+(Grolemund and Wickham 2011), Matrix (Bates, Maechler, and Jagan 2023), MASS (Venables and Ripley 2002), optimx (Nash and Varadhan 2011; Nash 2014), Rcpp (Eddelbuettel 2013), 
+
+RcppArmadillo (Eddelbuettel and Sanderson 2014), RcppGSL (Edelbuettel and Francois 2023), stats (R Core Team 2024), and utils (R Core Team 2024). 
+
+3. Probabilistic modeling of customer purchase behavior 
+
+Probabilistic models, also called stochastic or probability models, are an important part of the marketing research literature, particularly for modeling customer purchase behavior in non-contractual business settings. Since their first use to predict purchase patterns by Magee (1953), significant progress has been made. Fader et al. (2014) provide a detailed overview of their use and evolution throughout the following decades. Compared to alternative approaches, probabilistic modeling of purchase behavior has several Journal of Statistical Software 5advantages (Fader, Hardie, and Lee 2006): First, probabilistic models do not require observed transaction data to be split into two periods to create a dependent variable. As they explicitly model the data generating process, there is no need for a separate holdout set that defines the outcome measure of interest, e.g., customers’ next year revenue. Thus, all data can be used for model estimation (Fader and Hardie 2009). This is in contrast to many supervised learning techniques. Second, covariates can be included, but they are not a requirement. Indeed, the parsimoniousness of the models’ data requirements has been a key reason for their widespread real-world adoption. The basic probabilistic modeling approach only requires the transactional records of a business consisting of three data columns, i.e., the date and monetary value of the transaction as well as a customer identifier. Third, the underlying formal model of customer purchase behavior has been shown to be a reliable foundation for making predictions. This even applies when the forecasting horizon is much longer than the estimation period. Fourth, the scalability of many probabilistic models is high. Their application to millions of customers does not require specialized hardware such as graphics processing units. Fifth, recent advancements have introduced inferential analyses capabilities by allowing the inclusion of both time-invariant and -varying covariates. This enables comprehensive explanatory analyses and, thus, extends the applicability of the models beyond the predictive domain. This interpretability further distinguishes these models from machine learning approaches. In the following section, we give an overview of the general modeling structure for inferring customer lifetime values for a non-contractual business and thereby, distinguish two key modeling tasks. Next, we explain the mathematical intuition of a representative probabilistic model for each modeling task. Namely, our discussion focuses on the Pareto/NBD model to account for customers’ attrition and transaction process, as well as the Gamma-Gamma model to account for customers’ spending process. We also detail respective model extensions for incorporating covariates as well as advanced techniques such as parameter regularization. While further models are implemented in CLVTools , their general logic is analogous. The derivations for the Beta-Geometric/NBD (BG/NBD) model are found in Fader et al. (2005a) and for the Gamma-Gompertz/NBD (GGomp/NBD) model in Bemmaor and Glady (2012). Note that we use the term CLV to denote the future contributions of customers, i.e., projections that build on their observed past transaction behavior. In the literature, this is sometimes referred to as residual customer lifetime value. 
+
+3.1. General modeling structure 
+
+Probabilistic approaches focus on three processes to derive customers’ future purchase behavior and thus, individual CLVs. These are customers’ 
+
+• attrition process, i.e., “how long will a customer be active?”, 
+
+• transaction process, i.e., “how many times will a customer purchase?”, and 
+
+• spending process, i.e., “how much will a customer spend on every purchase?”. The first two processes are usually estimated jointly, modeling the unobserved attrition process of customers in combination with the individual transactional frequency. It is often referred to as a “buy-till-you-die” model or latent attrition model. Thereby, it is assumed that a customer buys according to a heterogeneous stationary process and then “dies” at an unobserved, as-if random point in time. This structure has proven to be very effective in many empirical settings (Fader et al. 2014). The third process is usually assumed to be independent and is modeled separately. It infers the average spending per purchase acknowledging customer heterogeneity. 6 CLVTools : Estimating Individual Customer Lifetime Values with R
+
+Estimating these three processes with two separate models results in a customer-specific prediction for two metrics: (1) discounted expected transactions and (2) the average monetary value of each transaction. A customer’s future value to a business is then calculated as the product of these two metrics. In the following, let F denote the information we observe from a generic customer. For instance, for the Pareto/NBD model introduced below, F = {x, t x, T },the number of transactions, timing of the last observed transaction, and the end of the observation period respectively. When predicting future customer purchase behavior, we know neither the lifetime of an individual customer nor the timing and nature of their purchase while they are “alive” as a customer (Ascarza, Fader, and Hardie 2017). Considering these quantities as random variables, our objective is to derive the conditional expectation of a customer’s future value to a business E(CLV | F ), her expected number of transactions in the future E(X(T, T + t) | F ), and the spending per transaction E(m | F ). Following Rosset, Neumann, Eick, and Vatnik (2003), we state that 
+
+E(CLV | F ) =  
+
+> ∫∞
+> T
+
+E[V (t) | F ]S(t | F )d(t)dt (1) with t = T representing the end of the observation period of the customer. E[V (t) | F ] is the expected cash flow from a customer at time t, assuming that they are alive at that time. 
+
+S(t | F ) is the probability that a customer has remained alive for at least time t, and d(t) is a discount factor that reflects the present value of money received at time t.Probabilistic modeling of customer value builds on this foundation. Again, an underlying assumption is that the monetary value of a particular transaction is independent of the transaction process, i.e., how many transactions a customer will make in the future. Thus, the cash flow per transaction can be factored out of the calculation. While this assumption can be relaxed, probabilistic modeling of CLV usually focuses on both predicting the sequence of future transactions and predicting the average monetary value of customers’ transactions, i.e., E(m | F ). The former includes a discounting of future transactions to their present value. The resulting metric is called discounted expected residual transactions ( DERT ): 
+
+DERT = 
+
+> ∫∞
+> T
+
+λ(t)S(t | F )d(t)dt, (2) where λ(t) is the purchase rate (Fader et al. 2006; Bachmann et al. 2021). This leads to 
+
+E(CLV | F ) = E(m | F )DERT. (3) Expressions for DERT, E(m | F ) as well as E(X(T, T + t) | F ) are available for all variations of the Pareto/NBD model. In the following E(X(T, T + t) | F ) will be referred to as conditional expected transactions (CET). Note that multiplying DERT and E(m | F ) makes the assumption that spending is stationary. The latter might require a transformation such as inflation adjustment, as mentioned in 4. Forecasting time-varying spending and adjusting CLV estimates accordingly is a subject of ongoing research. The decision on which models to use for these two modeling tasks is guided by theoretical and practical considerations (see Section 4). Whether for latent attrition or customer spending models, the difference between probabilistic model alternatives lies mainly in the distributional assumptions of the underlying processes. However, model extensions, which add the ability to include time-invariant and -varying covariates, have only been proposed recently and are only available for some models. Journal of Statistical Software 7
+
+3.2. Modeling customers’ latent attrition: The Pareto/NBD model 
+
+In the following, we provide the mathematical intuition behind the Pareto/NBD model. For technical details, see Schmittlein, Morrison, and Colombo (1987) and Fader and Hardie (2005). As with other latent attrition models, the Pareto/NBD consists of two parts. The first process focuses on modeling customers’ unobserved attrition. A second process considers customer purchase frequency given the assumption that they are still active. Customers “live” and therefore buy for an unknown period of time until they “die”, i.e., become inactive. Considering customer attrition, a customer’s unobserved lifetime of length ω is assumed to be exponentially distributed with rate μ and density 
+
+f (ω|μ) = μe −μω . (4) 
+
+μ is the mean attrition rate and is itself assumed to follow a Gamma distribution with shape parameter s and scale parameter β to account for the cross-sectional heterogeneity 
+
+g(μ) = βsμs−1e−μβ 
+
+Γ( s) . (5) In the original paper, Schmittlein et al. (1987) refer to μ as “average death rate” (p. 11). Combining the Exponential distribution of μ with the Gamma distribution in (5) results in a Pareto distribution of the second kind. The density of the lifetime of a random customer is: 
+
+f (ω) =  
+
+> ∫∞
+> 0
+
+f (ω|μ)g(μ)dμ = sβ 
+
+> (
+
+ββ + ω
+
+> )s+1
+
+. (6) Looking at the transaction process, the Pareto/NBD model assumes that transactions follow a Poisson process with rate λ for any given customer. Thus, the probability of observing x
+
+transactions in the time interval (0 , t ] follows a Poisson distribution with rate λt , i.e., 
+
+P (X(t) = x|λ, t < ω ) = (λt )xe−λt 
+
+x! , x = 0 , 1, 2, . . . , (7) where λ is interpreted as the mean purchase rate of a given customer. Accounting for heterogeneity, λ follows a Gamma distribution with shape parameter r and scale parameter α:
+
+g(λ) = αrλr−1e−λα 
+
+Γ( r) . (8) This combination of (7) and (8) results in a negative binomial distribution (NBD). Thus, the number of transactions made by a given customer while “alive” ( t < ω ) is given by: 
+
+P (X(t) = x | t < ω ) =  
+
+> ∫∞
+> 0
+
+P (X(t) = x|λ, t < ω )g(λ)dλ = Γ( r + x)Γ( r)x! 
+
+> (
+
+αα + t  
+
+> )r(
+
+tα + t
+
+> )x
+
+.
+
+(9) Combined in a single likelihood function, these two processes formalize the generative process of this probabilistic model of purchase behavior. As illustrated in Figure 1, suppose that a given customer makes x purchases during the observation period (0 , T ] at times t1, t 2, ..., t x.Note the uneven timings of transactions that characterize their stochastic nature. 8 CLVTools : Estimating Individual Customer Lifetime Values with R
+
+0 t1 t2 t3 tx T
+
+Figure 1: Schematic transaction history for a prototypical customer A customer is still alive at T (i.e., ω > T ) or has churned between the last transaction tx
+
+and the observation end T (i.e., ω ∈ (tx, T ] ). The likelihood function expresses these two possibilities. If a customer is alive until T , the “likelihood function is simply the product of the (inter-transaction-time) exponential density functions and the associated survivor function” (Fader and Hardie 2005, p. 5) and can be expressed as in Eq. (10). In cases where a customer became inactive at some time ω in the interval (tx, T ], the individual-level likelihood function is as in Eq. (11). The expressions are very similar and differ only in their conditioning on whether the customer “dies” before or after T :
+
+L (λ | t1, . . . , t x, T, ω > T ) = λxe−λT (10) 
+
+L (λ | t1, . . . , t x, T, inactive at ω ∈ (tx, T ]) = λxe−λω (11) For an individual customer with a purchase summary (x, t x, T ), the likelihood function is the combination of these expressions, weighted by their respective probabilities. Note that the exact timing of transactions, except the last one at tx, becomes irrelevant in this model due to the memoryless property of the exponential distribution: 
+
+L (λ, μ | x, t x, T ) = L(λ | x, T, ω > T )P (ω > T | μ)+ 
+
+> ∫Ttx
+
+L (λ | x, T, inactive at ω ∈ (tx, T ]) f (ω | μ)dω 
+
+= λxμλ + μ e−(λ+μ)tx + λx+1 
+
+λ + μ e−(λ+μ)T (12) Customers’ latent characteristics λ and μ are then marginalized over the two Gamma distribu-tions. The result is a rather intricate closed-form expression from which values for r, α, s,and β are estimated using a maximum likelihood approach (see Appendix A). Parameters 
+
+r and α are the shape and scale parameters of the Gamma distribution of the transaction process, and s and β are the shape and scale parameters of the Gamma distribution of the attrition process, respectively. Consequently, r/α and s/β represent the purchase rate and the dropout rate of an average customer, respectively. Given transactional records for a total of N customers, these parameters can be estimated by maximizing the log-likelihood 
+
+> N∑
+> i=1
+
+log L(r, α, s, β |xi, t xi , T i). (13) The likelihood reflects the underlying generative process of the Pareto/NBD model. Also, it highlights its data parsimony; only x, tx, and T are required as input. However, the latent parameters λ and μ are assumed to be independent but this may be relaxed (see Section 3.4). For the conditional expectation and managerial expressions, see Fader and Hardie (2005). In sum, the Pareto/NBD model is a parsimonious representation of customers’ attrition and transaction process. Yet, its standard form has shortcomings, e.g., covariates cannot be added. Journal of Statistical Software 9
+
+3.3. The Pareto/NBD model with time-invariant and -varying covariates 
+
+Thus far, heterogeneity has been solely modeled by Gamma distributions. However, observable information, such as customer demographics, is often available. These covariates may help to explain part of the heterogeneity among customers and, therefore, increase the predictive accuracy of the model. In addition, we can rely on their parameter estimates for inference, i.e., to identify and quantify the effects of time-invariant covariates on the transaction and attrition process. The extension for time-invariant covariates was discussed in Fader and Hardie (2007). More generally, in many real-world applications, customer transaction and attrition behavior may be influenced by covariates that vary over time . Consequently, the timing of a purchase and the corresponding value of the covariate at that time become relevant. Time-varying covariates can affect customers on the aggregated level as well as on the individual level. In the first case, all customers are affected simultaneously; in the latter case, a covariate is only relevant to a particular customer. In general, the literature identifies two groups of time-varying covariates (Platzer and Reutterer 2016): (1) seasonality in purchase patterns and (2) marketing activities. Seasonality in purchase patterns is observed in many industries. These patterns can be caused on the aggregated level by holidays or on the individual level by recurring personal events such as birthdays or paydays. Marketing activities also significantly influence customer behavior. Firms target their customers on the aggregated level through mass marketing and on the individual level through direct marketing campaigns. Bachmann 
+
+et al. (2021) address this issue and introduce time-varying covariates to the Pareto/NBD model. We now explain the key ideas behind this extension. For a comprehensive discussion of the technical details, we refer to the original paper. The foundation of time-varying covariates are the functions xP (s), xA(s) which map a time point s to a vector of covariates at time point s. Note that these functions are individual-level quantities and can generally vary between customers, although we omit the subscript 
+
+i for readability reasons. Furthermore, it is key to understand that these functions are parameterized by assuming equidistant time intervals (e.g., one week) during which the covariates are assumed to be constant. That is, xP (s), xA(s) are piecewise constant functions that return the covariates xPk , xAk of the interval k in which s lies, as in Figure 2. 
+
+0 t1 t2 t3 tx T
+
+xP 
+
+> 1
+
+, xA 
+
+> 1
+
+xP 
+
+> 2
+
+, xA 
+
+> 2
+
+xP 
+
+> 3
+
+, xA 
+
+> 3
+
+xPkT −1, xAkT −1 xPkT , xAkT
+
+Figure 2: Schematic transaction history of a prototypical customer with time-varying covariates The length of these intervals can be arbitrarily small and the discretization does not affect the continuous nature of the transaction and attrition process. The covariates for the transaction process ( xP ) and attrition process ( xA) may differ. We then obtain a time-varying mean purchase rate λ(t) and customer attrition rate μ(t), where 
+
+λ(t) = λ0 exp( γ′
+
+> purch
+
+xP (t)) , μ(t) = μ0 exp( γ′
+
+> attr
+
+xA(t)) ,
+
+with λ0, μ 0 following the Gamma distributions in (8) and (5) respectively. For the transaction process, the probability of purchasing x times is now dependent on the covariates in the relevant time period. The probability of x transactions in the interval (s1, s 2],10 CLVTools : Estimating Individual Customer Lifetime Values with R
+
+with two time points s1 < s 2, is given as 
+
+P (X(s1, s 2) = x | λ(t)) = [Λ( s1, s 2)] x
+
+x! exp[ −Λ( s1, s 2)] , (14) with 
+
+Λ( s1, s 2) =  
+
+> ∫s2
+> s1
+
+λ(s)ds. (15) In contrast to assumptions of models without time-varying covariates, the times between pur-chases are no longer independently and identically distributed. In particular, the distribution of the time between purchases j − 1 and j depends on the time of the last purchase j − 1.This determines which covariate time interval affects this particular mean purchase rate. For the attrition process, the density is dependent on the covariates across all time points, i.e., 
+
+f (ω|μ(t)) = μ(t) exp[ −M (ω)] , (16) with 
+
+M (ω) =  
+
+> ∫ω
+> 0
+
+μ(s)ds. (17) Combining both processes results in L(α, r, β, s, γpurch , γattr |XP , XA, x, t, T ) This closed-form likelihood contains the covariates for every time interval k,
+
+XP = ( xP 
+
+> 1
+
+, . . . , xPkT ) and XA = ( xA 
+
+> 1
+
+, . . . , xAkT ).
+
+Instead of only considering the recency of the last transaction as in the standard model, this extension considers the exact date of all transactions t = (t1, . . . , t x). This likelihood only contains a sum of expressions similar to the likelihood of the standard model, each being calculated for a certain time interval (see Bachmann et al. (2021, Appendix A.1)). The standard model and the extension for time-invariant covariates are nested within this model. With covariate effects set to zero, we arrive at the standard model. When including time-invariant and -varying covariates, the former maintain the same parameter value over all time intervals. α, r, β, s, γpurch and γattr are estimated using maximum likelihood. For the conditional expectation and managerial expressions, see Bachmann et al. (2021). 
+
+3.4. Advanced modeling techniques for latent attrition models 
+
+To adapt latent attrition models to the specific application context, several advanced modeling techniques can be leveraged. These include (1) correlating customers’ attrition and transaction process, (2) regularizing covariate parameter estimates γ, and (3) adding equality constraints for the covariate parameter estimates γ.To begin with, we look at the correlation of customers’ attrition and transaction processes. All models discussed so far assume independence between mean transaction and attrition rates. This may not be a realistic assumption. Thus, we use Sarmanov distributions to correlate the mean transaction and mean attrition rates (Park and Fader 2004). For alternatives see, e.g., Glady, Lemmens, and Croux (2015). We will refer to the example of the standard Pareto/NBD model but the approach is analogously applicable for related latent attrition models. The Sarmanov distribution family provides a straightforward way to introduce dependence between the mean purchase rate λ and the mean attrition rate μ. With the Sarmanov approach, Journal of Statistical Software 11 the joint density of (λ, μ ) can be expressed as a combination of multiple univariate densities that describe only one random variable. That is, the joint density can be written as the sum of the products of the univariate densities of λ and μ:
+
+g(λ, μ |α, r, β, s, m ) = g(λ|r, α )g(μ|s, β ) + m 
+
+> (
+
+α
+
+1 + α  
+
+> )r(
+
+β
+
+1 + β
+
+> )s
+
+· [(g(λ|r, α + 1) − g(λ|r, α ))( g(μ|s, β + 1) − g(μ|s, β )) ]. (18) Intuitively, this distribution combines the independent distribution g(λ|r, α )g(μ|s, β ) with a term that induces dependence. When m is positive, the formula increases probability density in regions where both variables are similarly positioned (both high or both low) and decreases it elsewhere. This is because g(λ|r, α + 1) is smaller than g(λ|r, α ) for “high” values of λ,making this difference negative. Similarly, g(μ|s, β + 1) − g(μ|s, β ) is negative for μ “high”. Their product becomes positive in these regions, creating positive dependence between λ and 
+
+μ. The opposite occurs when m is negative, resulting in negative dependence. The correlation of the two processes of the Pareto/NBD model is thereby given as 
+
+pm = m
+
+√r
+
+1 + α 
+
+> (
+
+α
+
+1 + α 
+
+> )r
+
+√s
+
+1 + β 
+
+> (
+
+β
+
+1 + β
+
+> )s
+
+. (19) As a consequence of Eq. (18), the new individual likelihoods of customers can be expressed as the sum of those likelihoods without correlation. Given the likelihood without correlation 
+
+L(α, r, β, s, m |x, t, T ) = ˜L(α, β ),
+
+it follows that the likelihood with correlation can be expressed as 
+
+L(α, r, β, s, m |x, t, T ) = ˜L(α, β ) + m 
+
+> (
+
+α
+
+1 + α  
+
+> )r(
+
+β
+
+1 + β
+
+> )s
+
+× [ ˜L(α + 1 , β + 1) − ˜L(α + 1 , β ) − ˜L(α, β + 1) + ˜L(α, β )].
+
+(20) The new likelihood contains the additional parameter m that captures the correlation between the underlying transaction and attrition process. Note that this coefficient must not be directly interpreted as a correlation coefficient, but Eq. (19) can be used to do so. Another modeling technique that can help to estimate latent attrition models with many covariates, is regularization. In these cases, regularization may be used to avoid overfitting and numerical instability. It is applied to the parameter vectors γpurch and γattr for the covariates. To add regularization, we put a Gaussian prior on γpurch and γattr such that 
+
+γpurch ∼ N (0 , 1/λ reg  
+
+> 1
+
+I), γattr ∼ N (0 , 1/λ reg  
+
+> 2
+
+I)
+
+for some hyperparameters λreg  
+
+> 1
+
+and λreg  
+
+> 2
+
+, and I is the identity matrix. Note that the symbol 
+
+λ used here for the regularization strength ( λreg  
+
+> 1
+
+, λreg  
+
+> 2
+
+) is conceptually distinct from the λ
+
+parameter in the generative BTYD models, which denotes the individual purchase rate. In this case, the maximum a posteriori optimization problem is given by 
+
+arg max 
+
+> α,r,β,s
+> γpurch ,γattr
+> n∑
+> i=1
+
+L(α, r, β, s, γpurch , γattr |XPi , XAi , x i, ti, T i) − λreg  
+
+> 1
+
+∥γpurch ∥2 − λreg  
+
+> 2
+
+∥γattr ∥2,
+
+(21) 12 CLVTools : Estimating Individual Customer Lifetime Values with R
+
+which corresponds to the L2-norm regularization of the likelihood. A final modeling technique that focuses on extending the possibilities for inferential analyses is equality constraints for covariate parameters of latent attrition models. These equality constraints make it possible for the optimizer to always use the same covariate parameter estimates for the transaction and attrition process. The implementation is straightforward: 
+
+γpurch ≡ γattr , (22) for λ0 exp( γ′
+
+> purch
+
+xP ) and μ0 exp( γ′
+
+> attr
+
+xA) with xP = xA.This feature enables researchers to test hypotheses. The equality constraints enable to test for any covariate whether or not there is a difference between the impact of a covariate on the two processes. The model that constrains both parameter estimates serves as a benchmark model to be able to do a likelihood ratio test and thus to determine formally if these parameter estimates are indeed different. For example, relying on a likelihood ratio test, we could assess whether direct marketing activities significantly increase the number of transactions while simultaneously leading to significantly higher churn. 
+
+3.5. Modeling customers’ spending process: The Gamma-Gamma model 
+
+Latent attrition models usually only focus on customers’ attrition and transaction process. However, to derive a monetary value such as CLV, customers’ spending behavior must also be considered. Here, the Gamma-Gamma model is a popular choice. For a discussion of technical details beyond the following overview, see Colombo and Jiang (1999) and Fader et al. (2005b). The true mean spending rate ζ of a customer is not observed. Therefore, we base each individual prediction on a customer’s past average spending value ¯z, where 
+
+¯z =
+
+> x∑
+> i=1
+
+zi/x, (23) and zi denotes the monetary value of each transaction with x as the number of transactions of a customer. Note that this model does not consider time as a dimension. The underlying “true” average transaction value is assumed to be time-invariant. To be able to model ¯z, the Gamma-Gamma model assumes that a customer’s spending per transaction is Gamma distributed with p as shape and ν as scale parameter: 
+
+g(zi) = νpzr−1 
+
+> i
+
+e−ziν
+
+Γ( p) . (24) Following the Gamma distribution’s scaling property, the density of customers’ past average spending values ¯z is 
+
+f (¯ z|p, ν ; x) = (νx )px ¯zpx −1e−νx ¯z
+
+Γ( px ) . (25) To allow for heterogeneity in a customer’s average spending value, we assume ν to be Gamma distributed with shape parameter q and the scale parameter γ. Then, the marginal distribution Journal of Statistical Software 13 for the mean spending rate ¯z given x is 
+
+f (¯ z|p, q, γ ; x) = 
+
+∫ ∞
+
+0
+
+(νx )px ¯zpx −1e−νx ¯z
+
+Γ( px )
+
+γqνq − 1e−γν 
+
+Γ( q) dν 
+
+= 1¯zB (px, q )
+
+( γγ + x¯z
+
+)q( x¯zγ + x¯z
+
+)
+
+, (26) where B(·, ·) is the Beta function, see, e.g., Abramowitz and Stegun (1972). The parameters 
+
+p, q, and γ of Eq. (26) are estimated using maximum likelihood. Recently, extensions to include covariates in the GG model have been proposed. For details, see the working papers of Bachmann, Meierer, and Näf (2022a,b) and Fader and Hardie (2024). To predict an individual CLV, we multiply a customer’s average spending per transaction, as predicted by using the Gamma-Gamma model, with the discounted transactions for this particular customer, as predicted by a latent attrition model. Figure 3 provides an illustration of the Gamma-Gamma model and its combination with the Pareto/NBD model (with time-invariant and -varying variables) to infer customers’ value. Customer Attrition 
+
+Customer Purchase Behavior 
+
+Customer Spending 
+
+Behavior 
+
+Ind. Spending 
+
+Heterogeneity 
+
+Ind. Attrition Heterogeneity Ind. Purchase Heterogeneity <latexit sha1_base64="b/8HduF8tPlUlF6IK7LHCWJNKvI=">AAACEnicbVDLSgMxFM34rPVVdekmWIQWpMyIVJdFF7qsYB/QKSWTSdvQZGZI7ohl6De48VfcuFDErSt3/o2ZdhbaeiDhcM65JPd4keAabPvbWlpeWV1bz23kN7e2d3YLe/tNHcaKsgYNRajaHtFM8IA1gINg7UgxIj3BWt7oKvVb90xpHgZ3MI5YV5JBwPucEjBSr1B2hQn7pJfYE+xqLrEL7AGSayInJZf6IZxM73K+VyjaFXsKvEicjBRRhnqv8OX6IY0lC4AKonXHsSPoJkQBp4JN8m6sWUToiAxYx9CASKa7yXSlCT42io/7oTInADxVf08kRGo9lp5JSgJDPe+l4n9eJ4b+RTfhQRQDC+jsoX4sMIQ47Qf7XDEKYmwIoYqbv2I6JIpQMC2mJTjzKy+S5mnFqVaqt2fF2mVWRw4doiNUQg46RzV0g+qogSh6RM/oFb1ZT9aL9W59zKJLVjZzgP7A+vwBSNadOg==</latexit> 
+
+ 0 ⇠ Gam( ·, ·) <latexit sha1_base64="pRNWUeU1rV8sPUw4bw9RWU/svZo=">AAACDXicbVDLSgMxFM3UV62vUZduglWoIGVGpLosutBlBfuAzjBk0rQNTWaG5I5Yhv6AG3/FjQtF3Lp359+YPhZaPXAvh3PuJbknTATX4DhfVm5hcWl5Jb9aWFvf2Nyyt3caOk4VZXUai1i1QqKZ4BGrAwfBWoliRIaCNcPB5dhv3jGleRzdwjBhviS9iHc5JWCkwD7wZBpkzgh7mkvsAbuH7IrIUcmjnRiOJ/0osItO2ZkA/yXujBTRDLXA/vQ6MU0li4AKonXbdRLwM6KAU8FGBS/VLCF0QHqsbWhEJNN+NrlmhA+N0sHdWJmKAE/UnxsZkVoPZWgmJYG+nvfG4n9eO4XuuZ/xKEmBRXT6UDcVGGI8jgZ3uGIUxNAQQhU3f8W0TxShYAIsmBDc+ZP/ksZJ2a2UKzenxerFLI482kP7qIRcdIaq6BrVUB1R9ICe0At6tR6tZ+vNep+O5qzZzi76BevjG/Mkm38=</latexit> 
+
+μ0 ⇠ Gam( ·, ·) <latexit sha1_base64="fK2MJk8pkjH6SXUVG4Ub1EHmXvI=">AAACDXicbVDLSgMxFM3UV62vUZduglWoIGVGpLosutBlBfuATimZNG1Dk8yQ3BHL0B9w46+4caGIW/fu/BvTx0KrB+7lcM69JPeEseAGPO/LySwsLi2vZFdza+sbm1vu9k7NRImmrEojEelGSAwTXLEqcBCsEWtGZChYPRxcjv36HdOGR+oWhjFrSdJTvMspASu13YNAJe3UG+HAcIkDYPeQXhE5KgS0E8HxpB+13bxX9CbAf4k/I3k0Q6XtfgadiCaSKaCCGNP0vRhaKdHAqWCjXJAYFhM6ID3WtFQRyUwrnVwzwodW6eBupG0pwBP150ZKpDFDGdpJSaBv5r2x+J/XTKB73kq5ihNgik4f6iYCQ4TH0eAO14yCGFpCqOb2r5j2iSYUbIA5G4I/f/JfUjsp+qVi6eY0X76YxZFFe2gfFZCPzlAZXaMKqiKKHtATekGvzqPz7Lw579PRjDPb2UW/4Hx8A/TKm4A=</latexit> 
+
+⌫0 ⇠ Gam( ·, ·)
+
+<latexit sha1_base64="LUevH4uxFhX5lekSgMrHNxvSAVA=">AAACCHicbVBNS8NAEN34bf2KevTgYhEUpCQi1aPoQY8VrApNCZvttl27uwm7E7GGHL34V7x4UMSrP8Gb/8Ztm4NfDwYe780wMy9KBDfgeZ/O2PjE5NT0zGxpbn5hccldXrkwcaopq9NYxPoqIoYJrlgdOAh2lWhGZCTYZdQ7HviXN0wbHqtz6CesKUlH8TanBKwUuut3YXad48BwiQNgt5CdEJlvBSoNMy/f2Q7dslfxhsB/iV+QMipQC92PoBXTVDIFVBBjGr6XQDMjGjgVLC8FqWEJoT3SYQ1LFZHMNLPhIznetEoLt2NtSwEeqt8nMiKN6cvIdkoCXfPbG4j/eY0U2gfNjKskBaboaFE7FRhiPEgFt7hmFETfEkI1t7di2iWaULDZlWwI/u+X/5KL3YpfrVTP9sqHR0UcM2gNbaAt5KN9dIhOUQ3VEUX36BE9oxfnwXlyXp23UeuYU8ysoh9w3r8AQa6ZfQ==</latexit> 
+
+zj ⇠ Gam( ⌫0, )
+
+Purchase Process Attrition Process Spending Process 
+
+<latexit sha1_base64="9DG/J0nyM0W6JFF9POhhH+Oe2/8=">AAACCHicbVA9SwNBEN3z2/gVtbRwMQixCXci0VIUwVLBmEAuhL3NJFmye3fszknCkdLGv2JjoYitP8HOf+MmuUITHww83pthZl4QS2HQdb+dufmFxaXlldXc2vrG5lZ+e+feRInmUOGRjHQtYAakCKGCAiXUYg1MBRKqQe9y5FcfQBsRhXc4iKGhWCcUbcEZWqmZ3/cjBR1GfSMU9RH6mF7142HRV0kzdYdHzXzBLblj0FniZaRAMtw0819+K+KJghC5ZMbUPTfGRso0Ci5hmPMTAzHjPdaBuqUhU2Aa6fiRIT20Sou2I20rRDpWf0+kTBkzUIHtVAy7Ztobif959QTbZ41UhHGCEPLJonYiKUZ0lAptCQ0c5cASxrWwt1LeZZpxtNnlbAje9Muz5P645JVL5duTwvlFFscK2SMHpEg8ckrOyTW5IRXCySN5Jq/kzXlyXpx352PSOudkM7vkD5zPH1zMmZI=</latexit> 
+
+! ⇠ Exp( μ0)
+
+(Discounted) Expected Transactions Expected Spending x
+
+= (Discounted) Expected Residual Revenue 
+
+<latexit sha1_base64="BSCqA6nbo2oY1KmVn6VyVtXYRmI=">AAACIHicbVBNSyNBEO1R141x1427Ry+NYUEhhBmRxGPYvXiMYKKQGYaeTiXptT+G7hoxDPkpe9m/shcPiqw3/TV2Yg5+7IOCx3tV3VUvy6VwGIYPwcrq2of1j5WN6uanz1tfattf+84UlkOPG2nsecYcSKGhhwIlnOcWmMoknGUXP+f+2SVYJ4w+xWkOiWJjLUaCM/RSWmtjWv6a0dgJRWOEKyy7RjhnNO1aw8G52V4s/XNDloaNQdiIjYIxS/bTWj1shgvQ9yRakjpZopvW7uOh4YUCjVwy5wZRmGNSMouCS5hV48JBzvgFG8PAU80UuKRcHDij370ypCNjfWmkC/XlRMmUc1OV+U7FcOLeenPxf96gwNFRUgqdFwiaP380KiRFQ+dp0aGwwFFOPWHcCr8r5RNmGUefadWHEL09+T3pHzSjVrN1cljv/FjGUSE7ZJfskYi0SYccky7pEU5+k7/khtwGf4Lr4C7499y6EixnvpFXCB6fAKJJozs=</latexit> 
+
+tj ⇠ Poisson Process(  0, [0 , !]) 
+
+Time-varying Covariates Time-varying Covariates <latexit sha1_base64="gF9ntMKIartWQ6aI1Tldxfn6Xfs=">AAACMHicbVBNT9tAFFxTWmhoS2iPvayISsMlshECLpWgPZQjlRpAygbrefMcVuza1u5zlcjyT+LCT4ELlVpVXPkVbEIOfHSklUYzb7TvTVJo5SgMfwdzL+ZfvlpYfN1YevP23XJz5f2hy0srsStzndvjBBxqlWGXFGk8LiyCSTQeJWffJv7RL7RO5dlPGhfYNzDMVKokkJfi5vc1Yco2rfMv3JO4CmsuSBl0QvDGmiAcUYWjom6LIRgDn+MKiGwtDNBpkvLRSbVX+/h63GyFnXAK/pxEM9JiMxzEzUsxyGVpMCOpwbleFBbUr8CSkhrrhigdFiDPYIg9TzPwO/Wr6cE1/+SVAU9z619GfKo+TFRgnBubxE9OFnVPvYn4P69XUrrTr1RWlISZvP8oLTWnnE/a4wNlUZIeewLSKr8rl6dgQZLvuOFLiJ6e/JwcbnSirc7Wj83W7tdZHYvsI1tlbRaxbbbL9tkB6zLJztkV+8P+BhfBdfAvuLkfnQtmmQ/sEYLbO000qJ4=</latexit> 
+
+μ(t) = μ0⇥
+
+exp(  0
+
+attr xA(t)) 
+
+<latexit sha1_base64="zgbocr569bfICEi5zOpyKqsMNv8=">AAACOHicbVBNbxMxEPWWtrSBtgGOvViNKOkl2q1Q4YJUwYUbQSJtpTisZp3ZxIq9u7JnUaLV/iwu/AxuiAsHUNUrvwAn3UM/eJKl5zcz9puXFFo5CsMfwdqD9Y3Nh1vbrUePd3b32k+enrm8tBIHMte5vUjAoVYZDkiRxovCIphE43kye7esn39B61SefaJFgSMDk0ylSgJ5KW5/OBTad4+hS0f8DW8ucRXWXJAy6LgQh4JwThXOi7orJmAMvIirwhuY1sIATZOUzz9X/do/cRS3O2EvXIHfJ1FDOqxBP25/F+NclgYzkhqcG0ZhQaMKLCmpsW6J0mEBcgYTHHqagfc0qlaL1/y5V8Y8za0/GfGVenOiAuPcwiS+c2nU3a0txf/VhiWlr0eVyoqSMJPXH6Wl5pTzZYp8rCxK0gtPQFrlvXI5BQuSfNYtH0J0d+X75Oy4F530Tj6+7Jy+beLYYvvsgHVZxF6xU/ae9dmASfaV/WS/2Z/gW/AruAyurlvXgmbmGbuF4O8/kKasWA==</latexit> 
+
+ (t) =  0⇥
+
+exp(  0
+
+purch xP (t)) 
+
+Figure 3: General modeling structure – Pareto/NBD model & Gamma-Gamma model (Gam refers to the Gamma distribution, and Exp refers to the Exponential distribution.) 
+
+4. Practical modeling guidance from the literature 
+
+Practical guidelines on probabilistic modeling focus primarily on latent attrition models. These guidelines are based on either theoretical arguments or simulation studies. In particular, extensive guidance is available for the most popular latent attrition model, the Pareto/NBD 14 CLVTools : Estimating Individual Customer Lifetime Values with R
+
+model. These recommendations mainly refer to the definition of the estimation period, such as its coverage, length, and sample size. Another focus of related studies has been the length of the prediction period. In the following, we provide an overview of these guidelines and point to often overlooked details discussed in previous research (e.g., Simon and Adler 2022; Schwartz, Bradlow, and Fader 2014; Hoppe and Wagner 2010). In general, it is common practice to split the customer base into multiple customer cohorts that are defined based on their first purchase and to fit separate models for each. Some authors refer to these as acquisition cohorts. The theoretical argument underlying this procedure is that these customers are prone to share some characteristics and thus their purchase behavior is often relatively homogeneous. For example, customers acquired in the last quarter of the year, e.g., in the context of Black Friday promotions, may have worse retention than customers acquired in other quarters. Generally speaking, customers attracted to a business may change over time as the market evolves, consumer preferences shift, or the product’s brand positioning changes. Acquisition cohorts provide a convenient way to account for such changes. It can be worthwhile to divide a cohort defined alone by its acquisition time further using other attributes of the first purchase. Common choices are the campaign or channel that are considered to have acquired a customer because they are expected to reach different audiences. This implicitly assumes that a firm’s targeting strategy works, i.e., that a firm’s marketing effort indeed resonates with a particular, relatively homogeneous consumer group. The work of Jaworski and Sauer (1985) provides an in-depth discussion on cohort analysis, including its history in marketing research. However, it is also possible to estimate the entire customer base with a single model controlling for customer cohort assignment by binary indicator variables. These “cohort dummies” control for the cohort-specific effects on the mean purchase rate λ and the mean attrition rate μ. Alternatively, practitioners might even prefer a simpler solution and trade-off some predictive accuracy and insights in cohort-specific patterns. In this case, they would estimate a single model for the entire customer base without controlling for customer-cohort-specific effects. An intermediate approach between the use of “cohort dummies” and cohort-specific models is to specify a parametric cross-cohort drift such as including a linear covariate for cohort assignment, which assumes that there is a linear relationship between cohorts of different ages. When customer cohorts are formed, recommendations on minimum cohort size range from 750 to 1,600 (Simon and Adler 2022; Schmittlein and Peterson 1994). However, other research also finds that sometimes even “small samples of 250 to 500 customers may provide reliable and sufficiently precise estimates” (Hoppe and Wagner 2010, p.49). The ability to estimate the customer base in a single model and use covariates to control for cohorts-specific effects might provide a solution for firms with a smaller customer base, such as in the business-to-business industry. In other scenarios, such an approach also enables analysts to control for more fine-grained cohort effects (e.g., by using weekly cohort dummies) within coarser cohorts (e.g., within a yearly cohort sample). Complementing these insights, recent work recommends analyzing recent cohorts separately and merging older cohorts in a single sample: “Even if you have complete records for every single customer from the day your firm started, you may choose to have a ’pre-20xy’ cohort to make the various plots that follow more legible. Besides, long after the shakeout [...] takes place, the distinctions between cohorts are less meaningful and interesting. The benefits arising from tracking old cohorts as separate entities will often not be worth the effort to do so” (Fader, Hardie, and Ross 2022, p.193). Journal of Statistical Software 15 Another question is how latent attrition models should account for the first purchase or not .Often, this observation is used to identify the assignment to a customer cohort. However, this may not be the best approach for any analysis. For some business contexts, an alternative approach can be better suited. While rarely applied in business practice, this has already been highlighted in the seminal work by Schmittlein et al. (1987). For example, if data on the sign-up date for a loyalty program is available, it can be used to define the cohort assignment, and the first purchase will be counted in the Pareto/NBD model. This also applies if other customer interactions with the firm precede the first transaction, e.g., a free trial period. Note that this can be different for the spending model (see Section 5.2). Analogously, the length of the estimation period depends on the business context. If seasonal patterns are not present, the estimation period can be determined based on customers’ interpurchase time and dropout rate (Hoppe and Wagner 2010; Simon and Adler 2022). In general, we recommend choosing an estimation period that is at the very least as long as the average interpurchase time. Thus, a startup business that only has very few months of purchase records but very short interpurchase times can use these models. For many retailers, it often makes sense to at least look at the last 12 months, as purchasing behavior often fluctuates greatly over the course of the months (Schmittlein and Peterson 1994). However, the duration of the estimation period should be extended to 24 months when strong seasonal patterns are observed. Thus, these effects can be better identified by the model. However, even if all past transaction records are available, Schmittlein et al. (1987) recommend testing if the use of only recent transactional data leads to better prediction results. Their argument is that Bayesian updating on customers’ death rate can drive the attrition rate μ for some customers close to zero, which can lead to unrealistically long lifetime predictions. Further, the business context also determines the choice of the relevant unit of time (e.g., hour, day, week, month). To define the input data for a latent attrition model, the chosen time unit is used to convert relevant time spans into meaningfully scaled numbers. In other words, the definition of a time unit forms the basis to convert the raw length of measured time spans to a sensible scale. The scaled numbers then serve as model inputs. The choice of time unit is arbitrary, but it can be a convenient tool to facilitate interpretation and improve numerical stability. In practice, a time unit may be chosen such that the typical interpurchase time is a few single-digit time units long. In most settings, this means choosing “weeks” as time unit. Defining the length of the prediction period is usually a strategic rather than a methodological decision. However, observing common approaches in business practice, it seems rather paradoxical that marketers often use short-term prediction horizons to evaluate the success of a relationship marketing strategy (Kumar 2018). A key aspect of any relationship marketing is the long-term orientation of a firm and management metrics should be aligned with this (Gummesson 1987). For example, the CLV metric is conceptualized as a manifestation of this long-term orientation (Gupta et al. 2006). From a financial perspective, the net present value of the revenue from future transactions can be substantial. For example, assuming a yearly discount rate of 5% (10%), the present value of 1 USD in year 5 is 0.78 USD (0.62 USD). The reasons for the mismatch between strategy and tactics when analyzing and managing customer relationships are well known. Marketing scholar Raghuram Iyengar explains that “customer analytics creates value because it helps organizations maximize the lifetime value of the customer (which is longer term), but most business leaders are compensated for optimizing short-term customer profits across products, divisions, or business units” (Stephen 2019). However, this discrepancy is merely a misconception and not necessarily a contradiction. The 16 CLVTools : Estimating Individual Customer Lifetime Values with R
+
+CLV metric explicitly values short-term transactions more because of its discounting factor, but at the same time also considers a customer’s long-term contribution to the business (Blattberg, Malthouse, and Neslin 2009). The same applies to managerial metrics to assess a customer’s future purchase level, such as the discounted expected residual transactions (DERT) metric, that can be derived from probabilistic latent attrition models (e.g., Fader and Hardie 2005). 
+
+Covariates are usually included for both the lifetime and the transaction process. However, if an analyst has access to a multitude of covariates and prediction is the main concern, it could be an option to include key covariates only for the transaction process. Not only does this reduce the number of parameters that have to be estimated, but there can also be substantive reasons for such an approach. For many businesses, the impact of, e.g., seasonality patterns on the transaction process is stronger and more straightforward to determine. Industry experts have taken advantage of the opportunity to include time-dependent covariates to create indicator variables based on the residuals between predictions and actual values. This must be done with the utmost care to avoid overfitting and information leakage, but it can help to gain additional insights, e.g., about the relevant seasonal patterns for a company. Modeling Customers’ spending may also require attention. To account for inflation, users can rely on price indices. Thereby, past monetary values are adjusted to reflect current price levels. To account for costs, it is recommended to rely on an additional model. Readers interested in the computational complexity of these probabilistic models and their various extensions are pointed to Appendix B. Using consumer-grade hardware, we provide some exemplary information on run times for the Pareto/NBD model for 1,000 to 1,000,000 customers. Also, the additional computational complexity of more advanced modeling techniques such as accounting for covariates or correlated processes is discussed. However, it is to note that these results are only valid for the current implementation of the Pareto/NBD model in CLVTools 
+
+and the hardware used for these analyses. A wide variety of uses case should be able to work with the scalability of the model implementations in CLVTools . For example, we are aware of businesses with 10,000,000 customers that use this implementation of the Pareto/NBD model to estimate and predict the individual future purchase behavior of their customer base. 
+
+5. Using the CLVTools package 
+
+To illustrate a common application, we use CLVTools to analyze consumer purchase records from a retail business. The data structure is identical for any type of non-contractual business’s transactional records. Thus, the following analyses can be applied “as is” to a broad range of businesses. See Table 2 for an overview of the key functionalities of CLVTools .Our analysis is structured in five sections. First, we discuss data preparation. Thereby, we detail how to initialize and inspect a transaction data object. Second, we discuss model estimation and diagnostics for both latent attrition models and spending models. Third, we explain how to derive predictions of individual customer lifetime values using the models obtained in the previous step. We look at two scenarios: First, we illustrate how to split the transaction data into an estimation and holdout set to fit the model parameters on the former and evaluate performance on the latter. Second, we also illustrate how to make predictions once the analyst has decided on a final model, using all available data. In a fourth section, we illustrate how to account for various types of covariate information. In other words, how to estimate latent attrition models with time-invariant and time-varying covariates and compare Journal of Statistical Software 17 their performance to the same model without covariates. Lastly, we show how to leverage advanced modeling technique to deepen the understanding of drivers of purchase behavior. 
+
+Step Details Commands Key arguments 
+
+(1) Data preparation 
+
+Create data object from transaction history 
+
+clvdata() data.transactions, time.unit, estimation.split data.end 
+
+For clvdata objects 
+
+Add time-invariant covariate data 
+
+SetStaticCovariates() clv.data, data.cov.life, data.cov.trans 
+
+Add time-varying covariate data 
+
+SetDynamicCovariates() clv.data, data.cov.life, data.cov.trans 
+
+Data subsetting subset() ids 
+
+Data extraction as.data.frame(), as.data.table() clv.data sample 
+
+Data summary summary() ids 
+
+Descriptive plots plot() which, sample 
+
+(2) Model estimation 
+
+Latent attrition model latentAttrition() formula †, data 
+
+Spending model spending() formula †, data 
+
+(3) Model evaluation & prediction 
+
+Prediction routine predict() clv.fitted, newdata 
+
+Diagnostic plots plot() which 
+
+Model summary summary() clv.fitted 
+
+Model details vcov(), confint(), logLik(), nobs(), fitted() clv.fitted   
+
+> Notes: †For details on how to specify the model formulas, see Section 5.2.
+
+Table 2: Overview of the key functionalities of CLVTools 
+
+5.1. Data preparation 
+
+Preparing the transaction data 
+
+CLVTools requires customers’ purchase history as input data, provided as data.frame or 18 CLVTools : Estimating Individual Customer Lifetime Values with R
+
+data.table . Every transaction record consists of a purchase date and a customer identifier. Optionally, the value of the transaction may be included. Doing so enables the prediction of individual lifetime values. Without this information, the predictions are limited to the future purchase level of customers, i.e., how many times customers will purchase in the future. For the following case study, we use transactional records that are representative of purchasing data from a retailer in the apparel industry. For each customer there are three variables: Customer identifier ( Id ), date of purchase ( Date ), and the total monetary value of the transaction ( Price ). Data of such structure should be available for any business operating in a non-contractual setting. We use the command data(“apparelTrans”) to load this data as a data.table object into the working environment. 
+
+R> library(CLVTools) R> library(data.table) R> library(ggplot2) R> library(egg) R> data("apparelTrans") R> head(apparelTrans, n = 3) 
+
+Id Date Price <char> <Date> <num> 1: 1 2005-01-02 230.30 2: 1 2005-09-06 84.39 3: 1 2006-01-18 131.07 
+
+Probabilistic models for customer base analysis, such as those implemented in CLVTools ,are often applied per customer acquisition cohort. Such a procedure accounts for possible differences between customers acquired at different time points. The apparelTrans data represents a single such cohort. It consists of 600 customers who purchased for the first time from this business on the day of 2005-01-02. The modeling can be divided in two stages: 
+
+• First, during the model benchmarking stage, the purchase records of all customers are split at a set date into two parts, an estimation and a holdout period. The model is estimated solely on the data in the estimation period while the data from the holdout period allows the model’s out-of-sample performance to be assessed. The optimal duration of the estimation period depends on the characteristics of the analyzed dataset, while the length of the prediction period is often a strategic management question. Generally, the estimation periods should be at least as long as the average time between customers’ transactions in order to observe repeat purchasing. If significant seasonality patterns are present, it is recommended to use at least a period of two years for model estimation (see Section 4). 
+
+• Second, after assessing model performance with an estimation and a holdout set, one can proceed to estimate a final model on available data and use it to derive the final predictions. For this last step, the model specification that has proven to be most robust in terms of accuracy and reliability during the benchmarking phase is used. For model benchmarking, we first create a transaction data object in which the purchase history is separated into an estimation and holdout set. The resulting object contains both Journal of Statistical Software 19 the estimation and holdout data. We use estimation.split to set the estimation period to 104 periods. This means, 104 weeks since the first purchase record. Alternatively, a date can be provided. By default, the last purchase record marks the end of the data. Optionally, we could use the parameter data.end to specify a fictional end beyond this date. This is useful, for example, when the last purchase record was on 2000-12-29 but customers were actually observed until 2000-12-31. Using data.end=“2000-12-31” without holdout period defines the estimation period until 2000-12-31 and moves the start of the prediction period to 2001-01-01. 
+
+R> clv.apparel <- clvdata( + data.transactions = apparelTrans, + date.format = "ymd", + time.unit = "week", + estimation.split = 104, + name.id = "Id", + name.date = "Date", + name.price = "Price" + ) 
+
+Further, we define the argument time.unit , here by specifying the value “week” . This period length is used to measure time spans. Further, we define the argument date.format , here by choosing “ymd” for year-month-day. This format is used to parse the date column in the given data, but also for any other date-like input at a later stage, such as parameters given as characters. The time-unit definition also prescribes how the transaction log must be aggregated before estimation. When the user creates a transaction data object in CLVTools ,two aggregation regimes apply. If unit of time for the probabilistic model is defined as 
+
+“daily” , “weekly” , or “yearly” , the package first collapses the data to the day level: For any customer–day combination, multiple purchases are combined into a single record whose transaction count equals one and whose monetary value equals the sum of that day’s spending. For all other settings of time.unit , e.g., hours, CLVTools aggregates at the most granular resolution allowed by a POSIXct timestamp - one second - so that at most one observation per customer–second remains. Any coincident purchases are merged – that is, the respective count is set to one – and their monetary values are summed. This automatic preprocessing has the following reason: Often purchases on the same day should not be regarded as separate, independent events but as strongly linked, e.g., a customer forgot to purchase milk and goes back into the grocery store after paying for all other errands. The Poisson process explicitly assumes that the events are independent. Because of this aggregation, purchases will not be stored at a finer temporal resolution than seconds for time.unit=hours and days for all other time units. Consequently, the time between purchases can only be measured at this granularity, e.g., at steps of 1/7 for time.unit = “week” . This preprocessed data input then serves as input to both latent attrition models and spending models. As an alternative to clvdata() , the command as.clv.data() is available to convert a 
+
+data.frame directly. It uses the most common defaults for all arguments. 
+
+Inspecting the transaction data 
+
+Customers’ purchase records can be extracted using the generics as.data.frame() and 
+
+subset() . By default, as.data.frame() copies all data present in the object, but this can 20 CLVTools : Estimating Individual Customer Lifetime Values with R
+
+be limited. With the parameter sample , data can be selected from either the estimation set (“estimation” ), the holdout set ( “holdout” ), or both ( “full” ). The parameter ids restricts the purchase records to the customers with matching identifiers. 
+
+R> df.full <- as.data.frame(clv.apparel, sample = "full") R> df.est <- as.data.frame(clv.apparel, sample = "estimation") R> df.ids <- as.data.frame(clv.apparel, ids = "1") 
+
+For more detailed data selection, the subset() method is available. It returns the transaction data that meets the specified conditions. The given conditional expressions are applied on the internal data.table object that holds the purchase data. The usual data.table syntax can hence be used to select based on the columns in the internal data: Id , Date , and, if provided, 
+
+Price . Additionally, the argument sample is available again. 
+
+R> df.price.50.to.100 <- subset(clv.apparel, Price >= 50 & Price <= 100) R> df.ids.7.9 <- subset(clv.apparel, Id=="7"|Id=="9", sample = "holdout") 
+
+The summary() method provides descriptive statistics for the transaction data. 
+
+R> summary(clv.apparel) 
+
+CLV Transaction Data Time unit Weeks Estimation length 104.0000 Weeks Holdout length 207.0000 Weeks Transaction Data Summary Estimation Holdout Total Period Start 2005-01-02 2007-01-01 2005-01-02 Period End 2006-12-31 2010-12-20 2010-12-20 Number of customers - - 600 First Transaction in period 2005-01-02 2007-01-01 2005-01-02 Last Transaction in period 2006-12-31 2010-12-20 2010-12-20 Total # Transactions 1866 1317 3183 Mean # Transactions per cust 3.110 5.557 5.305 (SD) 2.714 5.123 6.119 Mean Spending per Transaction 40.545 36.977 39.069 (SD) 73.362 55.356 66.519 Total Spending 75657.730 48699.170 124356.900 Total # zero repeaters 213 - -Percentage of zero repeaters 35.500 - -Mean Interpurchase time 24.823 30.604 37.817 (SD) 19.417 24.756 42.339 
+
+For this dataset, the summary statistics show, for example, that the dataset includes a total of 600 customers who made 3’183 purchases. 35.5% of these customers are zero repeaters, i.e., they purchase only once and never return. Journal of Statistical Software 21 Through the plot() method, a variety of descriptive plots are available. These can be selected using the argument which . Table 3 provides an overview of the available plots. Plot which Description 
+
+Tracking Plot “tracking” The total number of repeat transac-tions per period. 
+
+Frequency Plot “frequency” The distribution of the number of transactions per customer. 
+
+Spending Plot “spending” The empirical density of the average spending per transaction. 
+
+Interpurchase Time Plot “interpurchasetime” The empirical density of customer’s mean time between transactions. 
+
+Transaction Timing Plot “timings” The transaction timings of a cus-tomer subset. Table 3: Descriptive plots available for transaction data objects The tracking plot ( which = “tracking” ) – see Figure 4 – shows the total number of repeat transactions observed in each period. It helps to spot potential seasonal patterns, and thus informs the analyst whether model extensions to control for these patterns should be explored. 
+
+R> plot(clv.apparel, which = "tracking") 010 20 30   
+
+> 2006 2008 2010
+> Date
+> Number of Repeat Transactions
+> Estimation end: 2006−12−31
+> Weekly tracking plot
+
+Figure 4: Tracking plot for the apparel dataset The tracking plot illustrates the number of repeat purchases, i.e., excludes the first purchase of every customer. Each point in the plot represents the number of repeat orders that were placed in the time period preceding this date. The data’s very first order defines the start of the plot. Because there is no time to make any repeat purchases until then, this initial value by definition is zero and gives this plot its characteristic shape for the first time period. 22 CLVTools : Estimating Individual Customer Lifetime Values with R
+
+Next, the timings plot ( which=“timings” ) helps to visualize customers’ transaction timings. 
+
+R> plot( + clv.apparel, + which = "timings", + annotate.ids = TRUE, + ids = c("1", "2", "3") + ) 321   
+
+> 2005−01−02 2006−12−29 2008−12−24 2010−12−20
+> Date
+> Customer Identifier
+> Estimation end: 2006−12−31
+
+Transaction Timings 
+
+Figure 5: Timings plot for the apparel dataset The parameter ids can be either a vector of strings listing a subset of customers or an integer specifying the number of customers to randomly select. The resulting plot is shown in Figure 5. Each dot in a row illustrates when a transaction for a particular customer was recorded. It provides an intuitive way to learn about the purchase patterns of individual customers. The interpurchase-time plot ( which=“interpurchasetime” ) provides additional insights. 
+
+R> plot(clv.apparel, which = "interpurchasetime", sample = "estimation", bw=3) 0.00 0.01 0.02 0.03     
+
+> 025 50 75 100
+> Mean Interpurchase Time (Weeks)
+> Density
+
+Density of Customer's Mean Time between Transactions 
+
+Figure 6: Interpurchase-time plot for the apparel dataset The resulting plot is shown in Figure 6. It illustrates the empirical density of customers’ mean time between transactions, after aggregating purchases of the same customer on the Journal of Statistical Software 23 same date. The time unit defined in the data object is used to measure the time between transactions. Only data from customers with repeat transactions are shown in this graph. This plot can help to visually inspect the distribution of interpurchase times and thus verify model assumptions. Note that the plot interface allows us to pass additional arguments that are forwarded to ggplot2::stat_density , e.g., to adjust the bandwidth ( bw=3 ). If price information is present in the data object, the spending plot (‘ which = “spending” )is also available. It either shows the empirical density of customers’ average order values (mean.spending = TRUE ) or the value of every transaction in the data ( mean.spending = FALSE ). Such a plot can notably be used to assess whether the distribution remains stable in the estimation and the holdout period, a key assumption of the spending models. 
+
+R> plot.7a <- plot(clv.apparel, which = "spending", sample = "estimation") + + xlim(0,550) R> plot.7b <- plot(clv.apparel, which = "spending", sample = "holdout") + + xlim(0,550) R> ggarrange(plot.7a, plot.7b, labels = c("A", "B"), ncol = 2, nrow = 1) 0.00 0.01 0.02       
+
+> Density
+> 0.00 0.01 0.02 0.03
+> Density
+> Density of Average Transaction Value Density of Average Transaction Value
+> 0200 400
+> Average Value per Transaction
+> 0200 400
+> Average Value per Transaction
+> AB
+
+Figure 7: Spending plots for the apparel dataset (A: estimation period; B: holdout period) The resulting plots are shown in Figure 7. As for the interpurchase-time plot, the density bandwidth ( bw ) can be passed as an additional argument. For the data of the case study, the densities of customer spending in the estimation and holdout period are quite similar. We note that higher average transaction values are observed at the extreme end of the estimation period. This provides support for the probabilistic approach’s assumption that the spending patterns of customers remain constant over time. 
+
+5.2. Model estimation and diagnostics 
+
+Fitting a latent attrition model 
+
+After creating the transaction data object, we estimate a first latent attrition model on it. We focus on the Pareto/NBD model (Schmittlein et al. 1987), which has proven to be very robust across various industries. As with any customer base analysis, our case study starts with the simplest case. This means that we do not include any covariates in our first model. Recall 24 CLVTools : Estimating Individual Customer Lifetime Values with R
+
+that the required model inputs (xi, t xi , T i) can be derived from the purchase history of the estimation period alone, and no other data about the customers or holdout period is needed. We use the latentAttrition() interface to estimate the model. Besides the purchasing data (data ), we specify the model family ( family = pnbd ). The parameter formula is used to specify the covariates. Because we are estimating a model without covariates, this parameter has to be omitted. Recall that for models without covariates, all inputs are predefined and therefore, no dependent variable of any sort needs to be specified either. 
+
+R> est.pnbd <- latentAttrition(family = pnbd, data = clv.apparel) R> est.pnbd 
+
+Pareto/NBD Standard Model Call: latentAttrition(family = pnbd, data = clv.apparel) Coefficients: r alpha s beta 1.4490 48.6361 0.5613 46.8844 KKT1: TRUE KKT2: TRUE Used Options: Correlation: FALSE 
+
+The number and names of the reported parameters vary by model. For the Pareto/NBD model, we obtain four parameters r, α, s and β. r and α represent the shape and scale parameters of the distribution that determines the purchase rate and s and β represent the shape and scale parameters of the distribution that determines the attrition rate across individual customers. 
+
+r/α can be interpreted as the mean transaction and s/β as the mean attrition rate. In the case of the apparel dataset, we observe an average purchase rate of r/α = 0 .030 transactions and an average attrition rate of s/β = 0 .012 .Use summary(est.pnbd) to obtain a more detailed report that includes the likelihood value as well as AIC and BIC. Further, it includes the Karush-Kuhn-Tucker optimality conditions of the first (KKT1) and second order (KKT2) (Kuhn and Tucker 1951). Care needs to be taken, if the first KKT condition is not true, as this might hint at a possible model misspecification. If questions on optimality arise, the parameter optimx.args allows the optimization routine to be controlled. 
+
+R> est.pnbd <- latentAttrition( + family = pnbd, + data = clv.apparel, + optimx.args = list(method = "Nelder-Mead", control = list(trace = 1)) + ) 
+
+The argument optimx.args forwards a list of arguments to optimx (Nash and Varadhan 2011; Nash 2014). This allows us to define the optimization algorithm, set upper or lower limits, or Journal of Statistical Software 25 trace the optimization progress. CLVTools by default uses the optimization method L-BFGS-B 
+
+(Byrd, Lu, Nocedal, and Zhu 1995). If the optimization is not feasible, switching to the more robust but often slower method Nelder-Mead is recommended (Nelder and Mead 1965). As an alternative to the Pareto/NBD model, CLVTools features the Beta-Geometric/NBD model (Fader et al. 2005a) and the Gamma-Gompertz/NBD (Bemmaor and Glady 2012) model. To use these models, set the parameter family to either bgnbd or to ggomnbd . Table 4 gives an overview of the available latent attrition models and the implemented advanced modeling options. 
+
+pnbd bgnbd ggomnbd 
+
+Model name Pareto/ NBD BG/ NBD GGom/ NBD 
+
+Attrition: Distribution main process & heterogeneity 
+
+Exponential / Gamma Geometric / Beta Gompertz / Gamma 
+
+Transaction: Distribution main process & heterogeneity 
+
+Poisson / Gamma Poisson / Gamma Poisson / Gamma 
+
+Model Parameters r, α, s, β r, α, a, b r, α, β, b, s 
+
+Covariates (time-invariant/-varying) 
+
+✓/ ✓ ✓/ - ✓/ -
+
+Process correlation ✓ - -
+
+Equality constraints of covariate parameters 
+
+✓ ✓ ✓
+
+Regularization of covariate parameters 
+
+✓ ✓ ✓
+
+Table 4: Commands and characteristics of latent attrition models in CLVTools 
+
+In general, the user can choose between a formula- and a non-formula-based interface to define the model estimation details. Throughout this paper, we illustrate the formula-based interface which is particularly useful for specifying covariates. Alternatively, a model can also be estimated by applying the model family method on the purchasing data object. See the accompanying vignette of the package for more details on this approach. 
+
+Assessing diagnostics for a latent attrition model 
+
+The key diagnostics for a latent attrition model are two plots: (1) the tracking plot and (2) the probability mass function (PMF) plot. Besides these plots and the summary() command, the canonical generics coef() , logLik() , confint() , vcov() , nobs() , AIC() , BIC() are available for all fitted models to extract key information. To create a tracking plot, pass which=“tracking” to plot() . Further, use the flag cumulative 
+
+to specify the type of the tracking plot. The plot is drawn until the given prediction.end .For convenience, the latter defaults to the end of the transaction data. The resulting tracking 26 CLVTools : Estimating Individual Customer Lifetime Values with R
+
+plots - non-cumulative and cumulative - are shown in Figure 8. The dashed line indicates the split between the estimation period and the holdout period. 
+
+R> plot.8a <- plot(est.pnbd, which="tracking") R> plot.8b <- plot(est.pnbd, which="tracking", cumulative = TRUE) R> ggarrange(plot.8a, plot.8b, labels = c("A", "B"), ncol = 1, nrow = 2) 010 20 30 
+
+> Number of Repeat Transactions
+> 01000 2000
+> Number of Repeat Transactions
+> Estimation end: 2006−12−31
+
+Weekly tracking plot 
+
+> Estimation end: 2006−12−31
+
+Weekly tracking plot (cumulative)         
+
+> 2006 2008 2010
+> Date
+> Legend Actual Pareto/NBD Standard
+> 2006 2008 2010
+> Date
+> Legend Actual Pareto/NBD Standard
+> A
+> B
+
+Figure 8: Tracking plots for the apparel dataset (actual versus model results) The tracking plot gives an impression of how well the model tracks the actual purchases in both the estimation and the holdout period. The plot shows the actual repeat transactions and adds an overlay with the repeat transaction expected by the fitted model. This is based on the model’s unconditional expectation, i.e., the sum of all transactions expected by all customers in each period (e.g., Fader et al. 2005b). In line with previous literature, the first predicted date is the start of the data. The expected number of repeat transactions on this date by definition is zero and this fact gives the plot its characteristic shape. The non-cumulative tracking plot (A) gives an indication of how well the model captures dynamic effects such as seasonality and one-time events. The slightly downward sloping line shows how the model expects fewer purchases over time as more customers stop doing business with the firm. In the cumulative tracking plot (B) on the other hand, it is easier to see how well the model tracks the number of repeat purchases overall. In this case, we learn from both plots that the model fits the data quite well. To create a PMF plot, set which=“pmf” in the plot() command. The resulting plot is shown in Figure 9. The PMF plot completes the assessment of the model’s in-sample fit. It shows Journal of Statistical Software 27 the actual and expected number of customers who make a given number of repeat transactions during the estimation period. The expected number is based on the PMF, i.e., the probability of making exactly a given number of repeat transactions in the estimation period. For each bin, the expected number of customers is the sum of all customers’ individual PMF values for this number of purchases. The comparison between actual and fitted values is straightforward. Again, the results illustrate that the model fits the data well for this application case. 
+
+R> plot(est.pnbd, which="pmf") 213213.3 116 120.9 82 79.8 63 55.1 37 38.7 27 27.3 19 19.3 17 13.6 5 9.6 5 6.7 16 15.8             
+
+> 050 100 150 200
+> 012345678910+
+> Number of Repeat Transactions
+> Number of Customers
+> Legend Actual Pareto/NBD Standard
+
+Frequency of Repeat Transactions in the Estimation Period 
+
+Figure 9: PMF plot for the apparel dataset (actual versus model results) 
+
+Fitting a spending model 
+
+To predict CLV, we need to complement a latent attrition model with a model that estimates customers’ average spending per transaction. Currently, only the Gamma-Gamma (GG) model (Fader et al. 2005b; Colombo and Jiang 1999) is implemented for which no covariate extension has been published. The Normal-Normal model (Schmittlein and Peterson 1994) is an alternative but the GG model is regarded as more flexible. In literature and practice, it is thus the de-facto standard choice for modeling customers’ average spending per transaction. The specification of spending models is analogous to latent attrition models. There is, however, no parameter formula as the GG model does not support covariates and the dependent variable is not observed but latent. Should extensions for modeling time-invariant and -varying covariates become available in the future, a formula interface will be added. All required model inputs, in this case, the number of purchases and the mean order value, can again be derived only from customers’ purchase history. In the following, we estimate a GG model using the command spending . We define the type of model ( family ) and the input data ( data ). 
+
+R> est.gg <- spending(family = gg, data=clv.apparel) R> est.gg 28 CLVTools : Estimating Individual Customer Lifetime Values with R
+
+Gamma-Gamma Model Call: spending(family = gg, data = clv.apparel) Coefficients: p q gamma 3.099 5.654 56.504 KKT1: TRUE KKT2: TRUE 
+
+In line with the literature, CLVTools by default does not use the first transaction when estimating a spending model because in many cases this transaction has been found to be atypical for future purchases. As a consequence, customers with a single purchase are ignored during model estimation and their estimated average order value is the mean under the distribution. However, it is possible to set remove.first.transaction=FALSE to consider the first transaction,. 
+
+Assessing diagnostics for a spending model 
+
+A single diagnostic plot is available for spending models. Additionally, the same canonical generics as for latent attrition models are also available for spending models and help to extract key metrics. The resulting plot in Figure 10 compares the density of each customer’s observed average order value (i.e., the empirical distribution) to the model’s distribution of mean transaction spending across customers. In this case, the plot shows that the spending model fits the data in the estimation period reasonably well. 
+
+R> plot(est.gg) 0.00 0.01 0.02     
+
+> 0100 200 300
+> Average Value per Transaction
+> Density
+> Legend Gamma−Gamma
+> Density of Average Transaction Value
+
+Figure 10: Spending plots for the apparel dataset (actual versus model results) 
+
+5.3. Predicting customer lifetime value Journal of Statistical Software 29 
+
+Evaluating predictions on holdout data 
+
+Once the latent attrition model and the spending model are estimated, we are able to predict various metrics of customers’ purchase behavior by using predict() on the fitted model objects (i.e., est.pnbd and est.gg ). In order to benchmark different model specifications out-of-sample, we have split the transaction data into an estimation and a holdout period. This allows comparing model predictions for the holdout period to the actuals. We illustrate this in the following but before that we also explain how the predictions of both models are combined. Recall that latent attrition models predict customers’ future number of orders, while spending models infer the average value per order for each customer. Their predictions therefore need to be combined to obtain a measure of future spending and of customer lifetime value. CLVTools 
+
+facilitates this by accepting a fitted spending model as an input for the prediction routine of the latent attrition model. The predictions from both models are combined and metrics based on both are calculated. The content of this combined output is outlined in the following. Latent attrition models predict three managerial expressions for every customer: (1) the “conditional expected transactions” (CET), which is the number of transactions to expect from the end of the estimation period until the end of the prediction period, (2) the “probability of a customer being alive” (PAlive) at the end of the estimation period, and (3) the “discounted expected residual transactions” (DERT) for every customer, which is the total number of transactions for the residual lifetime of a customer discounted to the end of the estimation period. Note that this metric has an infinite prediction horizon, i.e., the remaining lifetime of each customer is fully taken into account. The prediction period can be specified by prediction.end , either as a duration or as an end-date (i.e, prediction.end = 30 or prediction.end = “2006-05-08” ). If there is a holdout period, the prediction is made by default until the end of the holdout period. The parameter 
+
+continuous.discount.factor allows the discount rate used for the DERT expression to be adjusted. Spending models alone produce only a single metric for each customer that is independent of a prediction period, namely (4) the predicted average spending per transaction. The combined prediction output of latent attrition and spending models additionally contains (5) the customer lifetime value (CLV), which is calculated by multiplying DERT with the average spending per transaction (Colombo and Jiang 1999; Fader et al. 2005b), and (6) the total spending expected in the prediction period, which is calculated by multiplying CET with the average spending per transaction. Further, if the predictions are made no further than the end of the holdout period, the true number of transactions (“actual.x”) and true spending (“actual.total.spending”) during the 30 CLVTools : Estimating Individual Customer Lifetime Values with R
+
+prediction period are reported. This allows for a convenient evaluation with common metrics such as the root mean square error (RMSE) and the mean absolute error (MAE). Although uncommon in the marketing literature, it is technically also possible to use the DECT predictions, but not the DERT predictions, to assess predictive performance based on the observed data in the holdout period. However, this requires discounting of the observed transactions prior to calculating the RMSE or MAE metric. In addition, this would imply that prediction errors in the far future are weighted less than prediction errors in the near future. In the following, we now show how to make the combined predictions of both models and evaluate their performance based on the most popular approach in the literature. To this end, we first call predict() on the latent attrition model and additionally pass the fitted spending model by using the argument predict.spending . Internally, predictions are produced for both models separately and then combined. Note that both types of model can also be predicted separately. As noted above, the prediction period defaults to the holdout period. 
+
+R> dt.pred <- predict(est.pnbd, predict.spending = est.gg) 
+
+If predict.spending=FALSE , only the predictions for the latent attrition model are produced. For convenience, a spending model can be given (e.g., predict.spending=gg ) in which case the model is estimated and used for prediction. However, we recommended a separate estimation. Further, to use the parameters of the estimated models to make predictions for a different set of customers (e.g., for another customer cohort), a new transaction data object can be provided in the argument newdata . The predictions for these new customers are then made by using the parameters of the estimated model while the inputs required per customer are derived from the transaction log in newdata .We now evaluate the models’ out-of-sample performance on the holdout data by calculating RMSE and MAE. For such an assessment, the CET metric has to be used. The DERT metric, which is the basis for CLV, incorporates a continuous discount factor and has an infinite prediction horizon. Hence, it cannot be used for comparisons against the actual number of transactions. The same applies to its analog for finite prediction horizons, the discounted expected conditional transactions (DECT) metric. 
+
+R> mae <- function(x, y){return(mean(abs(x - y)))} R> rmse <- function(x, y){sqrt(mean((x - y)^2))} R> dt.pred[, list( + mae.cet = mae(CET, actual.x), + rmse.cet = rmse(CET, actual.x), + mae.total.spending = + mae(CET * predicted.mean.spending, actual.total.spending), + rmse.total.spending = + rmse(CET * predicted.mean.spending, actual.total.spending) + )] 
+
+mae.cet rmse.cet mae.total.spending rmse.total.spending <num> <num> <num> <num> 1: 2.039532 3.329395 87.64222 182.38 Journal of Statistical Software 31 
+
+Making final predictions without holdout period 
+
+To obtain the final, most accurate estimates, we make predictions with a model that is estimated on all available purchasing data. As all models in CLVTools are generative models, no holdout period or any other form of holdout data is required to estimate them or to define a dependent variable. In general, this is the final step in a workflow that in previous steps has mainly centered around model testing, e.g., by comparing different specifications in a holdout period. Once a user has decided on a final model configuration, the final model is estimated on all available transaction data. To this end, a new transaction data object without holdout period has to be created ( estimation.split = NULL ). It goes without saying that model fit should still be assessed by using diagnostics that do not require a holdout period. For example, a visual inspection of both tracking plot types. If the fit is found to be adequate, this model will then be used to make predictions for the focal customer cohort. When making predictions without a holdout period, the argument prediction.end must be given to specify how far into the future to predict. In this case, we predict 95 weeks into the future. For the DERT expression, a discount rate also needs to be specified. By default CLVTools uses 
+
+δ = ln(1 + 0 .10) ,
+
+which corresponds to a 10% discrete annual rate. The natural logarithm appears because continuous compounding models growth as eδ; equating this to the discrete one-year growth factor 1 + d and solving for δ gives δ = ln(1 + d).If the time.unit chosen in clvdata() takes any value other than “yearly”, the continuous rate must be scaled down by the number of its occurrences per year. Specifically, with an annual discrete rate d, the appropriate rate is computed as 
+
+δk = ln(1 + d)
+
+k ,
+
+where k is the number of time units per year (e.g. k = 52 for weekly, k = 365 for daily units). Hence, for a discrete annual rate of 7.5%, and weekly units, one sets 
+
+δ52 = ln(1 .075) 52 .
+
+By passing δk to predict() , we ensure that both the prediction horizon and the discount-ing procedure use time units in a consistent way with the data indexing defined through 
+
+time.units .
+
+R> clv.apparel.full <- clvdata( + data.transactions = apparelTrans, + date.format = "ymd", + time.unit = "week", + estimation.split = NULL, # no holdout period + name.id = "Id", + name.date = "Date", + name.price = "Price" + ) 32 CLVTools : Estimating Individual Customer Lifetime Values with R
+
+R> est.pnbd.full <- latentAttrition(family = pnbd, data = clv.apparel.full) R> est.gg.full <- spending(family = gg, data = clv.apparel.full) R> dt.pred.full <- predict( + est.pnbd.full, + predict.spending = est.gg.full, + prediction.end = 95, + continuous.discount.factor = log(1 + 0.075) / 52, + verbose = FALSE + ) R> head(dt.pred.full, 3) 
+
+Key: <Id> Id period.first period.last period.length PAlive <char> <Date> <Date> <int> <num> 1: 1 2010-12-21 2012-10-15 95 0.007191623 2: 10 2010-12-21 2012-10-15 95 0.836860928 3: 100 2010-12-21 2012-10-15 95 0.922281780 CET DERT predicted.mean.spending <num> <num> <num> 1: 0.01300226 0.06200625 77.79363 2: 0.89770449 4.28104733 36.04491 3: 2.34558536 11.18582123 37.23417 predicted.period.spending predicted.CLV <num> <num> 1: 1.011493 4.823691 2: 32.357674 154.309950 3: 87.335919 416.494747 
+
+The metrics reported here, which were derived on the full purchasing data without any holdout period, are the final metrics that can be used for managerial decision making. For example, to select customers for a marketing campaign or as part of any marketing automation system. Recall that the prediction horizon ( prediction.end ) is only considered for metrics CET and 
+
+predicted.period.spending , while the value of continuous.discount.factor only affects 
+
+DERT and predicted.CLV . PAlive is unaffected by both parameters as it describes customers at the end of the estimation period. Due to their nature, DERT and predicted.CLV have an infinite time horizon. Thus, depending on the discount rate, they can be larger than the metrics that consider the given, finite prediction horizon. Method-specific deviations might be applied for models with time-varying covariates. See, e.g., the DECT metric, which relies on a finite prediction horizon and is detailed in Section 5.4 (Bachmann et al. 2021). When executing this task on a regular basis (e.g., daily or weekly), practitioners may want to consider the following: The day after the model is estimated and predictions have been made, more data is available. However, parameters likely change only marginally. Thus, the previously fitted model can still be used to make predictions on the next day. To do so, the full dataset, which includes the new purchase records, can be given in newdata . The predictions Journal of Statistical Software 33 are then made using the parameters of the already estimated model and using the input of the model (i.e., the purchase summary (x, t x, T )) calculated on the order data in newdata .
+
+Making predictions that account for uncertainty 
+
+Confidence intervals help users to quantify the uncertainty of a statistical model, i.e., they give an indication of the degree of uncertainty of an estimate. CLVTools facilitates the derivation of confidence intervals based on a bootstrapping routine. To calculate confidence intervals for all predicted metrics, the predict() command accepts arguments uncertainty and num.boots . If the former argument is set to “boots” , the latter defines the number of bootstrap samples. Customers, together with their entire purchasing history, are sampled with replacement. A new model is estimated on the sampled data with the same specification and optimization options as the given fitted model. For more custom applications, the clv.bootstrapped.apply command can be used. Given an estimated model, it samples new data from the transactions stored in it, re-fits the model on it, and then applies a user-given method on the newly estimated model. In each iteration, the customers together with their orders are selected by fn.sample . The model is fit on the new data with the exact same options as it was originally fit but any option can be overwritten by passing it in the ellipsis construct ( ... ). The method fn.boot.apply is applied on the model fit on the bootstrapped data and its return value is collected in a list which is eventually returned. It should be noted that simply sampling customers with their orders and creating a data object may yield different estimation and holdout periods because the end of the data is determined by the last order. This method makes sure that the estimation and holdout periods are preserved as in the original data. In this way, the model inputs (i.e, (x, t x, T )) in each iteration remain for each customer the same as in the original data, making it equivalent to sampling from the model inputs generated on the original data. For example, it facilitates the following routine that visualizes this uncertainty within the tracking plot: 
+
+R> set.seed(1) R> l.boot <- clv.bootstrapped.apply( + object = est.pnbd, + num.boot = 10, + verbose = FALSE, + fn.sample = function(ids){ + # method to sample customers each iteration + return(sample(ids, size = length(ids), replace = TRUE))}, + fn.boot.apply = function(fitted){ + # method applied on the model fitted on bootstrapped data + return(plot( + fitted, + which = "tracking", + plot = FALSE, # only return plot data + verbose = FALSE, + transactions = FALSE # only model expectation, no actual num orders + ))}) R> dt.boot <- rbindlist(l.boot) 34 CLVTools : Estimating Individual Customer Lifetime Values with R
+
+R> dt.CIs <- dt.boot[, list( + lb = quantile(value, 0.05), + ub = quantile(value, 0.95)), + by = "period.until" + ] R> plot.original <- plot(est.pnbd, verbose = FALSE) R> plot.original + geom_ribbon( + aes(ymin = lb, ymax = ub), + data = dt.CIs, + alpha = 0.3, + show.legend = FALSE + ) 010 20 30     
+
+> 2006 2008 2010
+> Date
+> Number of Repeat Transactions
+> Legend Actual Pareto/NBD Standard
+> Estimation end: 2006−12−31
+> Weekly tracking plot
+
+Figure 11: Tracking plot (non-cumulative) with confidence intervals The resulting plot highlights the 5% and 95% confidence interval for the number of purchases of this customer cohort for the estimation and holdout period. It is shown in Figure 11. It should be noted that bootstrapping only accounts for uncertainty in model parameters (epistemic uncertainty), and not sampling variability in the actual outcomes (aleatoric uncer-tainty). How to additionally consider the latter for this application case, i.e., the stochasticity in the data generating process, is an area of ongoing research. 
+
+Making predictions for prospective customers 
+
+While the discussed latent attrition models focus primarily on modeling the behavior of existing customers, they can also be used to derive the average value of prospective customers that are yet to be acquired. To this end, the unconditional expectation used for the tracking plot can be leveraged as it gives the expected number of orders for a customer for which no information is available. The method newcustomer() builds on this to predict the total number of orders an average prospective customer will make in the first t periods. It should be emphasized that such predictions are for entirely hypothetical average customers with no order history. Therefore, none of the transaction data stored in the fitted model is used, nor can any order data be given to the newcustomer() method. The following expression, which is based on the Pareto/NBD model, highlights that no inputs derived from orders are required for this Journal of Statistical Software 35 prediction: 
+
+1 + E[X(t)] = 1 + rβ α(s − 1) 
+
+> [
+
+1 − 
+
+> (
+
+ββ + t
+
+> )s−1]
+
+.
+
+We add +1 to the unconditional expectation to account for all transactions that a prospective customer will make, including the first one. Most applications of probabilistic models for customer base analysis focus on modeling repeat transactions that occur after the first transaction of a customer. In the following example, we predict the number of purchases of a prospective customer in the first year. To do so, the number of transactions and the average spending per transaction of a customer are separately predicted. To derive the expected total spending, we multiply both. 
+
+R> est.gg.full.first <- spending( + family = gg, + data = clv.apparel.full, + remove.first.transaction=FALSE) R> nc.trans <- predict(est.pnbd.full, newdata=newcustomer(num.periods = 52)) R> nc.spend <- predict(est.gg.full.first, newdata=newcustomer.spending()) R> cat("Average expected number of transactions:", nc.trans, "\n") R> cat("Average expected spending per order:", nc.spend, "\n") R> cat("Average spending in the first year:", nc.trans * nc.spend, "\n") 
+
+Average expected number of transactions: 2.218635 Average expected spending per order: 39.1372 Average spending in the first year: 86.83115 
+
+Note that the spending model should be fitted on all orders, including the initial purchases of each customer ( remove.first.transaction=FALSE ). The reason is that the predicted spending will be multiplied with the total number of transactions that also includes the initial order and not only repeat purchases. When making these predictions for prospective customers, it is recommended to use the latent attrition and spending model for the latest acquisition cohort. It is likely that this cohort resembles prospective customers the most. If covariates have been included in the model, it is possible to account for these and assess various scenarios. For example, to determine the difference between prospective customers in region A versus region B. For details, see the documentation of newcustomer.static() and newcustomer.dynamic() .
+
+5.4. Model specifications for covariate data 
+
+Time-invariant and time-varying covariates can help to better model complex patterns in customers’ purchase records. We can identify the added value of increasing model complexity by benchmarking such a model against a relevant baseline. 
+
+Latent attrition models with covariates 
+
+CLVTools can account for the observed cross-sectional heterogeneity by including covariates. In latent attrition models, covariates affect the purchase process and the attrition process. 36 CLVTools : Estimating Individual Customer Lifetime Values with R
+
+It is possible to include different covariates for the two processes. In general, two types of covariates are distinguished, i.e., time-invariant and time-varying. The former include factors that do not change over time, such as information on customer demographics or customers’ acquisition channel. The latter may change over time and include, for example, marketing activities or seasonal patterns. Data for time-invariant covariates must contain a unique customer identifier and a single value for each covariate. In the case of the apparel retailer, customers’ gender and in-formation on the acquisition channel are available as time-invariant covariates. Use the 
+
+data(“apparelStaticCov”) command to load the time-invariant covariates. In this example, 
+
+gender is coded as a dummy variable with male=0 and female=1 and channel with online=0 
+
+and offline=1 .
+
+R> data("apparelStaticCov") R> head(apparelStaticCov, n = 3) 
+
+Id Gender Channel <char> <num> <num> 1: 1 0 02: 2 1 03: 3 1 0
+
+Data for time-varying covariates require a time series of covariate values for every customer. In other words, if a time-varying covariate is included and the analysis is done based on weekly data, the covariate value can change every week. Thus, a value has to be specified for every customer every week. Note that the time unit specified for the transaction data also defines the time unit for the covariate data. In our case study, data on seasonal patterns ( High.Season ) is available as a time-varying covariate. It indicates whether a week falls into the high season or not. Additionally, we have the gender and the sales channel that a customer used for the first purchase as a time-invariant covariate. The data structure of time-invariant covariates (i.e., Gender and Channel ) needs to be aligned with the structure of time-varying covariates (i.e., High.Season ). In other words, the former has to be repeated for every entry of the latter. Indeed, such a representation is common for time-series analyses that allow for both time-invariant and -varying covariates. 
+
+R> data("apparelDynCov") R> head(apparelDynCov, n = 3) 
+
+Id Cov.Date High.Season Gender Channel <char> <Date> <num> <num> <num> 1: 1 2005-01-02 0 0 02: 1 2005-01-09 0 0 03: 1 2005-01-16 0 0 0
+
+In a next step, we need to add the covariate data to the transaction data object. Thereby, two commands are available: SetStaticCovariates() and SetDynamicCovariates() . Both commands are mutually exclusive. The arguments data.cov.life and data.cov.trans are Journal of Statistical Software 37 the data.frame or data.table that contain the covariate data for the attrition and the transaction process, respectively. If a covariate can affect both processes it has to be added in both arguments: data.cov.life and data.cov.trans . Categorical data ( factor and 
+
+character ) is turned into k-1 dummy variables. names.cov.life and names.cov.trans 
+
+specify the columns in the given covariate data that should be added to the purchasing data. 
+
+R> clv.static <- SetStaticCovariates( + clv.data = clv.apparel, + data.cov.life = apparelStaticCov, + data.cov.trans = apparelStaticCov, + names.cov.life = c("Gender", "Channel"), + names.cov.trans = c("Gender", "Channel"), + name.id = "Id" + ) 
+
+For the second example, we have mixed types of covariates and use the following command: 
+
+R> clv.mixed <- SetDynamicCovariates( + clv.data = clv.apparel, + data.cov.life = apparelDynCov, + data.cov.trans = apparelDynCov, + names.cov.life = c("High.Season", "Gender", "Channel"), + names.cov.trans = c("High.Season", "Gender", "Channel"), + name.id = "Id", + name.date = "Cov.Date" + ) 
+
+Once the covariates are added to the transaction data object, the estimation process is almost identical to the one for a model without covariates. The same latentAttrition() interface is used again and a specific model implementation is selected based on the data passed in. For example, for the Pareto/NBD model, an optimized implementation is available depending on (a) whether or not the data includes covariates and (b) whether these covariates are time-invariant or time-varying. If a model is estimated with time-invariant or -varying covariates, the parameter formula 
+
+must be given. The formula interface is used to select and transform the covariates stored in the data object before the model is estimated on it. It has to be a two-part formula without a dependent variable. The left-hand side of the formula has to remain empty as there is no dependent variable in the classical sense (see Section 3 for details). All required model inputs except the covariates are entirely predefined and are derived from the transaction data (i.e. 
+
+(xi, t xi , T i)). The right-hand side follows a two-part notation using | as a separator. The first part specifies which covariates to include for the attrition process while the second part specifies which covariates to include for the purchase process . This allows each process to further transform the data or to add interactions. Further, start values for optimization can be defined for the covariate parameters using the arguments start.params.life and start.params.trans . If not given, the start values are set to 0.1 for all covariates. 38 CLVTools : Estimating Individual Customer Lifetime Values with R
+
+We first show how the Pareto/NBD model with extension for time-invariant covariates is estimated. In addition to the model family, the parameter formula now has to be given to specify which of the covariates available in the data object should be used. The usual formula notation applies: Covariates can be specified by name or, if the aim is to include all covariates available for the respective process, by the placeholder . . In the following, we select all of the available covariates for both processes by explicitly naming them. To inspect the estimated model, we use summary() .
+
+R> est.pnbd.static <- latentAttrition( + formula = ~ Gender + Channel | Gender + Channel, + family = pnbd, + data = clv.static + ) R> summary(est.pnbd.static) 
+
+Pareto/NBD with Static Covariates Model Call: latentAttrition(formula = ~ Gender + Channel | Gender + Channel, family = pnbd, data = clv.static) Fitting period: Estimation start 2005-01-02 Estimation end 2006-12-31 Estimation length 104.0000 Weeks Coefficients: Estimate Std. Error z-val Pr(>|z|) r 1.8378 0.3455 NA NA alpha 92.9123 16.9670 NA NA s 0.5920 0.2609 NA NA beta 49.6227 36.2509 NA NA life.Gender -0.6430 0.2955 -2.176 0.02957 * life.Channel 0.7907 0.3059 2.585 0.00973 ** trans.Gender 0.2859 0.1041 2.745 0.00605 ** trans.Channel 0.6241 0.1050 5.946 2.74e-09 *** ---Signif. codes: 0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 Optimization info: LL -5821.0627 AIC 11658.1254 BIC 11693.3009 KKT 1 TRUE KKT 2 TRUE fevals 41.0000 Method L-BFGS-B Journal of Statistical Software 39 
+
+Used Options: Correlation FALSE Regularization FALSE Constraint covs FALSE 
+
+The covariate parameters are directly interpretable as rate elasticities: a 1% change in a covariate xP or xA changes the average purchase or the attrition rate by γpurch xP or γlif e xA
+
+percent, respectively (Gupta 1991). When dummy variables are used as covariates, the interpretation is relative to the baseline, i.e., the state defined as 0. In the case of the apparel retailer, we observe that female customers have a significantly higher purchase rate (trans.Gender = 0.2859 ) which, all other things equal, results in more purchases on average. Note that female customers are coded as 1, and male customers as 0. Also, customers acquired offline, coded as 1, purchase more ( trans.Channel = 0.6241 ) but drop out more quickly (life.Channel = 0.7907 ) than customers who have been acquired online. Note that the four Pareto/NBD base parameters ( r, α, s, β ) are not reported with any z-and p-values. As these parameters are constrained to be strictly positive, the model definition fixes their lower bound at 0. Thus, a null hypothesis of θ = 0 lies outside the admissible parameter space. Reporting “ NA ” for the corresponding z- and p-values therefore forestalls the boundary-parameter inference problem and spares users the misleading suggestion that a base parameter judged “insignificant” should be set to zero. To estimate the Pareto/NBD model with time-varying and time-invariant covariates, model estimation is analogous. What differs is only the transaction object passed in and the parameter 
+
+formula which has to be adapted to include the additional covariates. Note that the model estimation with time-varying covariates is computationally much more demanding than the previously detailed alternatives. It is recommended to keep an eye on the progress of model optimization. If necessary, the calculation of the Hessian matrix can be skipped to decrease runtime. The variance-covariance matrix is then not available, including statistics based on it such as standard deviation and p-values. To do so, a user can specify optimx.args :
+
+R> est.pnbd.mixed <- latentAttrition( + formula = + ~ Gender + Channel + High.Season | Gender + Channel + High.Season, + family = pnbd, + data = clv.mixed, + # Print progress and disable calculation of the Hessian matrix. + # The latter requires to also disable calculating KKT. + optimx.args = list(hessian=FALSE, control = list(trace = 1, kkt=FALSE)) + ) 
+
+If the Hessian matrix is needed at a later point, it can be obtained using the method hessian() .By adding it to the fitted model object, all functionalities that rely on it become available, such as standard errors. See the vignette with advanced techniques for illustrations. Note that in contrast to a Pareto/NBD model that does not include any covariates or only time-invariant covariates, the default optimizing routine changes. For a Pareto/NBD model with time-varying covariates, we use as a default the robust but often slower Nelder-Mead 40 CLVTools : Estimating Individual Customer Lifetime Values with R
+
+method (Nelder and Mead 1965). Users can always override this default and choose an alternative optimizing routine such as L-BFGS-B (Byrd, Lu, Nocedal, and Zhu 1995). To predict future purchase behavior, we call predict() on the estimated model. For the case of time-varying covariates, covariates must be provided for the entire prediction period. The covariates stored in the transaction data object, on which the model was estimated, may not cover the desired prediction period. In this case, a new order data object with long enough covariate data can be created and supplied as argument newdata (see Section 5.4.2). Note that the predicted metrics slightly differ for models with time-varying covariates. Instead of DERT, DECT is predicted which only covers a finite time horizon in contrast to DERT (see Bachmann et al. (2021) for details). To decide on a model configuration, diagnostic plots from multiple models can be visualized in a single plot to facilitate comparison. Here, we contrast the performance of the three previously discussed models: (1) the base model without any covariates ( est.pnbd ), (2) the model with time-invariant covariates ( est.pnbd.static ), and (3) the model with both time-invariant and time-varying covariates ( est.pnbd.mixed ). Here, we focus on the tracking plot as an example. To start with, we learn from the non-cumulative plot ( cumulative=FALSE ) that the model with time-varying covariates indeed fits the seasonal spikes much better than the alternative models that do not account for such patterns. From the cumulative tracking plot ( cumulative=TRUE ), we learn that the model with time-invariant and time-varying covariates also seems to have the best aggregate predictions. While the former plot helps to visually inspect efforts in capturing the seasonal patterns, the latter plot is often more intuitive for assessing the models’ relative performance. Note that for both tracking plot types, an assessment is possible for in-sample and out-of-sample observations. The non-cumulative and cumulative plots for our case study are shown in Figure 12. 
+
+R> plot.12.labels <- c( + "No Covariates", + "Time-invariant cov.", + "Time-invariant & -varying cov." + ) R> plot.12a <- plot( + est.pnbd, + which = "tracking", + cumulative = FALSE, + other.models = list(est.pnbd.static, est.pnbd.mixed), + label = plot.12.labels + ) R> plot.12b <- plot( + est.pnbd, + which = "tracking", + cumulative = TRUE, + other.models = list(est.pnbd.static, est.pnbd.mixed), + label = plot.12.labels + ) R> ggarrange(plot.12a, plot.12b, labels = c("A", "B"), ncol = 1, nrow = 2) Journal of Statistical Software 41 010 20 30 
+
+> Number of Repeat Transactions
+> 01000 2000
+> Number of Repeat Transactions
+> Estimation end: 2006−12−31
+
+Weekly tracking plot 
+
+> Estimation end: 2006−12−31
+
+Weekly tracking plot (cumulative)             
+
+> 2006 2008 2010
+> Date
+> Legend Actual No Covariates Time−invariant cov. Time−invariant & −varying cov.
+> 2006 2008 2010
+> Date
+> Legend Actual No covariates Time−invariant cov. Time−invariant & −varying cov.
+
+A
+
+B
+
+Figure 12: Tracking plot for the apparel dataset - model comparison (A: n.-cumul.; B: cumul.) Out-of-sample performance can also be measured with widely known metrics. Thereby, we rely on the actual values for the holdout period. For convenience, these are also included in the output from predict . Note that in this case, prediction.end defaults to the end of the holdout period. 
+
+R> data.frame( + pnbd.std = t( + predict(est.pnbd)[,list( + MAE = mae(CET, actual.x), + RMSE = rmse(CET, actual.x))]), + pnbd.static = t(predict(est.pnbd.static)[, list( + MAE = mae(CET, actual.x), + RMSE = rmse(CET, actual.x))]), + pnbd.mixed = t(predict(est.pnbd.mixed)[, list( + MAE = mae(CET, actual.x), + RMSE = rmse(CET, actual.x))]) + ) 
+
+pnbd.std pnbd.static pnbd.mixed MAE 2.039532 2.006879 1.857776 RMSE 3.329395 3.276752 3.253590 42 CLVTools : Estimating Individual Customer Lifetime Values with R
+
+For further model assessment, it is possible to look at the AIC and BIC values reported by the 
+
+summary() command or alternatively, the generics AIC() and BIC() . For our application case, the results support the previous findings. They indicate that the model including time-invariant and time-varying covariates approximates the underlying data-generating process best. 
+
+Making final predictions without holdout period (with time-varying covariates) 
+
+In section 5.3, we discussed how to derive the final predictions after the model was estimated on the all available transaction data without a holdout period. The motivation for this step is to use all available data to derive the customer-level predictions that are used in production. However, this task of making predictions beyond the last recorded purchase is more complex when time-varying covariates are included in a model. The reason is that the future state of all time-varying covariates has to be provided by the user for the entire prediction period. This is also the reason as to why only a few time-varying covariates are generally available for predictive modeling of time series: In most cases, the state of time-varying variables is not known in the future. An exception is seasonality patterns that depend on known dates such as school holidays or Black Friday. For our case study, we illustrate how to make predictions based on the model configuration that was found to be best suited during model benchmarking. Thereby, we re-define the input data without the holdout period and then re-estimate the latent attrition and spending model. 
+
+R> clv.apparel.full <- clvdata( + data.transactions = apparelTrans, + date.format = "ymd", + time.unit = "week", + estimation.split = NULL, # no holdout period + name.id = "Id", + name.date = "Date", + name.price = "Price" + ) R> clv.apparel.mixed.full <- SetDynamicCovariates( + clv.data = clv.apparel.full, + data.cov.life = apparelDynCov, + data.cov.trans = apparelDynCov, + names.cov.life = c("High.Season", "Gender", "Channel"), + names.cov.trans = c("High.Season", "Gender", "Channel"), + name.id = "Id", + name.date = "Cov.Date" + ) R> est.pnbd.mixed.full <- latentAttrition( + formula = + ~ Gender + Channel + High.Season | Gender + Channel + High.Season, + family = pnbd, + data = clv.apparel.mixed.full, + optimx.args = list(hessian=FALSE, control = list(trace = 1, kkt=FALSE)) + ) R> est.gg.full <- spending(family = gg, data = clv.apparel.mixed.full) Journal of Statistical Software 43 Next, we derive the final predictions. However, the information on the time-varying covariates, which was stored in clv.apparel.mixed.full and used to estimate the model, covers only the time during which purchases were recorded. To predict beyond this time point, we have to provide covariate information which reaches into the future, i.e., covers the prediction period. For our case study, we have prepared this data accordingly. It covers nearly two years beyond the last purchase. We load this information by executing data(apparelDynCovFuture) ,: 
+
+R> data("apparelDynCovFuture") R> cat("Range of covariates for estimation: \n", + format(range(apparelDynCov$Cov.Date)), "\n") R> cat("Range of covariates for prediction: \n", + format(range(apparelDynCovFuture$Cov.Date)), "\n") 
+
+Range of covariates for estimation 2005-01-02 2010-12-26 Range of covariates for prediction" 2011-01-02 2012-10-14 
+
+In data(apparelDynCovFuture) , we have extended the covariate data with the known future values of the time-varying and time-invariant covariates in the prediction period. To use this information about the future states of the covariates to make predictions, we have to combine it with the covariate information for the estimation period, i.e., data(apparelDynCov) . The reason for this is that some model expressions are derived from the covariate information of the estimation period. Next, these covariate data are added to the transaction data object. It should be highlighted that there is no need to re-estimate the model at this point. Instead, we can execute the predict() method on the already estimated model and pass the transaction data object with extended covariates as parameter newdata .
+
+R> apparelDynCovPastAndFuture <- rbind(apparelDynCov, apparelDynCovFuture) R> clv.apparel.mixed.PastAndFuture <- SetDynamicCovariates( + clv.data = clv.apparel.full, + data.cov.life = apparelDynCovPastAndFuture, + data.cov.trans = apparelDynCovPastAndFuture, + names.cov.life = c("High.Season", "Gender", "Channel"), + names.cov.trans = c("High.Season", "Gender", "Channel"), + name.id = "Id", + name.date = "Cov.Date" + ) R> dt.pred.mixed.future <- predict( + est.pnbd.mixed.full, + newdata=clv.apparel.mixed.PastAndFuture, + predict.spending = est.gg.full, + prediction.end = 95, + continuous.discount.factor = log(1 + 0.075) / 52 + ) R> head(dt.pred.mixed.future, 3) 44 CLVTools : Estimating Individual Customer Lifetime Values with R
+
+Key: <Id> Id period.first period.last period.length PAlive <char> <Date> <Date> <int> <num> 1: 1 2010-12-21 2012-10-15 95 0.0139206 2: 10 2010-12-21 2012-10-15 95 0.8108995 3: 100 2010-12-21 2012-10-15 95 0.9103230 CET DECT predicted.mean.spending <num> <num> <num> 1: 0.0253848 0.02379146 77.79363 2: 1.5938786 1.49351918 36.04491 3: 4.0419238 3.78742184 37.23417 predicted.period.spending predicted.period.CLV <num> <num> 1: 1.974776 1.850824 2: 57.451205 53.833759 3: 150.497668 141.021501 
+
+An extension to include time-invariant and time-varying covariates in the GG model – following the approach proposed by Bachmann et al. (2022a,b) – will be added in the future to CLVTools .
+
+5.5. Advanced modeling techniques 
+
+Going beyond conducting a basic customer base analysis with or without covariates, various advanced modeling options are provided in CLVTools . These include the ability (1) to add regularization for covariate parameters, (2) to account for the correlation between the transaction and dropout process, and (3) to set equality constraints on covariate parameters. An additional use case for advanced modeling techniques is to control for endogenous covariates. The covariate parameter estimates for the covariates can give some insight into what drives customers’ purchase behavior. If the exogeneity assumption of the covariates is violated, various techniques can be used to control for this. Thereby, the models that support covariates in CLVTools can be used together with other packages that implement related two-step modeling techniques. A first option is to use instrumental variables. If these are not available, internal instrumental variable approaches can serve as an alternative (Gui, Meierer, Schilter, and Algesheimer 2023). For a case study detailing various approaches to controlling the endogeneity of marketing campaigns, see Bachmann et al. (2021). In our case study, all covariates are assumed to be exogenous. For further advanced techniques, see Meierer, Schilter, Näf, and Bachmann (2025a). 
+
+Regularization of covariate parameters 
+
+When a large number of covariates are included in the analysis, regularization can help prevent overfitting. To this end, it is possible to apply a normal prior on the covariate parameters (L2 regularization). This requires specifying a regularization weight per process. The value of the regularization weight is the same for all covariate parameters of a process. The larger this regularization weight, the stronger the effect of the regularization. To find the optimal value, Journal of Statistical Software 45 any hyperparameter optimization procedure can be applied. To regularize covariate parameters, the regularization weights for both processes have to be defined in the parameter reg.lambdas in latentAttrition() . For example, by specifying 
+
+reg.lambdas = c(trans = 0.1, life = 0.1) , a user sets the regularization weight to 0.1 for both processes. The use of regularization is indicated at the end of the output of summary() .Given the limited number of covariates in our case study, adding regularization of their parameter estimates is not necessary. 
+
+Adding a correlation between the transaction and dropout process 
+
+To relax the assumption of independence between the transaction and the attrition process, specify the argument use.cor in the latentAttrition() command. This is independent of whether the model includes covariates or not. With regards to the latter, this is an extension of the model presented in Bachmann et al. (2021). In the case of use.cor=TRUE , a Sarmanov approach is used to correlate the attrition and transaction process (see section 3.4 for details). The argument start.param.cor allows us to optionally specify a starting value for the correlation parameter. The model output will then list an additional parameter Cor(life,trans) , which corresponds to pm in (19) and can be directly interpreted as a correlation: 
+
+• If the correlation is zero, it indicates that there is no relationship between customers’ transaction and attrition rate. 
+
+• If the correlation is positive and significant, customers with a higher (lower) transaction rate are more (less) likely to churn. The underlying mechanism is as follows: a higher transaction rate λ is associated with a higher attrition rate μ, i.e., a reduction in the customer’s lifetime. 
+
+• If the correlation is negative and significant, customers with a higher (lower) transaction rate are less (more) likely to churn. The impact of adding a correlation parameter depends on the dataset. In many applications that focus on prediction rather than on an in-depth understanding of customers’ purchase behavior, the modeling of the additional parameter is neglected. A key reason for this is the increase in computational complexity compared to the often only marginal change in predictive accuracy. While this is a common decision among practitioners, it depends on the data at hand and the modeling objective. For this case study, adding this correlation does indeed have a limited impact on predictive accuracy. This applies to all previously tested models. Therefore, we proceed without considering this correlation. 
+
+Including equality constraints for covariate parameters 
+
+If more complex hypothesis testing is required, users can leverage parameter constraints to compare effect sizes between the attrition and transaction process. All latent attrition models that can account for time-invariant and -varying covariates support equality constraints for the respective covariate parameters. For example, it is possible to test whether the parameter 46 CLVTools : Estimating Individual Customer Lifetime Values with R
+
+value of the covariate gender is the same for both processes. This facilitates testing of novel hypotheses and thus, helps to increase the understanding how covariates impact each process. For our case study data, we add such a constraint ( constr.Gender ): 
+
+R> est.pnbd.mixed.constr <- latentAttrition( + formula = ~ . | ., + names.cov.constr = "Gender", + family=pnbd, + data = clv.apparel.mixed.full, + optimx.args = list(control = list(trace = 1)) + ) R> summary(est.pnbd.mixed.constr) 
+
+Pareto/NBD with Dynamic Covariates Model Call: latentAttrition(formula = ~. | ., family = pnbd, data = clv.apparel.mixed.full, optimx.args = list( control = list(trace = 1)), names.cov.constr = "Gender") Fitting period: Estimation start 2005-01-02 Estimation end 2010-12-20 Estimation length 311.1429 Weeks Coefficients: Estimate Std. Error z-val Pr(>|z|) r 1.68794 0.21789 NA NA alpha 93.02150 13.82645 NA NA s 0.50273 0.07909 NA NA beta 55.14172 16.48224 NA NA life.High.Season 0.54747 0.55919 0.979 0.327560 life.Channel 0.69076 0.22692 3.044 0.002334 ** trans.High.Season 0.68975 0.04083 16.894 < 2e-16 *** trans.Channel 0.57020 0.09444 6.038 1.56e-09 *** constr.Gender 0.14102 0.09248 1.525 0.127273 ---Signif. codes: 0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 Optimization info: LL -11775.9091 AIC 23569.8182 BIC 23609.3906 KKT 1 TRUE KKT 2 TRUE fevals 1826.0000 Method Nelder-Mead Journal of Statistical Software 47 
+
+Used Options: Correlation FALSE Regularization FALSE Constraint covs TRUE Constraint params Gender 
+
+Here, an additional model is estimated that forces the covariate gender to have the same param-eter value for the transaction and attrition process. We use the argument names.cov.constr 
+
+to specify this variable. In consequence, the model output only contains a single parameter value for gender . The use of parameter constraints is indicated in the summary() output. A likelihood ratio test helps to evaluate if adding an equality constraint changes the model fit. 
+
+R> lrtest( + est.pnbd.mixed.constr, + est.pnbd.mixed.full, + name = c("Constrained Model", "Unconstrained Model") + ) 
+
+Likelihood ratio test Model 1: Constrained Model Model 2: Unconstrained Model #Df LogLik Df Chisq Pr(>Chisq) 1 9 -11776 2 10 -11763 1 26.072 3.289e-07 *** ---Signif. codes: 0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+
+By comparing the likelihood values of the unconstrained and the constrained model, the test results indicate whether the parameter of a covariate significantly differs between the attrition and transaction process. In our case study, the results show a significant difference for gender . Thus, we conclude that the parameter of the constrained variable for the attrition and transaction process is statistically significantly different. In other words, the model fit has worsened significantly by adding an equality constraint for the parameter value of gender . If exogenous information on marketing interventions is available, such an analysis can be helpful to disentangle the way that a marketing intervention impacts customers’ purchase behavior. 
+
+6. Conclusion 
+
+With CLVTools , we provide a comprehensive implementation framework for probabilistic models to predict the future purchase behavior of individual customers. The package features a standardized workflow independent of the specific model. CLVTools is based on a flexible class-based framework enabling the accommodation of various model variations. Additionally, the package is the first to provide options for advanced modeling techniques such as including time-invariant and time-varying covariates, correlation between the lifetime and transaction processes, regularization, and equality constraints. 48 CLVTools : Estimating Individual Customer Lifetime Values with R
+
+References 
+
+Abe M (2009). “’Counting Your Customers’ One by One: A Hierarchical Bayes Extension to the Pareto/NBD Model.” Marketing Science , 28 (3), 541–553. Abramowitz M, Stegun IA (1972). Handbook of Mathematical Functions with Formulas, Graphs, and Mathematical Tables . Dover Publications, New York. Ascarza E, Fader PS, Hardie BGS (2017). Marketing Models for the Customer-Centric Firm ,pp. 297–329. Springer, New York. Bachmann P, Meierer M, Näf J (2021). “The Role of Time-Varying Contextual Factors in Latent Attrition Models for Customer Base Analysis.” Marketing Science , 40 (4), 783–809. Bachmann P, Meierer M, Näf J (2022a). “Not on Every Day Your Average Joe: Extending Probabilistic Modeling of Customers’ Spending Behavior.” Working Paper. Bachmann P, Meierer M, Näf J (2022b). “Not on Every Day Your Average Joe: Extending Probabilistic Modeling of Customers’ Spending Behavior.” In Theory + Practice in Marketing (TPM) Conference . Atlanta, GA. Bates D, Maechler M, Jagan M (2023). Matrix: Sparse and Dense Matrix Classes and Methods .R package version 1.5-3, URL https://CRAN.R-project.org/package=Matrix .Bemmaor AC, Glady N (2012). “Modeling Purchasing Behavior with Sudden ’Death’: A Flexible Customer Lifetime Model.” Management Science , 58 (5), 1012–1021. Blattberg RC, Malthouse EC, Neslin SA (2009). “Customer Lifetime Value: Empirical Generalizations and Some Conceptual Questions.” Journal of Interactive Marketing , 23 (2), 157–168. Borle S, Singh SS, Jain DC (2008). “Customer Lifetime Value Measurement.” Management Science , 54 (1), 100–112. Byrd RH, Lu P, Nocedal J, Zhu C (1995). “A Limited Memory Algorithm for Bound Constrained Optimization.” SIAM Journal on Scientific Computing , 16 (5), 1190–1208. Colombo R, Jiang W (1999). “A Stochastic RFM Model.” Journal of Interactive Marketing ,
+
+13 (3), 2–12. Davidson-Pilon C (2020). Lifetimes: Measuring Users is Hard. Lifetimes Makes it Easy. 
+
+Python package version 0.11.3, URL https://pypi.org/project/Lifetimes/ .Dowle M, Srinivasan A (2023). data.table: Extension of ‘data.frame‘ . R package version 1.14.8, URL https://CRAN.R-project.org/package=data.table .Dziurzynski L, Wadsworth E, McCarthy D (2021). BTYD: Implementing Buy ’Til You Die Models . R package version 2.4.3, URL https://CRAN.R-project.org/package=BTYD .Eddelbuettel D (2013). Seamless R and C++ Integration with Rcpp . Springer, New York. Journal of Statistical Software 49 Eddelbuettel D, Sanderson C (2014). “RcppArmadillo: Accelerating R with High-performance C++ Linear Algebra.” Computational Statistics and Data Analysis , 71 , 1054–1063. URL 
+
+http://dx.doi.org/10.1016/j.csda.2013.02.005 .Edelbuettel D, Francois R (2023). RcppGSL: ’Rcpp’ Integration for ’GNU GSL’ Vectors and Matrices . R package version 0.3.13, URL https://CRAN.R-project.org/package= RcppGSL .Fader P, Hardie B, Lee KL (2006). “CLV: More Than Meets the Eye.” Marketing Research ,
+
+18 (2), 8–15. Fader P, Hardie BG, Ross M (2022). The Customer-Base Audit: The First Step on the Journey to Customer Centricity . University of Pennsylvania Press, Philadelphia. Fader PS, Hardie BG (2007). “Incorporating Time-invariant Covariates into the Pare-to/NBD and BG/NBD Models.” URL http://www.brucehardie.com/notes/019/time_ invariant_covariates.pdf .Fader PS, Hardie BG (2009). “Probability Models for Customer-Base Analysis.” Journal of Interactive Marketing , 23 (1), 61–69. Fader PS, Hardie BG, Lee K (2005a). “’Counting Your Customers’ the Easy Way: An Alternative to the Pareto/NBD Model.” Marketing Science , 24 (2), 275–284. Fader PS, Hardie BG, Lee K (2005b). “RFM and CLV: Using Iso-Value Curves for Customer Base Analysis.” Journal of Marketing Research , 42 (4), 415–430. Fader PS, Hardie BGS (2005). “A Note on Deriving the Pareto/NBD Model and Related Ex-pressions.” URL http://www.brucehardie.com/notes/009/pareto_nbd_derivations_ 2005-11-05.pdf .Fader PS, Hardie BGS (2024). “Incorporating Covariates in the Gamma-Gamma Spend Model.” URL https://www.brucehardie.com/notes/045/gamma_gamma_with_covars.pdf .Fader PS, Hardie BGS, Sen S (2014). “Stochastic Models of Buyer Behavior.” In RS Winer, SA Neslin (eds.), The History of Marketing Science , pp. 165–205. WS Publishing, Singapore. Glady N, Lemmens A, Croux C (2015). “Unveiling the Relationship Between the Transaction Timing, Spending and Dropout Behavior of Customers.” International Journal of Research in Marketing , 32 (1), 78–93. Grolemund G, Wickham H (2011). “Dates and Times Made Easy with lubridate.” Journal of Statistical Software , 40 (3), 1–25. URL http://www.jstatsoft.org/v40/i03/ .Gui R, Meierer M, Schilter P, Algesheimer R (2023). “REndo: internal instrumental variables to address endogeneity.” Journal of Statistical Software , 107 , 1–43. Gummesson E (1987). “The New Marketing - Developing Long-term Interactive Relationships.” 
+
+Long Range Planning , 20 (4), 10–20. Gupta S (1991). “Stochastic Models of Interpurchase Time with Time-Dependent Covariates.” 
+
+Journal of Marketing Research , 28 (1), 1–15. 50 CLVTools : Estimating Individual Customer Lifetime Values with R
+
+Gupta S, Hanssens DM, Hardie BGS, Kahn W, Kumar V, Lin N, Ravishanker N, Sriram S (2006). “Modeling Customer Lifetime Value.” Journal of Service Research , 9(2), 139–155. Hoppe D, Wagner U (2010). “Small Sample Properties of the Pareto/Negative Binomial Distribution Model.” Marketing: Journal of Research and Management , 32 , 39–50. Jaworski B, Sauer WJ (1985). “Cohort Variation.” In EC Hirschman, MB Holbrook (eds.), 
+
+Advances in Consumer Research , pp. 32–36. Association for Consumer Research, Berkeley. Jerath K, Fader PS, Hardie BGS (2011). “New Perspectives on Customer ’Death’ Using a Generalization of the Pareto/NBD Model.” Marketing Science , 30 (5), 866–880. Kuhn HW, Tucker AW (1951). “Nonlinear Programming.” In J Neyman (ed.), Second Berkeley Symposium on Mathematical Statistics and Probability , pp. 481–492. UC Press, Berkeley. Kumar V (2018). “A Theory of Customer Valuation: Concepts, Metrics, Strategy, and Implementation.” Journal of Marketing , 82 (1), 1–19. Magee JF (1953). “The Effect of Promotional Effort on Sales.” Journal of the Operations Research Society of America , 1(2), 64–74. McCarthy D, Fader P (2018). “Customer-Based Corporate Valuation for Publicly Traded Non-Contractual Firms.” Journal of Marketing Research , 55 (5), 617–635. Meierer M, Schilter P, Näf J, Bachmann P (2025a). “Advanced and Very Advanced Modeling Techniques in CLVTools.” URL https://cran.r-project.org/web/packages/CLVTools/ vignettes/CLVTools_advanced_techniques.pdf .Meierer M, Schilter P, Näf J, Bachmann P (2025b). “Probabilistic Models for Analyzing Cus-tomer Purchase Behavior: A Primer.” URL https://cran.r-project.org/web/packages/ CLVTools/vignettes/CLVTools_intuitive_explanations.pdf .Nash JC (2014). “On Best Practice Optimization Methods in R.” Journal of Statistical Software , 60 (2), 1–14. URL http://www.jstatsoft.org/v60/i02/ .Nash JC, Varadhan R (2011). “Unifying Optimization Algorithms to Aid Software System Users: optimx for R.” Journal of Statistical Software , 43 (9), 1–14. URL http://www. jstatsoft.org/v43/i09/ .Nelder JA, Mead R (1965). “A Simplex Method for Function Minimization.” The Computer Journal , 7(4), 308–313. Park YH, Fader PS (2004). “Modeling Browsing Behavior at Multiple Websites.” Marketing Science , 23 (3), 280–303. Platzer M (2021). BTYDplus: Probabilistic Models for Assessing and Predicting your Customer Base . R package version 1.2.0, URL https://CRAN.R-project.org/package=BTYDplus .Platzer M, Reutterer T (2016). “Ticking Away the Moments: Timing Regularity Helps to Better Predict Customer Activity.” Marketing Science , 35 (5), 779–799. PyMC Labs (2024). PyMC-Marketing: Bayesian Marketing Mix Modeling & Customer Lifetime Value . Python package version 0.10, URL https://pypi.org/project/pymc-marketing/ .Journal of Statistical Software 51 R Core Team (2024). R: A Language and Environment for Statistical Computing . R Foundation for Statistical Computing, Vienna, Austria. URL https://www.R-project.org/ .Reinartz WJ, Kumar V (2000). “On the Profitability of Long-Life Customers in a Noncon-tractual Setting: An Empirical Investigation and Implications for Marketing.” Journal of Marketing , 64 (4), 17–35. Reinartz WJ, Kumar V (2003). “The Impact of Customer Relationship Characteristics on Profitable Lifetime Duration.” Journal of Marketing , 67 (1), 77–99. Rosset S, Neumann E, Eick U, Vatnik N (2003). “Customer Lifetime Value Models for Decision Support.” Data Mining and Knowledge Discovery , 7, 321–339. Schilter P, Meierer M, Näf J, Bachmann P (2025). “Classes in CLVTools.” URL https: //cran.r-project.org/web/packages/CLVTools/vignettes/CLVTools_classes.pdf .Schmittlein DC, Morrison DG, Colombo R (1987). “Counting Your Customers: Who-Are They and What Will They Do Next?” Management Science , 33 (1), 1–24. Schmittlein DC, Peterson RA (1994). “Customer Base Analysis: An Industrial Purchase Process Application.” Marketing Science , 13 (1), 41–67. Schwartz EM, Bradlow ET, Fader PS (2014). “Model Selection Using Database Characteristics: Developing a Classification Tree for Longitudinal Incidence Data.” Marketing Science , 33 (2), 188–205. Simon L, Adler J (2022). “Worth the Effort? Comparison of Different MCMC Algorithms for Estimating the Pareto/NBD Model.” Journal of Business Economics , 92 (4), 707–733. Stephen D (2019). “Proving The Financial Contribution Of AI In Marketing Applica-tions.” Forbes.com/sites/forbesinsights/2019/11/20/proving-the-financial-contribution-of-ai-in-marketing-applications. Venables WN, Ripley BD (2002). Modern Applied Statistics with S . Springer, New York. Wickham H (2016). ggplot2: Elegant Graphics for Data Analysis . Springer, New York. 52 CLVTools : Estimating Individual Customer Lifetime Values with R
+
+A. Marginalized Likelihood of the Pareto/NBD model 
+
+L(r, α, s, β |x, t x, T )=
+
+∫ ∞
+
+0
+
+∫ ∞
+
+0
+
+( λxμλ + μ e−(λ+μ)tx + λx+1 μλ + μ e−(λ+μ)T
+
+)
+
+g(λ|r, α )g(μ)= Γ( r + x)αrβs
+
+Γ( r)
+
+( sr + s + x A1 + r + xr + s + x A2
+
+)
+
+, (27) with 
+
+A1 =
+
+
+
+> 2
+
+F1(r+s+x,s +1 ,r +s+x+1; α−βα+tx )(α+tx)r+s+x if α ≥ β
+
+> 2
+
+F1(r+s+x,r +x,r +s+x+1; β−αβ+tx )(β+tx)r+s+x if α < β 
+
+and 
+
+A2 =
+
+
+
+> 2
+
+F1(r+s+x,s,r +s+x+1; α−βα+T )(α+T )r+s+x if α ≥ β
+
+> 2
+
+F1(r+s+x,r +x+1 ,r +s+x+1; β−αβ+T )(β+T )r+s+x if α < β .
+
+The symbol 2F1(a, b, c, z ) refers to the integral representation of the Gaussian hypergeometric function (see e.g. Abramowitz and Stegun 1972). Journal of Statistical Software 53 
+
+B. Comparison of Model Run Times 
+
+As discussed in Section 4, we compare the run times of three variants of the Pareto/NBD model under varying sample sizes and estimation period lengths (in months). The results, showing average runtime in minutes, are summarized in Table 5. All models are estimated based on simulated data. We used the following base parameters for the Pareto/NBD model for this: r = 1, α = 0.5 , s = 1, β = 0.5 . Each scenario has been tested 3 times and the median run time (in minutes) is reported. We look at 3 model variations which differ in their estimation period and sample size: (1) a model without any covariate (2) a model with a single, dummy-coded time-invariant covariate, and (3) a model with a single, dummy-coded time-varying covariate. The latter two models illustrate the use of variables such as gender or seasonality indicators. In all cases, we use the optimization method L-BFGS-B (Byrd et al. 
+
+1995). All simulations were performed without calculating the Hessian. These analyses were run on a consumer-grade computer (AMD Ryzen 9 9950X 16-Core Processor). All algorithms were using a single core to ensure a high degree of comparability. Table 5: Run time comparison for the Pareto/NBD Model for various scenarios                                                  
+
+> Sample Size (Customers) Estimation Period (Weeks) Models No Covariate Time-Invariant Covariate Time-Varying Covariate
+> 1,000 26 0.19 sec 0.28 sec 6.28 sec 1,000 52 0.19 sec 0.26 sec 2.15 sec 1,000 104 0.20 sec 0.26 sec 10.68 sec 10,000 26 0.27 sec 0.55 sec 8.18 sec 10,000 52 0.32 sec 0.57 sec 21.37 sec 10,000 104 0.37 sec 0.72 sec 58.42 sec 100,000 26 0.43 sec 1.02 sec 1 min 30 sec 100,000 52 0.62 sec 1.34 sec 3 min 16 sec 100,000 104 1.01 sec 1.49 sec 10 min 39 sec 1,000,000 26 1.23 sec 2.07 sec 12 min 34 sec 1,000,000 52 1.58 sec 3.43 sec 34 min 22 sec 1,000,000 104 2.33 sec 5.60 sec 134 min 40 sec
+
+Using the apparel and CDNOW dataset (Dziurzynski et al. 2021), further analyses show that 
+
+• generally the run time can be reduced by approximately 20-30 % if the calculation of the Hessian is deactivated. This can be helpful in situations where the information of the Hessian is not required as prediction is the primary focus of the analysis at hand, and 
+
+• adding correlation to the Pareto/NBD model with the Sarmanov approach increases the computational time by a factor of approximately 2.5 to 6. Note that these results are only valid for the current implementation of the Pareto/NBD model in CLVTools and the hardware used. Using the optionally available parallelization techniques ,e.g., for the Extended Pareto/NBD model would lead to speedups. 54 CLVTools : Estimating Individual Customer Lifetime Values with R
+
+Affiliation: 
+
+Markus Meierer Geneva School of Economics and Management University of Geneva Boulevard du Pont-d’Arve 40 1211, Geneva, Switzerland E-mail: markus.meierer@unige.ch 
+
+URL: http://www.unige.ch 
+
+Journal of Statistical Software http://www.jstatsoft.org/ 
+
+published by the Foundation for Open Access Statistics http://www.foastat.org/ 
+
+MMMMMM YYYY, Volume VV, Issue II Submitted: yyyy-mm-dd 
+
+doi:10.18637/jss.v000.i00 Accepted: yyyy-mm-dd

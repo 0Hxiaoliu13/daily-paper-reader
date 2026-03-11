@@ -1,0 +1,798 @@
+Title: A Lightweight MPC Bidding Framework for Brand Auction Ads
+
+URL Source: https://arxiv.org/pdf/2603.07721v1
+
+Published Time: Tue, 10 Mar 2026 01:24:32 GMT
+
+Number of Pages: 8
+
+Markdown Content:
+# A Lightweight MPC Bidding Framework for Brand Auction Ads ∗
+
+# Yuanlong Chen †
+
+ychenfd@gmail.com Bytedance Inc. San Jose, Calinfornia, USA 
+
+# Bowen Zhu 
+
+bowen.zhu@bytedance.com Bytedance Inc. San Jose, Calinfornia, USA 
+
+# Bing Xia 
+
+xiabing.07@bytedance.com Bytedance Inc. San Jose, Calinfornia, USA 
+
+# Yichuan Wang 
+
+yichuan.wang@bytedance.com Bytedance Inc. San Jose, Calinfornia, USA 
+
+## Abstract 
+
+Brand advertising plays a critical role in building long-term con-sumer awareness and loyalty, making it a key objective for adver-tisers across digital platforms. Although real-time bidding has been extensively studied, there is limited literature on algorithms specif-ically tailored for brand auction ads that fully leverage their unique characteristics. In this paper, we propose a lightweight Model Pre-dictive Control (MPC) framework designed for brand advertising campaigns, exploiting the inherent attributes of brand ads—such as stable user engagement patterns and fast feedback loops—to simplify modeling and improve efficiency. Our approach utilizes online isotonic regression to construct monotonic bid-to-spend and bid-to-conversion models directly from streaming data, eliminat-ing the need for complex machine learning models. The algorithm operates fully online with low computational overhead, making it highly practical for real-world deployment. Simulation results demonstrate that our approach significantly improves spend effi-ciency and cost control compared to baseline strategies, providing a scalable and easily implementable solution for modern brand advertising platforms. 
+
+## CCS Concepts 
+
+• Information systems → Online advertising; Display adver-tising .
+
+## Keywords 
+
+Brand Advertising, Model Predictive Control, Real-time Bidding, Online Optimization, Optimal Bidding 
+
+## 1 Introduction 
+
+Online advertising has become a cornerstone of modern commerce, enabling businesses to reach targeted audiences efficiently and at scale. Major technology companies such as Google, Meta, and TikTok rely heavily on digital advertising as a primary source of revenue, underscoring its critical role in the global economy. Ad-vertisers engage in online advertising with the goal of achieving various marketing objectives, such as increasing brand awareness and engagement or boosting sales. To efficiently allocate limited advertising opportunities, auc-tion mechanisms—such as second-price auction, first price auction, 
+
+> ∗This preprint is an extended version of a compact paper accepted as a Late-Breaking Result (LBR) at the European Control Conference (ECC) 2026.
+> †Corresponding author
+
+generalized second price auction—are widely employed to sell ad impressions. In modern digital advertising, these auctions are of-ten conducted through a framework known as real-time bidding (RTB). RTB enables ad impressions to be auctioned dynamically as users visit websites or open mobile apps. For example, when a user performs a search on Google, scrolls through Instagram, or watches a video on TikTok, an ad request is triggered and sent to an ad exchange or the platform’s internal bidding system. Multiple advertisers then rapidly evaluate the opportunity and submit bids based on the user’s profile, context, and their campaign objectives. The platform runs an auction to determine the winning bid. The winning bidder earns the right to display their ad, typically paying according to the auction’s pricing rule. Depending on the campaign setup, advertisers may be charged per impression (CPM) or per click (CPC). This entire decision-making process is completed within mil-liseconds to ensure a seamless user experience without noticeable delays. Performance ads and brand ads are the two main types of digi-tal advertising, each playing a crucial yet distinct role in modern marketing strategies. Performance ads focus on driving immediate, measurable outcomes such as clicks, conversions, and sales. They rely heavily on real-time bidding, algorithmic optimization, and precise audience targeting to maximize return on ad spend (ROAS). However, performance ads often suffer from long feedback loops and data sparsity issues, as conversions may occur well after the ad impression and only a small fraction of impressions result in mea-surable actions. These challenges have been further intensified by increasing privacy regulations and restrictions on user-level track-ing, such as GDPR, CCPA, and the phasing out of third-party cook-ies. Such regulations limit data availability and granularity, making it more difficult to accurately attribute conversions and optimize bidding strategies. In contrast, brand ads—including auction-based ads and guaranteed delivery contracts—are primarily designed to build long-term brand awareness, shape consumer perception, and foster loyalty. Although real-time bidding strategies have been extensively stud-ied in the literature, most existing methods focus on performance-driven campaigns and do not specifically address the unique charac-teristics of brand ads. Brand ads—such as video ads and awareness ads—exhibit distinct attributes, including fast feedback loops and abundant engagement data, which differentiate them from perfor-mance ads and open new opportunities for more responsive and data-efficient bidding strategies. However, tailored solutions for optimizing bidding in brand advertising remain largely unexplored. 
+
+> arXiv:2603.07721v1 [cs.GT] 8 Mar 2026 Yuanlong Chen, Bowen Zhu, Bing Xia, Yichuan Wang
+
+In this paper, we propose a lightweight Model Predictive Control (MPC) framework as an effective bidding strategy specifically de-signed for brand auction ads. This framework leverages the rich data availability and rapid feedback in brand campaigns to make informed, adaptive bidding decisions in real time. The rest of the paper is organized as follows. In Section 2, we review existing approaches to real-time bidding, highlighting their limitations in the context of brand advertising. In Section 3, we present our proposed lightweight MPC framework in detail. We begin by formulating the general bidding problem, followed by introducing methods to construct bid-to-𝑋 models—such as bid-to-spend and bid-to-conversions models—using a lightweight isotonic regression algorithm (Pooled Adjacent Violators Algorithm, PAVA). We then demonstrate how these models can be used to design ef-fective bidding strategies for common bidding products, including maximum delivery and cost cap campaigns. In Section 4, we dis-cuss how to evaluate the proposed algorithm through both offline simulations and online budget-split A/B testing experiments. In Section 5, we provide deeper insights into our MPC framework and then highlight the key challenges that arise when applying it to deep-funnel performance ads. Finally, in Section 6, we conclude the paper and outline future research directions. 
+
+## 2 Related Work 
+
+In the early stages of digital advertising, manual bidding was the predominant strategy, where advertisers set fixed bids based on their target objectives. While straightforward, this approach often led to inefficient budget utilization; if the bid or budget was not carefully calibrated, campaigns could either exhaust their budgets prematurely or underdeliver. To mitigate this issue, throttling-based pacing algorithms were introduced to control the rate of ad deliv-ery over time, smoothing budget consumption and avoiding early campaign termination [2, 29] . As the advertising ecosystem evolved, automated bidding strate-gies became dominant. One research direction is to perform op-timization at the individual campaign level by formulating the bidding problem as an online stochastic optimization problem, sub-ject to constraints imposed by advertisers, such as budget limits and cost-per-action (CPA) targets [ 5, 6, 10 , 12 , 14 , 18 – 20 , 24 , 26 ]. The existing literature on real-time bidding extensively studies these problems and proposes various algorithmic solutions, there are several popular approaches in industry: 1. Controller-based approaches, such as Proportional–Integral–Derivative (PID) con-trollers, which dynamically adjust bids to control the spend rate around a target value [ 25 , 30 , 31 ]; 2. Dual-based online optimization methods, such as dual online gradient descent, which iteratively up-date dual variables to enforce budget and performance constraints [6, 7, 19]. Another direction adopts a more centralized perspective by for-mulating the problem as an online resource allocation task to op-timize the overall objectives of the advertising platform [ 1, 3, 13 ,17 , 21 , 23 ]. In such approaches, the bidding strategy for each ad-vertiser naturally emerges as a by-product of the platform-level optimization. For branding ads, most existing work focuses on guaranteed de-livery mechanisms under contractual agreements [ 11 , 15 , 16 , 27 , 28 ], where the primary objective is to fulfill impression guarantees over a specified period. Other studies investigate the memory retention requirements of brand ads to optimize exposure frequency and timing to enhance long-term brand recall [ 22 ]. In this work, we focus on auction-based branding ads and devise a lightweight, prac-tical bidding strategy to address key objectives such as efficient budget pacing and cost-effective delivery in a dynamic auction environment. 
+
+## 3 Lightweight MPC Framework 
+
+We now present the technical details of the lightweight MPC frame-work for brand advertising optimization. Throughout this section, we assume that ad impressions are sold via standard second-price auction mechanisms. We begin by addressing the maximum deliv-ery problem, where the campaign is constrained solely by its budget. This problem is formulated to maximize the campaign’s welfare under the budget constraint, from which we derive the optimal bidding strategy. We then demonstrate how online isotonic regres-sion can be leveraged to model the bid landscape and adaptively adjust bids within the MPC framework. Finally, we illustrate how this framework can be extended to handle more complex scenarios involving multiple constraints, such as cost caps. 
+
+## 3.1 Problem Formulation 
+
+We begin by formalizing the max-delivery problem. Consider a specific brand advertising campaign (e.g., an awareness ad or a video ad) that is charged on a per-impression basis. Let 𝑇 denote the total predicted number of auction opportunities within a day. For the 𝑡 -th auction, let 𝑟 𝑡 represent the welfare utility —for example, 
+
+𝑟 𝑡 = 1 for awareness ads, or 𝑟 𝑡 equals the video play rate (VPR) for video ads. Let 𝑐 𝑡 denote the cost associated with the 𝑡 -th auction; in a second-price auction, this corresponds to the highest competing 
+
+eCPM bid. Define 𝑥 𝑡 ∈ { 0, 1} as a binary decision variable indicating whether the campaign wins the 𝑡 -th auction. The welfare maximization problem under a budget constraint 𝐵 
+
+can then be formulated as the following optimization problem: 
+
+max  
+
+> 𝑥 𝑡 ∈ { 0,1}
+> 𝑇
+
+∑︁  
+
+> 𝑡 =1
+
+𝑥 𝑡 · 𝑟 𝑡 
+
+s.t. 
+
+> 𝑇
+
+∑︁  
+
+> 𝑡 =1
+
+𝑥 𝑡 · 𝑐 𝑡 ≤ 𝐵. 
+
+(1) Under certain regularity conditions (e.g., 𝑐 𝑡 and 𝑟 𝑡 are indepen-dently and identically distributed), it can be shown [ 6 , 19 ] that the optimal bid per impression at 𝑡 is given by 
+
+𝑏 ∗ 
+
+> 𝑡,𝑖𝑚𝑝
+
+= 𝑟 𝑡 
+
+𝜆 ∗ = 𝑏 ∗ · 𝑟 𝑡 , (2) where 𝜆 ∗ is the Lagrangian dual variable associated with the budget constraint in the primal-dual formulation, 𝑏 ∗ = 1/𝜆 ∗ is the optimal bid per conversion(we treat each impression in awareness ads as a “conversion” with rate 1) for this campaign. It can also be shown that this optimal bid level depletes the total budget exactly by the end of the campaign lifetime. This implies that, at a specific timestamp, the target spend rate per auction opportunity can be derived by dividing the remaining budget by the remaining auction opportunities. Traditional PID controllers and dual online gradient A Lightweight MPC Bidding Framework for Brand Auction Ads 
+
+descent methods are designed based on this observation, adjusting bid or dual variable by examining the instantaneous gap between the actual spend rate and the target spend rate. In practice, instead of updating the bid for every auction request, it is more common to update in a batch manner. That is, the bid per conversion or the dual variable 𝜆 is updated at fixed time intervals of length Δ𝑡 , and the bid level remains unchanged within each pacing cycle. The pacing interval Δ𝑡 is typically set between a few seconds and several minutes to balance the trade-off between update frequency and the variance of the actual spend rate within the pacing cycle. 
+
+## 3.2 MPC Framework 
+
+The general procedure of Model Predictive Control (MPC) operates as follows. At each time step, an optimization problem is solved to determine a sequence of control actions over a fixed time hori-zon. The first control input from this sequence is applied to the system; this approach is known as Receding Horizon Control (RHC) .At the next time step, the process is repeated by solving a new op-timization problem with the time horizon shifted one step forward, incorporating the latest system state and updated information. We mention here that one big advantage of MPC is its ability to handle constraints directly while requiring significantly less parameter tun-ing (e.g., controller gains, learning rates) compared to conventional control methods such as PID control and dual online grandient descent. Specifically in our case, at the end of each pacing cycle 𝜏 , we adaptively reformulate our optimization problem ( RHC ) as 
+
+max  
+
+> 𝑥 𝑡 ∈ { 0,1}
+
+∑︁ 𝑡 >𝜏 
+
+𝑥 𝑡 · 𝑟 𝑡 
+
+s.t. ∑︁  
+
+> 𝑡 >𝜏
+
+𝑥 𝑡 · 𝑐 𝑡 ≤ 𝐵 𝜏 
+
+(3) where 𝐵 𝜏 is the remaining budget at 𝜏 . Mathematically, this corre-sponds to the same optimization problem defined in Equation 1. To determine the bid for the next pacing cycle of duration Δ𝑡 , we first compute the target spend rate . The target spend for the upcoming interval Δ𝑡 is set proportionally to the fraction of auction opportu-nities expected in that interval relative to the remaining campaign duration. Specifically, the target spend 𝑇 𝑆 𝜏 in Δ𝑡 satisfies 
+
+𝑇 𝑆 𝜏 = 𝐵 𝜏 · 𝑁 𝜏, Δ𝑡 
+
+𝑇 − 𝜏 , (4) where 𝑁 𝜏, Δ𝑡 denotes the predicted number of auction requests in the next pacing cycle. Suppose we have a bid landscape model 
+
+𝑠 = 𝑓 (𝑏 ),
+
+which characterizes the relationship between the bid level 𝑏 (here corresponding to 1/𝜆 , without accounting for conversion rate) and the resulting spend rate 𝑠 . To achieve a desired target spend rate 
+
+𝑇 𝑆 𝜏 in the next pacing interval, the bid can be updated by applying the inverse of the bid landscape function: 
+
+𝑏 𝜏 = 𝑓 −1 (𝑇 𝑆 𝜏 ).
+
+## 3.3 Lightweight Bid-to-𝑋 Modeling 
+
+We now show how to construct such bid-to-𝑋 models using a lightweight isotonic regression approach [ 8]. Here, 𝑋 can represent various performance metrics over a fixed pacing interval, such as the amount of spend, the number of impressions, or the number of video plays. We use spend as an example to demonstrate the idea, the cases of impression and video play can be handled in the same way. We leverage the most recent pacing data from this campaign. Recall that, within each bid update interval Δ𝑡 , the bid per click 𝑏 𝑡 
+
+remains unchanged. We may collect the most recent 𝑁 interval bid-spend pairs {𝑏 𝑘 , 𝑠 𝑘 }, where 𝑠 𝑘 represents the spend over the fixed interval Δ𝑡 at time 𝑘 (and thus can be considered as the spend rate). The bid-spend rate relationship for the next interval Δ𝑡 can then be learned from these 𝑁 data points, assuming that the number of auction opportunities does not change too much over small intervals of Δ𝑡 . For a specific auction, if we bid higher, the spend should increase (or at least not decrease). Therefore, 𝑓 (𝑏 ) should be a monotonically nondecreasing function. However, {𝑏 𝑘 , 𝑠 𝑘 } does not necessarily form a monotonic se-quence, as the data points are collected from different time intervals. Isotonic regression is a type of regression analysis designed for situ-ations where the target variable is expected to be non-decreasing (or non-increasing) with respect to an independent variable. It imposes an order constraint on the data, ensuring the resulting function remains monotonic. A key algorithm used for isotonic regression is the Pool Adjacent Violators Algorithm (PAVA) [ 4 , 9 ]. PAVA efficiently solves isotonic regression problems by iteratively merg-ing adjacent data points that violate the monotonicity constraint. It is computationally lightweight, operating in linear time 𝑂 (𝑛 ),making it well-suited even for large datasets. Once the monotonic bid-spend sequence is obtained, the function 
+
+𝑓 (𝑏 ) can be constructed as a monotonic curve by performing linear interpolation between the available data points and extrapolation outside the observed range. The algorithms for constructing this monotonic mapping and computing the corresponding bid values are summarized in Algorithm 1 and Algorithm 2. 
+
+## 3.4 Extension 
+
+We briefly discuss how to extend this framework to handle multi-constraint problems, such as cost cap bidding for brand auction campaigns. The cost cap problem introduces an additional con-straint on the average cost per conversion, increasing complexity by requiring the algorithm to balance both budget pacing and cost efficiency. The cost cap bidding problem can be formulated as an optimiza-tion problem that maximizes welfare utility subject to both a budget constraint and a cost per conversion constraint(e.g., see [19]): 
+
+max  
+
+> 𝑥 𝑡 ∈ { 0,1}
+> 𝑇
+
+∑︁ 
+
+> 𝑡 =1
+
+𝑥 𝑡 · 𝑟 𝑡 
+
+s.t. 
+
+> 𝑇
+
+∑︁ 
+
+> 𝑡 =1
+
+𝑥 𝑡 · 𝑐 𝑡 ≤ 𝐵, 
+
+Í𝑇 𝑡 =1 𝑥 𝑡 · 𝑐 𝑡 
+
+Í𝑇 𝑡 =1 𝑥 𝑡 · 𝑟 𝑡 
+
+≤ 𝐶, 
+
+(5) Yuanlong Chen, Bowen Zhu, Bing Xia, Yichuan Wang 
+
+Algorithm 1 Pool Adjacent Violators Algorithm (PAVA)  
+
+> 1:
+
+Input: {( 𝑏 𝑘 , 𝑠 𝑘 )} 𝑛 𝑘 =1: Bid-spend pairs sorted in ascending order by bid  
+
+> 2:
+
+Output: {( 𝑏 ′ 
+
+> 𝑘
+
+, 𝑠 ′ 
+
+> 𝑘
+
+)} 𝑚 𝑘 =1: Monotonic bid-spend pairs  
+
+> 3:
+
+Initialize 𝑠 ′ 
+
+> 𝑘
+
+← 𝑠 𝑘 and 𝑤 𝑘 ← 1 for all 𝑘  
+
+> 4:
+
+𝑖 ← 1 
+
+> 5:
+
+while 𝑖 < 𝑛 do  
+
+> 6:
+
+if 𝑠 ′ 
+
+> 𝑖
+
+> 𝑠 ′ 
+
+> 𝑖 +1
+
+then ⊲ Monotonicity violation  
+
+> 7:
+
+Merge: 
+
+𝑠 ′ 
+
+> 𝑖
+
+← 𝑤 𝑖 𝑠 ′ 
+
+> 𝑖
+
++ 𝑤 𝑖 +1𝑠 ′
+
+> 𝑖 +1
+
+𝑤 𝑖 + 𝑤 𝑖 +1
+
+, 𝑤 𝑖 ← 𝑤 𝑖 + 𝑤 𝑖 +1 
+
+> 8:
+
+Remove 𝑠 ′
+
+> 𝑖 +1
+
+, 𝑤 𝑖 +1, and 𝑏 𝑖 +1 
+
+> 9:
+
+𝑖 ← max (1, 𝑖 − 1) 
+
+> 10:
+
+else  
+
+> 11:
+
+𝑖 ← 𝑖 + 1 
+
+> 12:
+
+end if  
+
+> 13:
+
+end while  
+
+> 14:
+
+return {( 𝑏 ′ 
+
+> 𝑘
+
+, 𝑠 ′ 
+
+> 𝑘
+
+)} 
+
+Algorithm 2 MPC-based Max Delivery Bidding Algorith  
+
+> 1:
+
+Input: {( 𝑏 𝑘 , 𝑠 𝑘 )} 𝑛 𝑘 =1: Bid-spend pairs sorted in ascending order by bid, 𝐵 𝜏 : remaining budget at cycle 𝜏 , 𝑁 𝜏, Δ𝑡 : predicted auction requests in next interval, 𝑇 : total number of auction opportunities  
+
+> 2:
+
+Output: 𝑏 𝜏 : computed bid for interval Δ𝑡  
+
+> 3:
+
+Compute target spend: 
+
+𝑇 𝑆 𝜏 ← 𝐵 𝜏 × 𝑁 𝜏, Δ𝑡 
+
+𝑇 − 𝜏  
+
+> 4:
+
+Apply PAVA: Use Algorithm 1 on {( 𝑏 𝑘 , 𝑠 𝑘 )} to get mono-tonic {( 𝑏 𝑘 , 𝑠 ′ 
+
+> 𝑘
+
+)}  
+
+> 5:
+
+if 𝑇 𝑆 𝜏 ≤ 𝑠 ′ 
+
+> 1
+
+then ⊲ below range  
+
+> 6:
+
+𝑏 𝜏 ← 𝑏 1 + 𝑇 𝑆 𝜏 − 𝑠 ′
+
+> 1
+
+𝑠 ′ 
+
+> 2
+
+− 𝑠 ′
+
+> 1
+
+(𝑏 2 − 𝑏 1) 
+
+> 7:
+
+else if 𝑇 𝑆 𝜏 ≥ 𝑠 ′ 
+
+> 𝑛
+
+then ⊲ above range  
+
+> 8:
+
+𝑏 𝜏 ← 𝑏 𝑛 + 𝑇 𝑆 𝜏 − 𝑠 ′
+
+> 𝑛
+
+𝑠 ′ 
+
+> 𝑛
+
+− 𝑠 ′
+
+> 𝑛 −1
+
+(𝑏 𝑛 − 𝑏 𝑛 −1) 
+
+> 9:
+
+else ⊲ within range  
+
+> 10:
+
+Find 𝑖 s.t. 𝑠 ′ 
+
+> 𝑖
+
+≤ 𝑇 𝑆 𝜏 ≤ 𝑠 ′ 
+
+> 𝑖 +1
+> 11:
+
+𝑏 𝜏 ← 𝑏 𝑖 + 𝑇 𝑆 𝜏 − 𝑠 ′
+
+> 𝑖
+
+𝑠 ′ 
+
+> 𝑖 +1
+
+− 𝑠 ′
+
+> 𝑖
+
+(𝑏 𝑖 +1 − 𝑏 𝑖 ) 
+
+> 12:
+
+end if  
+
+> 13:
+
+return 𝑏 𝜏 
+
+where 𝐶 represents the cost per conversion cap specified by ad-vertisers. The second constraint ensures that the average cost per conversion does not exceed the cap 𝐶 . The optimal bid per impres-sion for problem (5) at time 𝑡 is given by 
+
+𝑏 ∗ 
+
+> 𝑡, imp
+
+= 1 + 𝜇 ∗𝐶 𝜆 ∗ + 𝜇 ∗ · 𝑟 𝑡 = 𝑏 ∗ · 𝑟 𝑡 ,
+
+where 𝜆 ∗ and 𝜇 ∗ are the Lagrangian dual variables corresponding to the budget and cost constraints, respectively, and 𝑏 ∗ represents the optimal bid per conversion result for the campaign. At each time step 𝜏 , we solve the Receding Horizon Control (RHC) 
+
+problem to optimize the objective. The updated budget 𝐵 𝜏 is simply the remaining budget at time 𝜏 . The adjusted cost cap 𝐶 𝜏 ensures that the overall cost per conversion remains under the original cap 
+
+𝐶 , and is computed as 
+
+𝐶 𝜏 = 𝐵 𝜏 𝐵 𝐶 − 𝑁𝐶 𝜏 
+
+,
+
+where 𝑁𝐶 𝜏 is the number of conversions observed up to time 𝜏 .The RHC optimization problem at time 𝜏 is formulated as: 
+
+max  
+
+> 𝑥 𝑡 ∈ { 0,1}
+
+∑︁ 𝑡 >𝜏 
+
+𝑥 𝑡 · 𝑟 𝑡 
+
+s.t. ∑︁  
+
+> 𝑡 >𝜏
+
+𝑥 𝑡 · 𝑐 𝑡 ≤ 𝐵 𝜏 ,
+
+Í𝑡 >𝜏 𝑥 𝑡 · 𝑐 𝑡 
+
+Í𝑡 >𝜏 𝑥 𝑡 · 𝑟 𝑡 
+
+≤ 𝐶 𝜏 .
+
+(6) The target spend 𝑇 𝑆 𝜏 for the next pacing interval (𝜏, 𝜏 + Δ𝑡 ) is computed as 
+
+𝑇 𝑆 𝜏 = 𝐵 𝜏 · 𝑁 𝜏, Δ𝑡 
+
+𝑇 − 𝜏 ,
+
+and the target cost cap is set as 
+
+𝑇𝐶 𝜏 = 𝐶 𝜏 .
+
+The objective now is to determine the highest bid 𝑏 such that the spend and cost per conversion over the next pacing interval do not exceed the constraints 𝑇 𝑆 𝜏 and 𝑇𝐶 𝜏 . For the budget constraint, we use the bid-to-spend model 𝑓 (𝑏 ), while for the cost constraint, we construct a bid-to-cost-per-result model ℎ(𝑏 ). To compute ℎ(𝑏 ), we collect the most recent 𝑁 pacing intervals and construct {( 𝑏 𝑘 , 𝑛 𝑘 )} ,where 𝑛 𝑘 is the number of conversions in interval 𝑘 . Applying the PAVA algorithm to {( 𝑏 𝑘 , 𝑛 𝑘 )} , we obtain a monotonic bid-to-conversions model 𝑛 = 𝑔 (𝑏 ), and compute 
+
+ℎ(𝑏 ) = 𝑓 (𝑏 )
+
+𝑔 (𝑏 ) .
+
+The final bid for the next pacing cycle is selected as the largest value 𝑏 such that 𝑓 (𝑏 ) ≤ 𝑇 𝑆 𝜏 and ℎ(𝑏 ) ≤ 𝑇𝐶 𝜏 . This procedure is summarized in Algorithm 3. 
+
+## 4 Evaluation 
+
+In this section, we present empirical results to demonstrate the effectiveness of the proposed MPC framework. We first conduct offline simulations to evaluate the performance of our MPC bidding strategy against several popular benchmarks, including PID control and gradient descent-based methods. We then present results from real-world online A/B testing on large-scale brand auction ads conducted at TikTok, further validating the practical effectiveness of our approach in production environments. 
+
+## 4.1 Offline Simulations 
+
+We conduct simulations to quantitatively evaluate the performance of our proposed bidding algorithms. A Lightweight MPC Bidding Framework for Brand Auction Ads 
+
+Algorithm 3 MPC-Based Cost Cap Bidding Algorithm  
+
+> 1:
+
+Input:  
+
+> 2:
+
+𝑇 : Total predicted number of auction opportunities; 𝐵 : Total budget; 𝐶 : Cost cap;  
+
+> 3:
+
+𝜏 : 𝜏 -th auction request; 𝐵 𝜏 : Remaining budget; 𝑁𝐶 𝜏 : Ob-served conversions;  
+
+> 4:
+
+𝑏 𝑢 : Max bid value; Δ𝑏 : Search step size.  
+
+> 5:
+
+Output: 𝑏 ∗: Optimal bid for next pacing interval.  
+
+> 6:
+
+Step 1: Compute Budget and Cost Cap Constraints  
+
+> 7:
+
+Compute the target spend for next pacing interval: 
+
+𝑇 𝑆 𝜏 ← 𝐵 𝜏 · 𝑁 𝜏, Δ𝑡 
+
+𝑇 − 𝜏  
+
+> 8:
+
+Compute the cost cap 𝑇𝐶 𝜏 for the next pacing interval: 
+
+𝑇𝐶 𝜏 ← 𝐵 𝜏 𝐵 𝐶 − 𝑁𝐶 𝜏  
+
+> 9:
+
+Step 2: Construct Models 𝑓 (𝑏 ) and ℎ(𝑏 ) 
+
+> 10:
+
+Use recent 𝑁 bid-spend pairs {( 𝑏 𝑘 , 𝑠 𝑘 )} and apply Algorithm 1 to build 𝑓 (𝑏 ). 
+
+> 11:
+
+Use recent 𝑁 bid-conversion pairs {( 𝑏 𝑘 , 𝑛 𝑘 )} and apply Algo-rithm 1 to build 𝑔 (𝑏 ). 
+
+> 12:
+
+Compute cost per conversion estimate: 
+
+ℎ(𝑏 ) ← 𝑓 (𝑏 )
+
+𝑔 (𝑏 ) 
+
+> 13:
+
+Step 3: Search for Optimal Bid 𝑏 ∗ 
+
+> 14:
+
+Initialize 𝑏 ∗ ← 0. 
+
+> 15:
+
+for 𝑏 ← 0 to 𝑏 𝑢 with step size Δ𝑏 do  
+
+> 16:
+
+if 𝑓 (𝑏 ) ≤ 𝑇 𝑆 𝜏 and ℎ(𝑏 ) ≤ 𝑇𝐶 𝜏 then  
+
+> 17:
+
+Update 𝑏 ∗ ← 𝑏  
+
+> 18:
+
+end if  
+
+> 19:
+
+end for  
+
+> 20:
+
+Step 4: Return Optimal Bid  
+
+> 21:
+
+return 𝑏 ∗
+
+4.1.1 Benchmarks. We compare our lightweight MPC against two industry-standard pacing strategies. 
+
+PID. Following [ 31 ], at each pacing interval starting at 𝜏 we com-pute the normalized error 
+
+𝑒 𝜏 = 1 − 𝐴𝑆 𝜏 
+
+𝑇 𝑆 𝜏 
+
+,
+
+where 𝐴𝑆 𝜏 is the actual spend and 𝑇 𝑆 𝜏 is the target spend in that interval. The bid is then adjusted based on the PID controller update rule propsed in [31]. 
+
+Dual Online Gradient Descent (DOGD). Following [ 19 ], at each pacing interval 𝜏 we update the dual variable 𝜆 via 
+
+𝜆 ← 𝜆 − 𝜖 𝜏 ·
+
+
+
+1 − 𝐴𝑆 𝜏 /𝑁 𝑅 𝜏 
+
+𝐵 /𝑇 
+
+
+
+,
+
+where 𝐴𝑆 𝜏 is the actual spend observed in the pacing interval at 
+
+𝜏 , 𝑁 𝑅 𝜏 is the number of auction requests, 𝐵 is the total budget, 𝑇 
+
+is the total predicted number of auction opportunities, and 𝜖 𝜏 is 
+
+Table 1: Performance Comparison of Max Delivery Algorithm BUR (%) #Impressions CPV BV 
+
+PID 99.9 23,759 0.01360 0.0860 DOGD 99.9 22,754 0.01422 0.1653 MPC 99.8 24,582 0.01319 0.0346 Optimal 99.9 24,584 0.01318 0.00 the learning rate at 𝜏 . The bid per conversion is then set to 1/𝜆 
+
+according to (2). 
+
+4.1.2 Experiment Set-up. We conduct simulations using a daily paced video ad campaign. The daily budget is denoted by 𝐵 , and for cost cap campaign simulations, the cost cap is set to 𝐶 . The total predicted number of auction opportunities is 𝑇 . The video play rate (VPR) 𝑟 𝑡 is sampled from a log-normal distribution LogNorm (𝜇 1, 𝜎 1),and the second price 𝑐 𝑡 is sampled from LogNorm (𝜇 2, 𝜎 2). The pa-rameters 𝜇 1, 𝜎 1, 𝜇 2, and 𝜎 2 are estimated by fitting the correspond-ing distributions to internal auction data from TikTok advertising platform. For each bidding algorithm (MPC and benchmarks), each simu-lation episode continues until either the campaign budget is fully depleted or all auction opportunities are exhausted. We run 100 episodes for each algorithm and report the average of key evalua-tion metrics to assess performance. 
+
+4.1.3 Result Analysis. Several evaluation metrics are computed to assess the effectiveness of the bidding strategies, including the 
+
+budget utilization rate (BUR) to measure pacing efficiency, the cost per video view (CPV) to evaluate return on investment (ROI) for advertisers, and the bid variance (BV) to assess the stability of pacing dynamics. The BUR is defined as the ratio of the delivered budget to the total allocated budget. To compute the cost per video view (CPV), we approximate the total number of video views by summing the sampled VPR values across all winning auction opportunities. The BV is defined as: 
+
+𝐵𝑉 = 1
+
+𝑇 
+
+> 𝑇
+
+∑︁ 
+
+> 𝑡 =1
+
+
+
+1 − 𝑏 𝑡 
+
+𝑏 𝑚 
+
+2
+
+,
+
+where 𝑏 𝑡 is the bid at time 𝑡 , and 𝑏 𝑚 is the average bid across all bids during the pacing day. A lower BV indicates more stable bidding behavior, leading to smoother budget pacing and delivery. We first perform a grid search to determine the optimal constant bid, which serves as the reference point for comparison. We then fine-tune the PID controller (by adjusting the control gains) and the DOGD algorithm (by tuning the learning rate) to identify their best-performing configurations. The simulation results are summarized in Table 1. As shown in the results, all the fine-tuned algorithms successfully utilize the full budget. Among them, the MPC approach achieves the best ROI metrics, reflected by the lowest CPV. This improvement is partially attributed to its reduction of bid variance, which helps stabilize the bidding dynamics. To further validate our hypothesis, we plot a sampled path of bid(rescaled to [0, 1]) to illustrate the pacing dynamics of each algorithm in Figure 1. The MPC algorithm exhibits significantly Yuanlong Chen, Bowen Zhu, Bing Xia, Yichuan Wang 0 10000 20000 30000 40000 50000 
+
+> Auction Round (t)
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> Rescaled Bid ( bt)
+> Bidding Dynamics Across Algorithms (Rescaled)
+> OPTIMAL
+> PID
+> DOGD
+> MPC
+
+Figure 1: Sampled path of bid of the tested algorithms. Bid is rescaled to [0, 1] 0.0001 0.001 0.01 0.1 0.2 0.5 1.0 
+
+> Initial Bid Value
+> 0.0125
+> 0.0150
+> 0.0175
+> 0.0200
+> 0.0225
+> 0.0250
+> 0.0275
+> 0.0300
+> 0.0325
+> Average CPV
+> Robustness of Algorithms: CPV vs. Initial Bid
+> OPTIMAL
+> PID
+> DOGD
+> MPC
+
+Figure 2: CPV versus initial bid value for each algorithm. MPC is highly robust to initialization, while PID and DOGD suffer as the cold-start bid deviates from the true optimum. 
+
+more stable and controlled bidding behavior compared to PID and DOGD. We also observe that both PID and DOGD tend to deplete the budget before the end of the pacing day, potentially due to their lack of planning capability, which MPC effectively addresses through its receding horizon optimization. In practice, the initial bid for a cold start campaign is estimated offline, and a bidding strategy’s performance is sometimes highly sensitive to this estimate. To evaluate robustness to this factor, we vary the initial bid across seven values from 0.0001 to 1.0 and measure the resulting metrics. We observe that all algorithms fully deplete their budget in each run. To compare the ROI, average CPV versus initial bid is plotted in Figure 2: MPC’s performance remains essentially invariant and closely tracks the optimal ROI, while the other two—and in particular DOGD—exhibit significant performance degradation as the initialization error grows. 
+
+## 4.2 Large Scale Online A/B Test 
+
+We conduct a budget split experiment on the TikTok advertising platform to evaluate the proposed MPC framework. The experiment involves tens of thousands of brand auction campaigns, including max delivery and cost cap, with both awareness and video view ob-jectives, over a 7-day period. The MPC framework is tested against the existing production bidding framework. Experimental results show significant improvements across multiple key performance metrics, including budget utilization rate, CPM, and CPV. 
+
+## 5 Remarks 
+
+The unique attributes of brand auction ads make this lightweight framework particularly effective. The charging model we use in this paper is on a per-impression basis. In practice, the charging models for brand ads can vary; for example, video ads typically are charged for different objectives such as 2-second, 5-second, or 15-second views. This introduces delays in the feedback loop; however, in online experiments, we find that such impact is relatively small on performance, even for 15-second video ads. In contrast, performance ads typically involve deeper funnel engagement events and are often charged based on specific user ac-tions (e.g., clicks, conversions). This results in much sparser spend signals and makes it challenging to directly extend our online MPC framework to such scenarios. Even when using per-impression charging to mitigate spend signal sparsity, the elongated conver-sion funnels associated with performance ads introduce higher variance in spend data. To see this, recall that to construct the bid-to-spend-rate model 𝑓 , we collect recent bid-spend pairs from each pacing interval. The spend signal aggregates costs across all auction opportunities within the interval, where each auction request may have a different conversion rate 𝑟 𝑡 . Our framework relies on the assumption that these conversion rates 𝑟 𝑡 are random and approx-imately i.i.d., allowing statistical aggregation to reduce variance and produce robust bid-spend modeling. This assumption holds reasonably well for upper-funnel objectives such as video views, where the conversion funnel is short and feedback is timely. How-ever, for performance ads involving post-click deep-funnel actions, outcomes become significantly more volatile. Deep-funnel cost control further compounds these challenges, introducing both signal sparsity and highly noisy conversion esti-mates. In such cases, more sophisticated techniques—such as model calibration, delayed feedback handling, and advanced variance re-duction methods—should be incorporated to make the online MPC framework effective and reliable. 
+
+## 6 Conclusion 
+
+This work presents a practical solution for optimizing brand adver-tising campaigns through a lightweight MPC-based bidding frame-work. By fully exploiting the predictable impression patterns and timely feedback loops inherent in brand auction ads, our framework simplifies bid decision-making while effectively balancing multiple business objectives, including budget pacing and cost efficiency. Unlike complex machine learning-based approaches, our method relies on simple, interpretable models that can be deployed entirely online with minimal system overhead. Both offline simulations and large-scale A/B testing on the TikTok platform validate the effec-tiveness of our approach in real-world environments. While the current framework is well-suited for upper-funnel brand objectives, extending it to handle the delayed and sparse feedback typical of A Lightweight MPC Bidding Framework for Brand Auction Ads 
+
+performance advertising remains an important direction for future research. 
+
+## References 
+
+[1] Zoö Abrams, S Sathiya Keerthi, Ofer Mendelevitch, and John A Tomlin. 2008. Ad delivery with budgeted advertisers: A comprehensive LP approach. Journal of Electronic Commerce Research 9, 1 (2008). [2] Deepak Agarwal, Souvik Ghosh, Kai Wei, and Siyu You. 2014. Budget pacing for targeted online advertisements at linkedin. In Proceedings of the 20th ACM SIGKDD international conference on Knowledge discovery and data mining . 1613– 1619. [3] Gagan Aggarwal, Ashwinkumar Badanidiyuru, and Aranyak Mehta. 2019. Au-tobidding with constraints. In Web and Internet Economics: 15th International Conference, WINE 2019, New York, NY, USA, December 10–12, 2019, Proceedings 15 .Springer, 17–30. [4] Miriam Ayer, H Daniel Brunk, George M Ewing, William T Reid, and Edward Silverman. 1955. An empirical distribution function for sampling with incomplete information. The annals of mathematical statistics (1955), 641–647. [5] Santiago Balseiro, Anthony Kim, Mohammad Mahdian, and Vahab Mirrokni. 2017. Budget management strategies in repeated auctions. In Proceedings of the 26th International Conference on World Wide Web . 15–23. [6] Santiago R Balseiro and Yonatan Gur. 2019. Learning in repeated auctions with budgets: Regret minimization and equilibrium. Management Science 65, 9 (2019), 3952–3968. [7] Santiago R Balseiro, Haihao Lu, Vahab Mirrokni, and Balasubramanian Sivan. 2022. Analysis of dual-based pid controllers through convolutional mirror de-scent. arXiv preprint arXiv:2202.06152 (2022). [8] Richard E Barlow. 1972. Statistical inference under order restrictions: The theory and application of isotonic regression. (No Title) (1972). [9] Frank MTA Busing. 2022. Monotone regression: A simple and fast O (n) PAVA implementation. Journal of Statistical Software 102 (2022), 1–25. [10] Matteo Castiglioni, Andrea Celli, and Christian Kroer. 2022. Online learning with knapsacks: the best of both worlds. In International Conference on Machine Learning . PMLR, 2767–2783. [11] Bowei Chen, Shuai Yuan, and Jun Wang. 2014. A dynamic pricing model for unifying programmatic guarantee and real-time bidding in display advertising. In Proceedings of the Eighth International Workshop on Data Mining for Online Advertising . 1–9. [12] Yuanlong Chen. 2025. A Practical Guide to Budget Pacing Algorithms in Digital Advertising. arXiv preprint arXiv:2503.06942 (2025). [13] Ye Chen, Pavel Berkhin, Bo Anderson, and Nikhil R Devanur. 2011. Real-time bidding algorithms for performance-based display ad allocation. In Proceedings of the 17th ACM SIGKDD international conference on Knowledge discovery and data mining . 1307–1315. [14] Vincent Conitzer, Christian Kroer, Eric Sodomka, and Nicolas E Stier-Moses. 2022. Multiplicative pacing equilibria in auction markets. Operations Research 
+
+70, 2 (2022), 963–989. [15] Liang Dai, Kejie Lyu, Chengcheng Zhang, Guangming Zhao, Zhonglin Zu, Liang Wang, and Bo Zheng. 2024. Percentile risk-constrained budget pacing for guar-anteed display advertising in online optimization. In Proceedings of the AAAI Conference on Artificial Intelligence , Vol. 38. 7987–7994. [16] Zhen Fang, Yang Li, Chuanren Liu, Wenxiang Zhu, Yu Zheng, and Wenjun Zhou. 2019. Large-scale personalized delivery for guaranteed display advertising with real-time pacing. In 2019 IEEE International Conference on Data Mining (ICDM) .IEEE, 190–199. [17] Jon Feldman, Monika Henzinger, Nitish Korula, Vahab S Mirrokni, and Cliff Stein. 2010. Online stochastic packing applied to display ad allocation. In European Symposium on Algorithms . Springer, 182–194. [18] Joaquin Fernandez-Tapia, Olivier Guéant, and Jean-Michel Lasry. 2017. Optimal real-time bidding strategies. Applied mathematics research express 2017, 1 (2017), 142–183. [19] Yuan Gao, Kaiyu Yang, Yuanlong Chen, Min Liu, and Noureddine El Karoui. 2022. Bidding agent design in the linkedin ad marketplace. arXiv preprint arXiv:2202.12472 (2022). [20] Sahin Cem Geyik, Luthfur Chowdhury, Florian Raudies, Wen Pu, and Jianqiang Shen. 2020. Impression Pacing for Jobs Marketplace at LinkedIn. In Proceedings of the 29th ACM International Conference on Information & Knowledge Management .2445–2452. [21] Paul Grigas, Alfonso Lobos, Zheng Wen, and Kuang-chih Lee. 2017. Profit maximization for online advertising demand-side platforms. In Proceedings of the ADKDD’17 . 1–7. [22] Takanori Maehara, Atsuhiro Narita, Jun Baba, and Takayuki Kawabata. 2018. Optimal Bidding Strategy for Brand Advertising.. In IJCAI . 424–432. [23] Aranyak Mehta, Amin Saberi, Umesh Vazirani, and Vijay Vazirani. 2007. Adwords and generalized online matching. Journal of the ACM (JACM) 54, 5 (2007), 22–es. [24] Alessandro Nuara, Francesco Trovò, Nicola Gatti, and Marcello Restelli. 2022. Online joint bid/daily budget optimization of internet advertising campaigns. 
+
+Artificial Intelligence 305 (2022), 103663. [25] Michael Tashman, Jiayi Xie, John Hoffman, Lee Winikor, and Rouzbeh Gerami. 2020. Dynamic bidding strategies with multivariate feedback control for multiple goals in display advertising. arXiv preprint arXiv:2007.00426 (2020). [26] Jun Wang, Weinan Zhang, Shuai Yuan, et al . 2017. Display advertising with real-time bidding (RTB) and behavioural targeting. Foundations and Trends ® in Information Retrieval 11, 4-5 (2017), 297–435. [27] XiaoYu Wang, Bin Tan, Yonghui Guo, Tao Yang, Dongbo Huang, Lan Xu, Niko-laos M Freris, Hao Zhou, and Xiang-Yang Li. 2022. CONFLUX: A Request-level Fusion Framework for Impression Allocation via Cascade Distillation. In Pro-ceedings of the 28th ACM SIGKDD Conference on Knowledge Discovery and Data Mining . 4070–4078. [28] Di Wu, Cheng Chen, Xiujun Chen, Junwei Pan, Xun Yang, Qing Tan, Jian Xu, and Kuang-Chih Lee. 2021. Impression Allocation and Policy Search in Display Advertising. In 2021 IEEE International Conference on Data Mining (ICDM) . IEEE, 749–756. [29] Jian Xu, Kuang-chih Lee, Wentong Li, Hang Qi, and Quan Lu. 2015. Smart pacing for effective online ad campaign optimization. In Proceedings of the 21th ACM SIGKDD international conference on knowledge discovery and data mining .2217–2226. [30] Xun Yang, Yasong Li, Hao Wang, Di Wu, Qing Tan, Jian Xu, and Kun Gai. 2019. Bid optimization by multivariable control in display advertising. In Proceedings of the 25th ACM SIGKDD international conference on knowledge discovery & data mining . 1966–1974. [31] Weinan Zhang, Yifei Rong, Jun Wang, Tianchi Zhu, and Xiaofan Wang. 2016. Feedback control of real-time display advertising. In Proceedings of the Ninth ACM International Conference on Web Search and Data Mining . 407–416. 
+
+## A Proof of Optimal Bidding Bidding Formula 
+
+For completeness, we include below the proof of the optimal-bidding formula (2) for the max-delivery problem (1) . Under the regularity assumption that {𝑟 𝑡 } and {𝑐 𝑡 } are sampled independently from two different i.i.d. distributions, one can show that the optimal bid level causes actual spend to scale linearly with the number of auction opportunities. Similar derivations can be found in [6, 18, 19]. 
+
+Proof. We start from the primal max delivery problem 
+
+max 
+
+𝑥 𝑡 ∈ { 0,1}
+
+𝑇 ∑︁ 
+
+𝑡 =1
+
+𝑥 𝑡 𝑟 𝑡 s.t. 
+
+𝑇 ∑︁ 
+
+𝑡 =1
+
+𝑥 𝑡 𝑐 𝑡 ≤ 𝐵. 
+
+Introducing the dual variable 𝜆 ≥ 0, the Lagrangian is 
+
+L( 𝑥, 𝜆 ) =
+
+𝑇 ∑︁ 
+
+𝑡 =1
+
+𝑥 𝑡 𝑟 𝑡 − 𝜆 
+
+ 𝑇 ∑︁ 
+
+𝑡 =1
+
+𝑥 𝑡 𝑐 𝑡 − 𝐵 
+
+
+
+=
+
+𝑇 ∑︁ 
+
+𝑡 =1
+
+𝑥 𝑡 (𝑟 𝑡 − 𝜆 𝑐 𝑡 ) + 𝜆 𝐵. 
+
+Thus the dual function is 
+
+L∗ (𝜆 ) = max 
+
+𝑥 𝑡 ∈ { 0,1} L( 𝑥, 𝜆 ) =
+
+𝑇 ∑︁ 
+
+𝑡 =1
+
+ 𝑟 𝑡 − 𝜆 𝑐 𝑡 
+
+
+
++ + 𝜆 𝐵, 
+
+where (𝑧 )+ = max {𝑧, 0}. The dual problem is then 
+
+min 
+
+𝜆 ≥0 L∗ (𝜆 ) = min 
+
+𝜆 ≥0
+
+𝑇 ∑︁ 
+
+𝑡 =1
+
+h
+
+(𝑟 𝑡 − 𝜆 𝑐 𝑡 )+ + 𝜆 𝐵 𝑇 
+
+i
+
+.
+
+Let 𝜆 ∗ be its minimizer. By KKT, if 𝜆 ∗ > 0 then the budget constraint binds: 𝑇 ∑︁ 
+
+𝑡 =1
+
+𝑥 𝑡 𝑐 𝑡 = 𝐵. 
+
+Moreover, the optimal binary decision is 
+
+𝑥 ∗
+
+𝑡 =
+
+(
+
+1, 𝑟 𝑡 − 𝜆 ∗ 𝑐 𝑡 > 0,
+
+0, otherwise ,Yuanlong Chen, Bowen Zhu, Bing Xia, Yichuan Wang 
+
+so the corresponding optimal bid is 
+
+𝑏 ∗ 
+
+> 𝑡
+
+= 𝑟 𝑡 
+
+𝜆 ∗ .
+
+Under an i.i.d. model for 𝑟 𝑡 and 𝑐 𝑡 , each served auction has constant expected cost, and hence over any window Δ𝑡 ,∑︁   
+
+> 𝜏 ≤𝑡 ≤𝜏 +Δ𝑡
+
+𝑥 𝑡 𝑐 𝑡 ∝ #{auctions in (𝜏, 𝜏 + Δ𝑡 )} .
+
+□

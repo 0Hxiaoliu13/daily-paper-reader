@@ -1,0 +1,1235 @@
+Title: Toward Trustworthy Evaluation of Sustainability Rating Methodologies: A Human-AI Collaborative Framework for Benchmark Dataset Construction
+
+URL Source: https://arxiv.org/pdf/2602.17106v1
+
+Published Time: Fri, 20 Feb 2026 01:28:46 GMT
+
+Number of Pages: 29
+
+Markdown Content:
+# Toward Trustworthy Evaluation of Sustainability Rating Methodologies: A Human–AI Collaborative Framework for Benchmark Dataset Construction 
+
+Xiaoran Cai * 1 Wang Yang * 2 Xiyu Ren 3 Chekun Law 4 Rohit Sharma 5 Peng Qi 6
+
+# Abstract 
+
+Sustainability or ESG rating agencies use com-pany disclosures and external data to produce scores or ratings that assess the environmental, social, and governance performance of a com-pany. However, sustainability ratings across agen-cies for a single company vary widely, limiting their comparability, credibility, and relevance to decision-making. To harmonize the rating re-sults, we propose adopting a universal human-AI collaboration framework to generate trustworthy benchmark datasets for evaluating sustainability rating methodologies. The framework comprises two complementary parts: STRIDE (Sustainabil-ity Trust Rating & Integrity Data Equation) pro-vides principled criteria and a scoring system that guide the construction of firm-level benchmark datasets using large language models (LLMs), and SR-Delta , a discrepancy-analysis procedu-ral framework that surfaces insights for poten-tial adjustments. The framework enables scal-able and comparable assessment of sustainability rating methodologies. We call on the broader AI community to adopt AI-powered approaches to strengthen and advance sustainability rating methodologies that support and enforce urgent sustainability agendas. 
+
+# 1. Introduction 
+
+Sustainability has become a central concern for govern-ments, investors, consumers, and corporations, as it increas-ingly shapes long-term economic resilience, social well-being, and environmental stability (Huber & Comstock, 2017; Eccles et al., 2014). In response, companies embed sustainability into their operations and strategic planning 
+
+> 1
+
+Columbia University, USA 2Case Western Reserve University, USA 3Hong Kong University of Science and Technology, Hong Kong 4NVIDIA, USA 5Informatica Inc., USA 6Uniphore, USA. Correspondence to: Xiaoran Cai <xc2422@columbia.edu>, Wang Yang <wxy320@case.edu>. 
+
+and disclose performance through sustainability reports that include quantitative and qualitative indicators such as car-bon emissions, labor practices, and corporate governance structures (Odinaka & Wash-Anigboro, 2025). However, companies differ in their disclosure strategies, lim-iting comparability. As a result, sustainability ratings were introduced as intermediaries that translate non-comparable information across companies into decision-relevant in-sights (Lu, 2024). Sustainability ratings serve as a multipur-pose informational infrastructure, guiding investors’ capital allocation, supporting corporate performance improvement, informing regulators and policymakers, and enabling public stakeholders such as consumers and NGOs to assess corpo-rate responsibility and engage in advocacy (Organisation for Economic Co-operation and Development (OECD), 2025). As sustainability ratings have gained prominence, their pro-liferation has introduced a new issue: rating results for a company are inconsistent across different agencies. Pre-vious research showed that the correlation among ESG 1
+
+ratings ranges from 0.38 to 0.71 due to methodological dif-ferences in scope (38%), weighting (6%), and measurement (56%) (Berg et al., 2022), creating confusion for stakehold-ers and ambiguity in the market (Sun Life Global Invest-ments Institutional, 2023). For example, in 2023, Sustaina-lytics rated Adani’s governance as high risk ("moderate"), while Morgan Stanley Capital International ("MSCI") main-tained an "A" rating for Adani Green Energy. Following the Hindenburg report, Adani’s shares plunged, wiping £100 billion off the company’s market value (Kerber & Wilkes, 2023). Such evidence highlights structural biases and com-mercial influences in sustainability rating methodologies (Zhang et al., 2024; Berg et al., 2025). Consequently, these issues undermine the credibility and practical application of these ratings (Berg et al., 2022) and further raise questions about the financial benefits of sustainability (Adamopoulou & Gkizori, 2025). 
+
+> 1
+
+Please note that the terms "ESG" and "sustainability" are used interchangeably in this paper. This is because the input documents are not uniformly labeled as "ESG reports" or "sustainability re-ports". Companies adopt different naming conventions depending on their strategic objectives, reporting systems, and the standards they follow. 
+
+1
+
+> arXiv:2602.17106v1 [cs.AI] 19 Feb 2026 Submission for International Conference on Machine Learning (ICML 2026)
+
+Sustainability ratings or overall sustainability remain un-derexplored within the AI research community in two di-mensions: technology focus areas and scope of study. First, previous related work in sustainability focuses mainly on extracting unstructured data from ESG reports (Zou et al., 2023; Sun et al., 2024), on annotation (Wu et al., 2025), or on vertical applications of AI such as decarbonization and smart cities (Toderas, 2025). Limited efforts have fo-cused on sustainability ratings as a primary research object. Second, the input data have a specific scope by region or sector (Sun et al., 2024), limiting their comparability. For metric selection, most studies adopt a single international framework or regional guideline (Zou et al., 2023), often neglecting firm-specific and industry-specific metrics es-sential for contextualized evaluation. Other work further narrows its scope by focusing exclusively on a single cate-gory of sustainability metrics, such as environmental indi-cators (Angioni et al., 2024), thereby failing to capture the multidimensional nature of sustainability performance. 
+
+Our Position : A universal human–AI collaboration frame-work that guides the generation of benchmark datasets and produces scores to assess their readiness should be adopted to evaluate sustainability rating methodologies. From an impact standpoint, there are more than 600 ESG or sustainability ratings as of 2018 (Wong & Petroy, 2020). In the UK alone, more than 150 sustainability rating providers operate in the market, and regulatory interven-tion could save firms an estimated £578 million over the next decade(Financial Times, 2025). From a technology standpoint, AI and LLMs have demon-strated capabilities in information extraction, reasoning over unstructured disclosures, and synthesizing qualitative and quantitative information at scale (Bronzini et al., 2024). A multi-agent system has been used to extract KPIs from finan-cial reports (Choi et al., 2025). These capabilities empower scalable development of standardized insight-level evalua-tion frameworks for the evaluation of sustainability rating methodologies. To support this position, this paper makes the following key contributions: • Propose STRIDE: The Sustainability Trust Rating & Integrity Data Equation (STRIDE) is a universal frame-work with key consideration elements for generating firm-level benchmark datasets with a scoring system. • Propose SR-Delta: The SR-Delta framework uses STRIDE guided benchmark datasets for discrepancy analysis to generate improvement insights. • Provide alternative perspectives: Review other possible approaches, identify associated barriers, and present our responses. The frameworks are developed based on insights from pre-vious research and our empirical experience in a case study. No optimal framework exists, and continuous improvement is necessary over time. We provide an illustrative case study as an initial step with the intention of stimulating feedback and iterative refinement over time. 
+
+# 2. Key Challenges in AI-Based Sustainability Rating Benchmarking 
+
+Challenge 1: Inconsistent Sustainability Practices 
+
+Unlike financial disclosure, sustainability disclosure lacks a standardized set of guidelines that companies can consis-tently reference (Berg et al., 2022). Heterogeneous stan-dards and guidelines at the global, national, local, industry, and firm levels result in inconsistent sustainability disclo-sure practices (Stedman & Gibbons Paul, 2025). Even more than that, regulations and policies at the same level can be fragmented (Park, 2024). For example, countries exhibit het-erogeneous sustainability priorities, regulatory frameworks, and reporting languages. Consequently, the governance, alignment, and standardization of sustainability disclosure remain an unresolved challenge in sustainability assessment and benchmarking(Berg et al., 2022). As for rating agencies, they typically adopt one or more reporting standards to design their rating methodologies. For example, MSCI uses 150 policy metrics, 20 perfor-mance metrics, and more than 100 governance key metrics based on its own business model (MSCI ESG Research LLC, 2024), while Sustainalytics uses 180 metrics across 138 sub-industries(Sustainalytics, n.d.). 
+
+Challenge 2: Limited High-quality Input Data 
+
+Sustainability ratings rely on corporate sustainability dis-closures as data input (Windolph, 2011), yet the quality of these inputs remains a concern. Incentives for sustainabil-ity disclosure are regulatory in nature (De Villiers et al., 2020). Mandatory sustainability disclosure is limited to a small number of jurisdictions (e.g, the EU under the CSRD), with voluntary reporting prevailing elsewhere (Hatter et al., 2025). As a result, voluntary disclosure companies often ap-proach sustainability disclosure as a branding or public rela-tions exercise in the absence of clear regulatory or economic incentives, emphasizing narrative and storytelling over stan-dardized measurement (Hassani et al., 2024). Therefore, the input data may be misaligned with real-world condi-tions and exhibit quality deficiencies. Even for companies with the capacity and intention to engage in sustainability disclosure, the reporting information infrastructures, such as data systems and software, remain uneven and underde-veloped, limiting the collection and integration of reliable sustainability data (Troshani & Rowbottom, 2024). 2Submission for International Conference on Machine Learning (ICML 2026) 
+
+Challenge 3: Lack of an End-to-end Trustworthy Docu-ment Acquisition Layer 
+
+Sustainability reports consist of complex, long, unstructured data, including text, tables, and figures. There is a lack of reliable agentic pipelines for report retrieval, human annota-tion, provenance tracking across corporate web properties, and agile feedback loops for content drift. The current LLM model for understanding ESG-related knowledge achieves a measurable level of accuracy, typically around 55-70%, and the results indicate room for improvement (He et al., 2025). Human-annotated data is often introduced to com-pensate for these limitations. Yet, there is no consensus that ground-truth datasets reliably improve model performance, and prior work highlights risks arising from subjective judg-ments, inconsistent annotation guidelines, and varying anno-tator expertise (Zajac et al., 2023; Foody, 2024; Zhong et al., 2020). These challenges are further amplified by the scale and fragmentation of sustainability-related data on the web, with a rapidly growing stream of external news and civil society reporting. Sustainability concepts themselves also evolve and are interpreted inconsistently, necessitating ag-ile, end-to-end systems rather than static models or datasets (Berg et al., 2022). 
+
+# 3. STRIDE: Sustainability Trust Rating and Integrity Data Equation 
+
+The Trust Equation, introduced in 2000, conceptualizes human-to-human trust as a function of four components: credibility, reliability, and intimacy, which enhance trust, and self-orientation, which diminishes it (Green et al., 2000). Now, the Trust Equation can be extended to human–machine interaction research, where it helps to understand and de-sign trust in machine-generated outputs, including decision-support systems and AI-enabled tools. Previous studies show that perceptions of credibility, reli-ability, and intent alignment play a central role in whether users accept, rely on, or override machine recommendations (Larasati et al., 2025). Existing research on trustworthy AI in industrial contexts informs the design of a structured trustworthiness data framework that spans data preparation, algorithm design, system development, deployment, and operational workflows (Li et al., 2023). In this work, we for-mulate the trust equation to account for the domain-specific nature of sustainability ratings and the collaboration be-tween LLMs and human experts. 
+
+Human-Machine Trust Equation. The overview of the framework about our trust equation is shown in Figure 1. We model human-machine trust as a latent scalar τ (x) ∈
+
+(0 , 1) , defined as a sigmoid function of a weighted linear combination of four components (as shown in Figure 2): credibility C(x), reliability R(x), human–AI intimacy I(x),and self-serving purpose S(x). The sigmoid function σ(x)
+
+ensures that the trust score is bounded between 0 and 1 and exhibits a diminishing sensitivity to extreme values of the latent trust signal. Following the Trust Equation, AI-generated benchmark data reflect industry best practices rather than average or minimal compliance (Amel-Zadeh & Serafeim, 2018). The appro-priate depth and breadth of data and systems are designed to generate comparable and actionable insights (Organisa-tion for Economic Co-operation and Development (OECD), 2025). The details of the function and equations are pro-vided in Appendix B. 
+
+3.1. Credibility 
+
+Credibility provides principled guidance for selecting raw input data. It guides and sets criteria for the sufficiency of data coverage and the verifiability of data sources. It indicates data quality. Credibility includes four aspects: 
+
+inclusiveness and materiality IM( x), auditable and trace-able data AT( x), exemplary reference ER( x), and time relevance TR( x).
+
+Inclusiveness and Materiality ( IM ) capture whether a sus-tainability rating benchmark dataset framework includes relevant issues across sectors (Eccles et al., 2012) and re-gions while properly focusing on metrics that matter for impact, risk, and decision-making. Two input sources are used: sustainability reports that con-tain data values, and standards and principles that define metrics. First, for sustainability reports, it is critical to be representative across sectors and regions to ensure that the benchmark dataset is generalizable as a credible reference (Du Toit, 2024). Second, for metrics, there are five stan-dard layers: global, national, local, industry-specific, and company-specific. Uniform metrics may fail to capture industry, geographic, and contextual differences in corpo-rate behavior and priorities (Shi & Yao, 2025). Companies also disclose tailored quantitative data for their operations, making "one-size-fits-all" metrics difficult to maintain ma-teriality (Liu, 2022). Third, beyond internal and disclosure data, it is essential to incorporate metrics that capture ex-ternal data, such as sentiment and narratives in local news, which provide independent signals of real-world impacts, stakeholder perceptions, and emerging sustainability risks (Hassan et al., 2019). 
+
+IM( x) can be defined as a function of geographic cover-age, industry coverage, standard-layer coverage, and the incorporation of external datasets: 
+
+IM( x) = f (Cctry (x), Iind (x), S(x), E(x)) .
+
+Auditable and Traceable Data ( AT ) refer to selected input data that are supported by verifiable evidence internally and 3Submission for International Conference on Machine Learning (ICML 2026)  
+
+> Figure 1. STRIDE framework for trustworthy sustainability rating benchmark datasets. Trust is modeled as a function of credibility, reliability, and human–AI intimacy (positive contributors), and self-serving purpose (negative contributor).
+
+externally. The source of the data can be traced throughout the data lifecycle, thereby mitigating the challenges posed by subjective and narrative-driven sustainability disclosures. For data audibility, the absence of auditable pipelines and robust governance controls can compromise the credibility of datasets and, therefore, mislead model performance (Luo et al., 2024). Traceability enables transparency, account-ability, and reproducibility by allowing users to audit input values and data transformations throughout the analytical pipeline (Buneman et al., 2001; Bouthillier et al., 2021). Traceability also supports risk management and governance by enabling organizations to identify, diagnose, and cor-rect errors or biases introduced at specific stages of data collection and processing (Pineau et al., 2021). 
+
+AT( x) can be defined as a function of auditability and trace-ability across the evidence set E(x):
+
+AT( x) = f (aud( e), tr( e), E(x)) .
+
+Exemplary Reference requires data sources from organi-zations with established reporting practices so that the data reflect credible operations with practical value for insights. First, benchmark datasets often draw on longitudinal dis-closures from high-governance companies such as FTSE 350 constituents (Ferjanˇ ciˇ c et al., 2024). Second, compar-ative sustainability analyses typically rely on high-quality disclosures from well-governed firms as reference data to ensure robustness and confidence level (Meng et al., 2025). Systematic reviews of ESG indicators emphasize the need to compare with consistent high-assurance corporate disclo-sures to support comparability (da Cunha et al., 2025). 
+
+ER( x) can be defined as a function of the confidence level 
+
+σ associated with the sustainability disclosure of a company and the number of recognitions it receives in the sustainabil-ity field: 
+
+ER( x) = f (σ, n rec (x)) .
+
+Time Relevance refers to the extent to which data reflect the most relevant and current conditions, practices, and contextual realities at the time of analysis. Unlike annual sustainability reports, rating agencies’ time-lines do not necessarily align with companies’ periodic re-porting cycles, and rating outcomes can change in response to data or methodological updates. For example, MSCI ESG Research distinguishes between full rating actions and interim data updates. While comprehensive ESG Ratings and Industry-Adjusted Scores are recalculated only during formal rating reviews, updates to individual data points can automatically affect relevant scores, often within a week, without an immediate analyst-led reassessment (MSCI ESG Research LLC, 2025). 
+
+TR( x) can be defined as a function of the overlap evaluation time and a temporal decay rate for time relevancy: 
+
+TR( x) = f (∆ t(x), λ ) .
+
+3.2. Reliability 
+
+Reliability addresses the rigor and robustness of model per-formance. It guides and sets criteria for modeling processes and output validation. It signals model quality. Reliability includes four dimensions: rigorous sampling methodology 
+
+SM( x), ground-truth annotation GT( x), agility with appro-priate trade-offs AG( x), and security and safety SS( x).4Submission for International Conference on Machine Learning (ICML 2026) 
+
+STRIDE: Sustainability Trust Rating and Integrity Data Equation 
+
+τ (x) = σ(αC C(x) + αRR(x) + αI I(x) − αS S(x)) , σ(z) = 11 + exp( −z) . (1) 
+
+C(x) = wC 
+
+> IM
+
+IM( x) + wC 
+
+> AT
+
+AT( x) + wC 
+
+> ER
+
+ER( x) + wC 
+
+> TR
+
+TR( x). (2) 
+
+R(x) = wR 
+
+> SM
+
+SM( x) + wR 
+
+> GT
+
+GT( x) + wR 
+
+> AG
+
+AG( x) + wR 
+
+> SS
+
+SS( x). (3) 
+
+I(x) = wI 
+
+> HG
+
+HG( x). + wI 
+
+> DE
+
+DE( x) + wI 
+
+> IF
+
+IF( x) (4) 
+
+S(x) = wS 
+
+> T
+
+T( x) + wS 
+
+> RS
+
+RS( x). (5) 
+
+Parameters. τ (x) ∈ (0 , 1) denotes the overall human–machine trust score. C(x), R(x), I(x), and S(x) represent credibility, reliability, human–AI intimacy, and self-served purpose, respectively. α• ≥ 0 control cross-dimension importance. Weights w(·) 
+
+> •
+
+≥ 0 form convex combinations within each component. 
+
+Sub-metrics. IM (Inclusiveness & Materiality), AT (Auditable & Traceable Data), ER (Exemplary Reference), TR 
+
+(Time Relevance), SM (Rigorous Statistical Methodology), GT (Ground-Truth Annotation), AG (Agility with Right Trade-off), SS (Security & Safety), HG (AI-Driven and Human-Governed), DE (Domain-Expert-in-the-Loop), IF 
+
+(Iterative Feedback Loop), T (Transparency), RS (Role Separation and Independent Oversight).  
+
+> Figure 2. STRIDE trust formulation and component decomposition.
+
+Rigorous Statistical Methodology refers to the use of sta-tistical techniques that ensure sampling results are sufficient, representative, and robust to noise. First, the sample size should be chosen to achieve saturation, beyond which additional data do not result in statistically sig-nificant performance improvements (Ott & Barbosa-Silva, 2022). Second, a selected sample dataset is representative if it has minimal distributional deviation from the population (Petersen et al., 2016). Beyond examining surface-level data properties, it is equally important to consider the substantive characteristics of the subject matter being studied (Hornung et al., 2023). For example, when constructing benchmark datasets from sustainability reports, sampling should reflect diversity across companies and industries, as well as varia-tion in sustainability themes and disclosure practices. 
+
+SM( x) can be defined as a function of the sample saturation threshold and a deviation-based representativeness measure: 
+
+SM( x) = f (nsat , σ p(x)) .
+
+Ground-Truth Annotation refers to the process of creat-ing reference labels or judgments by humans that serve as baselines against which models, systems, or benchmarks are evaluated. First, prior research shows that models trained with human-verified subsets outperform models trained on fully auto-mated labels, even when the human-labeled portion is rela-tively small (10–30%) (Zhang et al., 2021). Second, while aggregated non-expert annotations can approximate expert labels for well-defined and low-interpretation tasks, expert annotations differ qualitatively by encoding deeper domain knowledge, greater conceptual consistency, and more re-liable handling of ambiguous and long-tail cases such as sustainability reports (Snow et al., 2008). Third, annotation disagreement can be signals (Aroyo & Welty, 2015) and improve downstream model robustness (Uma et al., 2021). 
+
+GT( x) can be defined as a function of the proportion of human-validated annotations, expert utilization signals, and deviation-based agreement terms capturing human-machine annotation alignment and machine-machine an-notation alignment: 
+
+GT( x) = f (phuman (x), u (x), σ HM (x), σ M M (x)) .
+
+Agility with Right Trade-off refers to a model’s ability to adapt and improve in response to changing conditions while maintaining performance. In rapidly evolving domains such as sustainability and AI governance, benchmark systems must remain adapt-able without compromising methodological integrity (Hardt, 2025). Agility in benchmark design enables iterative re-finement, incorporation of newly emerging standards, and responsiveness to changing practices to maintain and im-prove model performance (Guan, 2025). At the same time, explicit articulation of trade-offs, such as the use of partial automation, proxy variables, or sampled annotations, is es-sential to ensure transparency, interpretability, and justified 5Submission for International Conference on Machine Learning (ICML 2026) 
+
+methodological choices. 
+
+AG( x) can be defined as a function of the marginal accuracy gain per change of the model: 
+
+AG( x) = f (Acc( x), p( x)) .
+
+Security and Safety refers to the ability of AI to be falsely confident and generate adversarial examples. The risk of sustainability rating benchmarks is the genera-tion of biased or misleading insights that distort decision-making (Berg et al., 2022), particularly when users treat benchmark output as proxies for the underlying real-world sustainability performance. 
+
+SS( x) can be defined as a function of the number of rows that contain harmful information Nharm (x) and the total number of extracted rows Ntotal (x):
+
+SS( x) = f (Nharm (x), N total (x)) .
+
+3.3. Intimacy 
+
+Intimacy refers to the degree to which AI systems, do-main experts, and governance stakeholders work together (Shneiderman, 2020b). It guides and sets criteria for human-machine collaboration. It represents the extent to which the design of the system enables structured interaction between human experts and AI models, allowing humans to guide, interpret, challenge, and refine the results of the model (Bansal et al., 2021). Intimacy includes three dimensions: 
+
+AI-driven and human-govern HG( x), domain-expert-in-the-Loop DE( x), iterative feedback loop IF( x).
+
+AI-Driven and Human-Govern describes systems in which AI performs tasks, while humans retain oversight, decision-making authority, and accountability for system design and outputs. Given the inherently context-dependent and normative na-ture of sustainability, humans define rating objectives and materiality boundaries, validate model outputs, and inter-vene when models exhibit error, bias, or drift (Vaccaro et al., 2024). AI systems enable the efficient processing of large, complex, and unstructured datasets, while human gover-nance ensures contextual understanding, ethical oversight, and alignment with societal values(Floridi et al., 2018). 
+
+HG( x) can be defined as a function of the number of human intervention cases and the total number of generated cases. 
+
+HG( x) = f (nintervene (x), n cases (x)) .
+
+Domain-Expert-in-the-Loop refers to the active involve-ment of subject-matter experts in the design, annotation, validation, and governance of data and model outputs for model robustness. Domain-expert-in-the-loop has been proven to enhance the robustness of AI and ML techniques. This approach im-proves the performance of knowledge graphs by improv-ing semantic accuracy, data quality, and schema design throughout the graphs’ life-cycle (Bikaun et al., 2024). Pre-vious research shows that expert participation reduces noise in automated extraction, strengthens ontology alignment, and provides higher-quality training and evaluation data for knowledge graph learning models. These contributions lead to more reliable inference, improved downstream task performance, and greater robustness in dynamic and domain-specific settings (Zhang et al., 2019). 
+
+DE( x) can be defined as a function of the number of domain-expert involvement across an AI pipeline, the num-ber of pipeline stages with expert participation, the total number of domain experts, and pipeline stages within the scope of the system: 
+
+DE( x) = f (E(x), S(x), N E , N S ) .
+
+Iterative Feedback Loop refers to a structured process in which system outputs are continuously evaluated, cor-rected, and refined through repeated cycles of human and/or automated feedback. An iterative feedback loop is critical for improving system performance, reliability, and alignment over time. In bench-mark construction and Human–AI collaboration, feedback loops enable the identification of systematic errors, evolving edge cases, and shifts in domain expectations (Raji et al., 2020). Prior research demonstrates that iterative feedback is essential for maintaining adaptability, particularly in com-plex, real-world domains where static benchmarks quickly become outdated (Raji et al., 2020). Studies on interactive machine learning also show that trial-and-error–based it-erative evaluation and collaboration between humans and AI systems constitute a core methodology for testing and improving human-AI collaboration (Mosqueira-Rey et al., 2023). 
+
+IF( x) can be defined as a function of the number of human and/or automated feedback at iteration that leads to explicit correction and improvement in the accuracy rate. 
+
+IF( x) = f (I(x), ∆x) .
+
+3.4. Self-served Purpose 
+
+Self-served Purpose addresses the extent to which poten-tial biases influence benchmarking outcomes. It guides and sets criteria for disclosure transparency and governance. It represents transparency in the disclosure of assumptions, constraints, and potential conflicts of interest (Suresh & Guttag, 2021) as well as the independence of the evalu-6Submission for International Conference on Machine Learning (ICML 2026) 
+
+ation procedures. The self-served purpose includes two dimensions: transparency T( x), and role separation and independent evaluation RS( x).
+
+Transparency refers to the explicit documentation and com-munication of the underlying assumptions, methodological choices, data constraints, and known limitations that shape the design and output of the system (Kroll et al., 2017). Explicitly documenting assumptions about data coverage, proxies, and model scope along with known limitations such as data gaps or uncertainty helps prevent misuse and over-generalization (Brundage et al., 2020). Previous work in re-sponsible AI and evaluation methodology emphasizes trans-parency as a prerequisite for accountability, reproducibility, and trust, particularly when benchmarks inform decisions or policy discussions (Inel et al., 2023). 
+
+T( x) can be defined as a function of the assumptions re-quired to build the benchmark dataset unit and the number of explicitly disclosed assumptions. 
+
+T( x) = f (Adis (x), Areq (x), ∆x) .
+
+Role Separation and Independent Evaluation refer to the structural separation of responsibilities across system design, implementation, and evaluation. Role separation operates across three dimensions: AI agent roles, human roles, and human–AI collaboration roles. Re-search on algorithmic governance and accountability across human roles highlights the importance of delineating respon-sibilities among developers, testers, and oversight bodies to mitigate risks in algorithmic systems (Cobbe et al., 2021; Cech et al., 2021; Blake, 2024). Research on algorithmic governance and AI system design emphasizes that AI agents should have different levels of data access to support role separation. When agents are allowed to produce and assess results, the risks of circular validation, misaligned rewards, and unchecked bias increase (Kroll et al., 2017; Raji et al., 2020; Cobbe et al., 2021). 
+
+RS( x) can be separated as the subset of relations whose responsibilities and handovers should be separated into units and a function of the set of all potential relationships among the roles. 
+
+RS( x) = f (Esep (x), E⋆) .
+
+# 4. SR-Delta: Sustainability Rating Delta for Methodology Improvement 
+
+For both existing and newly developed sustainability rating methodologies (Step 1), we gather original results based on the specified methodologies (Step 2) using agencies’ pro-prietary data. In parallel, the same methodology is applied to a STRIDE-guided benchmark data set that standardizes data quality, coverage, and interpretability (Step 3). Holding the rating logic constant across both pipelines ensures that any differences in outcomes arise from data construction rather than methodological design. Comparing the resulting rating outputs (Steps 4 and 5) enables systematic discrep-ancy analysis (Step 6), which identifies and further analyzes data-driven sources of rating divergence. The STRIDE framework does not prescribe corrective ac-tions; rather, it surfaces signals and warnings for deeper analysis. To validate our position, we applied the STRIDE and SR-Delta frameworks to Luxshare Precision Industry Co. ("Luxshare"), a Fortune 500 electronics manufacturer. We constructed a STRIDE-guided benchmark dataset for Luxshare using its 2024 sustainability report. Based on the proposed scoring parameters, the dataset achieved an overall STRIDE score of τ = 0 .56 . We used the datasets to go through the MSCI sustainability rating methodology to compare the results (“BB”) for the same reporting period. The incumbent executive pay rating is affected by disclosure ambiguity, whereas the chemical safety rating shows sys-tematic over-estimation. The STRIDE-guided approach ex-poses these inconsistencies, illustrating how the human–AI collaborative benchmarking framework can serve as a rigor-ous evaluation layer for conventional sustainability ratings. Please see an end-to-end case study in Appendix C. 
+
+# 5. Alternative Views 
+
+View 1: There are more efficient ways of solving the prob-lem rather than using an AI-driven benchmark dataset. 
+
+Early sustainability efforts were largely driven by political movements and public initiatives (Park et al., 2022). Regu-latory convergence (e.g., mandatory disclosure standards) can reduce rating divergence at the source by improving data consistency between firms, making AI-driven bench-mark datasets a secondary rather than a primary solution (Kong et al., 2025). Local community movements are also drivers of sustainability norms and action, especially for environmental change (Ostrom, 2010). 
+
+Response: The benchmark dataset methodology serves as an accelerator rather than a replacement. Benchmark datasets have played an essential role in advancing ma-chine learning by enabling standardized evaluation, com-parability, and rapid iteration. Early benchmarks such as MNIST (1998) accelerated algorithmic progress (LeCun et al., 1998). ImageNet (2009), with its unprecedented scale and challenge-based evaluation, exposed the limitations of existing computer vision methods and directly incentivized the development of new architectures, most notably deep convolutional neural networks (Deng et al., 2009). 7Submission for International Conference on Machine Learning (ICML 2026)  
+
+> Figure 3. Overview of the STRIDE-guided discrepancy analysis framework. Rating outcomes generated using an existing sustainability rating methodology (A) are compared against ratings produced using STRIDE-guided benchmark data to identify systematic divergences.
+
+Time also matters when it comes to the sustainability schedule. The IPCC AR6 Synthesis Report warns that global warming will likely exceed the critical 1.5 ◦Cthreshold in the early 2030s, beyond which climate risks rise non-linearly, drastic and irreversible impacts in-crease(Intergovernmental Panel on Climate Change, 2023; 2018). Sustainability ratings and reports are essential inputs for measuring progress (Organisation for Economic Co-operation and Development, 2021). Having a standardized framework for benchmark datasets is therefore essential to ensure consistency, comparability, and accountability across sustainability assessments, enabling timely, evidence-based decision-making aligned with climate targets (Berg et al., 2022). 
+
+View 2: The application of AI can introduce biases in benchmark datasets. AI can hallucinate (OpenAI, 2023). AI models can generate confidence without unfounded facts. When AI-generated outputs are reused iteratively to update benchmarks, such hallucinations can propagate and harden to apparent ground truth, creating self-reinforcing distor-tions that undermine the reliability and the use of decisions of sustainability assessments (Shumailov et al., 2024). 
+
+Response: The framework does not aim for complete ac-curacy or transparency; rather, it is designed to generate a benchmark dataset for insights and support critical think-ing. Achieving deeper and more reliable insights requires human–AI collaboration, where AI systems surface pat-terns, anomalies, and alternative perspectives, while human judgment provides contextual understanding, ethical reason-ing, and domain expertise (Amershi et al., 2019). Through this side-by-side interaction, a form of intimacy between human and machine emerges, which enables iterative sense-making, challenges overconfidence in automated outputs, and strengthens interpretive rigor rather than replacing hu-man responsibility (Shneiderman, 2020a). 
+
+View 3: Stakeholders resist the changes. Implementing an AI-driven or unified benchmarking framework may face resistance from firms, regulators, and investors anchored to incumbent methodologies, driven by concerns over trans-parency, interpretability, and potential reputation or re-rating risks (Recht et al., 2019). 
+
+Response: Such resistance is a well-documented feature of methodological and technological change, particularly in high-stakes decision environments. Research on human-centered and responsible AI emphasizes that adoption is more likely when systems are positioned as decision-support tools rather than automated arbiters, preserving human judg-ment, interpretability, and accountability. By framing the framework as an augmentation instrument based on insight rather than a replacement for existing processes, it can fa-cilitate gradual adoption, trust calibration, and stakeholder acceptance, aligning with best practices in human–AI col-laboration and change governance (Amershi et al., 2019; Shneiderman, 2020a). A data-driven science-based solution has been more effective in driving change. 
+
+# 6. Conclusion 
+
+To address discrepancies in sustainability ratings, we pro-pose an AI–human collaborative, firm-level benchmarking framework, STRIDE , together with a discrepancy analysis procedure, SR-Delta , which enables systematic identifica-tion of divergence sources and improvement opportunities in rating methodologies. We hope that this position catalyzes community engage-ment toward an open, auditable, and continuously updated benchmark infrastructure for the evaluation of sustainability rating methodologies. We call on the broader AI commu-nity to recognize the urgency of sustainability challenges and to adopt AI-powered approaches to harmonize rating discrepancies, allowing for more accurate measurement of sustainability progress. 8Submission for International Conference on Machine Learning (ICML 2026) 
+
+# References 
+
+Adamopoulou, E. and Gkizori, K. The impact of esg investments on market capitalization. Preprints.org ,2025. doi: 10.20944/preprints202507.0415.v1. URL 
+
+https://www.preprints.org/manuscript/ 202507.0415 .Amel-Zadeh, A. and Serafeim, G. Why and how investors use esg information: Evidence from a global survey. 
+
+Financial Analysts Journal , 74(3):87–103, 2018. doi: 10.2469/faj.v74.n3.2. Amershi, S., Weld, D., Vorvoreanu, M., Fourney, A., Nushi, B., Collisson, P., Suh, J., Iqbal, S., Bennett, P. N., Inkpen, K., Teevan, J., Kikin-Gil, R., and Horvitz, E. Guidelines for human-ai interaction. Proceedings of the ACM on Human-Computer Interaction , 3(CSCW):1–24, 2019. Angioni, S., Consoli, S., Dessí, D., Osborne, F., Salatino, A., et al. Investigating environmental, social, and governance (esg) discussions in news: A knowledge graph analysis empowered by ai. In CEUR WORKSHOP PROCEED-INGS , volume 3697, pp. 49–60. CEUR, 2024. Aroyo, L. and Welty, C. Truth is a lie: Crowd truth and the seven myths of human annotation. AI Magazine , 36(1): 15–24, 2015. doi: 10.1609/aimag.v36i1.2564. Bansal, G., Wu, T., Zhou, J., Fok, R., Nushi, B., Kamar, E., Ribeiro, M. T., and Weld, D. S. Does the whole exceed its parts? the effect of ai explanations on complemen-tary team performance. In Proceedings of the 2021 CHI Conference on Human Factors in Computing Systems , pp. 1–16. ACM, 2021. doi: 10.1145/3411764.3445717. Berg, F., Kölbel, J. F., and Rigobon, R. Aggregate confusion: The divergence of esg ratings. Review of Finance , 26(6): 1315–1344, 2022. doi: 10.1093/rof/rfac033. Berg, F., Kölbel, J. F., and Rigobon, R. Esg ratings: A com-pass without direction. SSRN Electronic Journal , 2025. URL https://download.ssrn.com/2025/10/ 31/4536239.pdf?abstractId=4536239 . Ac-cessed December 25, 2025. Bikaun, T., Stewart, M., and Liu, W. Cleangraph: Human-in-the-loop knowledge graph refinement and comple-tion. None , 2024. URL https://arxiv.org/abs/ 2405.03932 . arXiv preprint. Blake, H. Algorithmic accountability: Establishing frame-works for transparency and responsibility in ai-driven decisions. Preprint / Research article, 2024. Explores ac-countability frameworks that support separation of roles and oversight in AI systems. Bouthillier, X., Laurent, C., and Vincent, P. Survey of machine learning experimental methodology. Journal of Machine Learning Research , 22(202):1–76, 2021. Bronzini, M., Nicolini, C., Lepri, B., Passerini, A., and Staiano, J. Glitter or gold? deriving structured insights from sustainability reports via large language models. 
+
+EPJ Data Science , 13(1):41, 2024. Brundage, M., Avin, S., Wang, J., et al. Toward trustworthy ai development: Mechanisms for supporting verifiable claims. arXiv preprint arXiv:2004.07213 , 2020. Buneman, P., Khanna, S., and Tan, W.-C. Why and where: A characterization of data provenance. In International Conference on Database Theory , pp. 316–330. Springer, 2001. Cech, F. et al. Mechanisms for algorithmic accountability through the lens of actor and forum agency. Technology in Society , 2021. Discusses the need for stakeholder agency and governance to support transparency and accountabil-ity. Choi, C., Lopez-Lira, A., Lee, Y., Kwon, J., Kim, M., Hwang, J., Ha, M., Kim, C., Ha, J., Yun, S., and Kim, J. Structuring the unstructured: A multi-agent system for extracting and querying financial kpis and guidance. arXiv preprint arXiv:2505.19197 , 2025. doi: 10.48550/arXiv.2505.19197. FinIR 2025. Cobbe, J., Lee, M. S. A., and Singh, J. Reviewable auto-mated decision-making: A framework for accountable algorithmic systems. Law, Innovation and Technology ,13(1):93–126, 2021. da Cunha, Í. G. F., Policarpo, R. V. S., de Oliveira, P. C. S., Abdala, E. C., and Rebelatto, D. A. d. N. Asystematic review of esg indicators and corporate per-formance: Proposal for a conceptual framework. Future Business Journal , 11(1):106, 2025. ISSN 2314-7210. doi: 10.1186/s43093-025-00539-1. De Villiers, C., Sharma, U., and Molinari, M. Trends in sustainability reporting: The role of regulation and reporting standards. Accounting, Auditing & Account-ability Journal , 33(7):1545–1570, 2020. doi: 10.1108/ AAAJ-05-2019-3990. Deng, J., Dong, W., Socher, R., Li, L.-J., Li, K., and Fei-Fei, L. Imagenet: A large-scale hierarchical image database. In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR) , pp. 248–255, 2009. doi: 10.1109/CVPR.2009.5206848. Du Toit, E. Thirty years of sustainability reporting: Insights, gaps and an agenda for future research through a system-atic literature review. Sustainability , 16(23):10750, 2024. doi: 10.3390/su162310750. 9Submission for International Conference on Machine Learning (ICML 2026) 
+
+Eccles, R. G., Krzus, M. P., Rogers, J., and Serafeim, G. The need for sector-specific materiality and sustainabil-ity reporting standards. Journal of Applied Corporate Finance , 24(2):65–71, 2012. doi: 10.1111/j.1745-6622. 2012.00380.x. Eccles, R. G., Ioannou, I., and Serafeim, G. The impact of corporate sustainability on organizational processes and performance. Management Science , 60(11):2835–2857, 2014. Ferjanˇ ciˇ c, U., Ichev, R., Lonˇ carski, I., Montariol, S., Pelicon, A., Pollak, S., Sitar Šuštar, K., Toman, A., Valentinˇ ciˇ c, A., and Žnidaršiˇ c, M. Textual analysis of corporate sus-tainability reporting and corporate esg scores. Journal of Business Research , 175:114610, 2024. ISSN 0148-2963. doi: 10.1016/j.jbusres.2024.114610. Financial Times. Uk watchdog seeks to ‘clean up’ conflicts of interest in esg rat-ings. https://www.ft.com/content/ 93bbbc83-0799-41fe-a3f1-48792d8834c8 ,December 1 2025. Accessed: 2025-12-22. Floridi, L., Cowls, J., Beltrametti, M., et al. Ai4people—an ethical framework for a good ai society. Minds and Machines , 28(4):689–707, 2018. doi: 10.1007/ s11023-018-9482-5. Foody, G. M. Ground truth in classification accuracy assess-ment: Myth and reality. Geomatics , 4(1):81–90, February 2024. doi: 10.3390/geomatics4010005. Green, C. H., Maister, D. H., and Galford, R. M. The Trusted Advisor . Free Press, New York, NY, 2000. Guan, B. Is your benchmark (still) useful? dynamic bench-marking through input transformation. arXiv preprint ,abs/2503.06643, 2025. URL https://arxiv.org/ abs/2503.06643 .Hardt, M. The emerging science of machine learning benchmarks. SIAM News; manuscript available on-line at mlbenchmarks.org, 2025. URL https:// mlbenchmarks.org/ . Discusses limitations of static benchmarks and the need for evolving evaluation frame-works. Hassan, T. A., Hollander, S., van Lent, L., and Tahoun, A. Firm-level political risk: Measurement and effects. Quar-terly Journal of Economics , 134(4):2135–2202, 2019. Hassani, B. K., Bahini, Y., and Mushtaq, R. Discourse vs emissions: Analysis of corporate narratives, symbolic practices, and mimicry through large language models. 
+
+arXiv preprint , 2024. Hatter, D. G., May, C., Barbone, G., Ngunjiri, J., and Thomas, A. The transatlantic divide in esg disclosure requirements: Why this matters to global businesses. Business Law Today , March 18 2025. URL https://www.americanbar. org/groups/business_law/resources/ business-law-today/2025-march/ divide-in-esg-disclosure-requirements/ .He, C., Zhou, X., Wu, Y., Yu, X., Zhang, Y., Zhang, L., Wang, D., Lyu, S., Xu, H., Xiaoqiao, W., Liu, W., and Miao, C. Esgenius: Benchmarking llms on environmen-tal, social, and governance (esg) and sustainability knowl-edge. In Proceedings of the 2025 Conference on Empiri-cal Methods in Natural Language Processing , pp. 14623– 14664, Suzhou, China, November 2025. Association for Computational Linguistics. doi: 10.18653/v1/2025. emnlp-main.739. URL https://aclanthology. org/2025.emnlp-main.739/ .Hornung, R., Nalenz, M., Schneider, L., Bender, A., Both-mann, L., Bischl, B., Augustin, T., and Boulesteix, A.-L. Evaluating machine learning models in non-standard set-tings: An overview and new findings. arXiv preprint arXiv:2310.15108 , 2023. doi: 10.48550/arXiv.2310. 15108. Huber, B. M. and Comstock, M. Esg reports and ratings: What they are, why they matter. Harvard Law School Forum on Corporate Governance , July 2017. Posted by Davis Polk & Wardwell LLP. Inel, O., Draws, T., and Aroyo, L. Collect, measure, re-peat: Reliability factors for responsible ai data collec-tion. In Proceedings of the AAAI Conference on Hu-man Computation and Crowdsourcing (HCOMP) , 2023. arXiv:2308.12885. Intergovernmental Panel on Climate Change. Global warm-ing of 1.5 ◦c. Technical report, IPCC, Geneva, Switzer-land, 2018. Special Report on the impacts of global warming of 1.5 ◦C. Intergovernmental Panel on Climate Change. Climate change 2023: Synthesis report. Technical report, IPCC, Geneva, Switzerland, 2023. Contribution of Working Groups I, II and III to the Sixth Assessment Report. Kerber, R. and Wilkes, T. Sustainalytics down-grades three adani companies’ governance scores. Reuters , February 9 2023. URL 
+
+https://www.reuters.com/article/ adani-group-sustainalytics-idUSL4N34X2XE .Kong, L., Chen, R., Huang, X., and Wang, F. Can industry-specific information disclosure guidelines al-leviate corporate esg diverence? evidence from chi-10 Submission for International Conference on Machine Learning (ICML 2026) 
+
+nese listed companies. International Review of Finan-cial Analysis , pp. 104529, 2025. doi: 10.1016/j.irfa. 2025.104529. URL https://doi.org/10.1016/ j.irfa.2025.104529 .Kroll, J. A., Huey, J., Barocas, S., Felten, E. W., Reiden-berg, J. R., Robinson, D. G., and Yu, H. Accountable algorithms. University of Pennsylvania Law Review , 165: 633–705, 2017. Larasati, R., De Liddo, A., and Motta, E. Human and ai trust: Trust attitude measurement instrument. arXiv preprint arXiv:2510.21535 , 2025. URL https:// arxiv.org/abs/2510.21535 .LeCun, Y., Bottou, L., Bengio, Y., and Haffner, P. Gradient-based learning applied to document recognition. Pro-ceedings of the IEEE , 86(11):2278–2324, 1998. doi: 10.1109/5.726791. Li, B., Qi, P., Liu, B., Di, S., Liu, J., Pei, J., Yi, J., and Zhou, B. Trustworthy ai: From principles to practices. ACM Computing Surveys , 55(9):1–46, 2023. Liu, M. Quantitative esg disclosure and divergence of esg ratings. Frontiers in Psychology , 13:936798, 2022. doi: 10.3389/fpsyg.2022.936798. URL https://doi. org/10.3389/fpsyg.2022.936798 .Lu, L. Regulating esg rating firms as the gatekeepers for sustainable finance. Capital Markets Law Journal , 19(2): 184–206, 2024. Luo, Z., Kasirzadeh, A., and Shah, N. B. The more you automate, the less you see: Hidden pitfalls of ai scientist systems. arXiv preprint , 2024. arXiv preprint. Meng, Q., Knapp, D., Brecht, L., and Eckert, R. A com-parative analysis of corporate sustainability reporting: A multi-method approach to china and the united states. 
+
+Sustainability , 17(22):10315, 2025. ISSN 2071-1050. doi: 10.3390/su172210315. Mosqueira-Rey, E., Hernández-Pereira, E., Alonso-Ríos, D., Bobes-Bascarán, J., and Fernández-Leal, A. Human-in-the-loop machine learning: A state of the art. Artificial Intelligence Review , 56:3005–3054, 2023. doi: 10.1007/ s10462-022-10246-w. MSCI ESG Research LLC. Msci esg ratings methodology: Process. Technical report, MSCI Inc., April 2024. URL https://www.msci.com/documents/ 1296102/34424357/MSCI+ESG+Ratings+ Methodology+-+Process.pdf . Accessed: 2025-01-30. MSCI ESG Research LLC. General faqs for cor-porate issuers, June 2025. URL https://www. msci.com/documents/1296102/10259127/ FAQ-For-Corporate-Issuers.pdf . Accessed: 2025-01-31. Odinaka, N. and Wash-Anigboro, O. Sustainability practices in fortune 500 companies and their impact on business practices: A multiple case study analysis. Journal of Energy Research and Reviews , 17(7):17–26, 2025. OpenAI. Gpt-4 technical report, 2023. Acknowledges hal-lucination as a core limitation of large language models. Organisation for Economic Co-operation and Development. Sustainability metrics: Measurement for policy action. Technical report, OECD, Paris, France, 2021. Organisation for Economic Co-operation and Devel-opment (OECD). Behind esg ratings: Unpacking sustainability metrics. Technical report, OECD Publishing, 2025. URL https://www.oecd. org/content/dam/oecd/en/publications/ reports/2025/02/behind-esg-ratings_ 4591b8bb/3f055f0c-en.pdf .Ostrom, E. Polycentric systems for coping with collective action and global environmental change. Global Envi-ronmental Change , 20(4):550–557, 2010. doi: 10.1016/j. gloenvcha.2010.07.004. Ott, S. and Barbosa-Silva, A. Mapping global dynamics of benchmark creation and saturation in artificial intelligence. Scientific Data , 2022. URL https://www.ncbi.nlm.nih.gov/pmc/ articles/PMC9649641/ . Discusses benchmark sat-uration patterns where additional data yield limited per-formance improvements. Park, J., Cuervo-Cazurra, A., and Montiel, I. The evolution of sustainability concerns over business activities: From local to cross-national to global. Manuscript EE003, November 27, 2022, 2022. Park, S. K. Untangling the extraterritoriality of esg regula-tion. North Carolina Journal of International Law , 49(4), 2024. Petersen, L., Minkkinen, P., and Esbensen, K. H. Rep-resentative sampling for reliable data analysis: Theory of sampling. Chemometrics and Intelligent Laboratory Systems , 158:1–20, 2016. Pineau, J., Vincent-Lamarre, P., Sinha, K., Larivière, V., Beygelzimer, A., d’Alché Buc, F., Fox, E., and Larochelle, H. Improving reproducibility in machine learning research. Journal of Machine Learning Research ,22(164):1–20, 2021. 11 Submission for International Conference on Machine Learning (ICML 2026) 
+
+Raji, I. D., Smart, A., White, R., Mitchell, M., Gebru, T., et al. Closing the ai accountability gap: Defining an end-to-end framework for internal algorithmic auditing. 
+
+Proceedings of the ACM Conference on Fairness, Ac-countability, and Transparency (FAccT) , 2020. Recht, B., Roelofs, R., Schmidt, L., and Shankar, V. Do imagenet classifiers generalize to imagenet? In Proceed-ings of the 36th International Conference on Machine Learning , 2019. URL https://arxiv.org/abs/ 1902.10811 .Shi, Y. and Yao, T. Esg rating divergence: Existence, driving factors, and impact effects. Sustainability , 17(10):4717, 2025. doi: 10.3390/su17104717. URL https://doi. org/10.3390/su17104717 .Shneiderman, B. Human-centered artificial intelligence: Reliable, safe & trustworthy. International Journal of Human–Computer Interaction , 36(6):495–504, 2020a. Shneiderman, B. Human-centered artificial intelligence: Reliable, safe & trustworthy. International Journal of Human–Computer Interaction , 36(6):495–504, 2020b. Shumailov, I., Shumaylov, Z., Zhao, Y., Gal, Y., Papernot, N., and Anderson, R. Ai models collapse when trained on recursively generated data. Nature Machine Intelligence ,2024. doi: 10.1038/s42256-024-00813-4. Snow, R., O’Connor, B., Jurafsky, D., and Ng, A. Cheap and fast—but is it good? evaluating non-expert annotations for natural language tasks. In Proceedings of the 2008 Conference on Empirical Methods in Natural Language Processing , 2008. URL https://aclanthology. org/D08-1027/ .Stedman, C. and Gibbons Paul, L. 10 top esg report-ing frameworks explained and compared. TechTarget, November 2025. Accessed: 2025-12-27. Sun, Z., Satapathy, R., Guo, D., Li, B., Liu, X., Zhang, Y., Tan, C.-A., Shirota Filho, R., and Goh, R. S. M. Informa-tion extraction: Unstructured to structured for esg reports. In 2024 IEEE International Conference on Data Mining Workshops (ICDMW) , pp. 487–495. IEEE, 2024. Sun Life Global Investments Institu-tional. No two esg ratings are the same. 
+
+https://www.slgiinstitutional. com/en/news-and-insights/ No-two-ESG-ratings-are-the-same/ ,January 30 2023. Accessed: 2025-12-22. Suresh, H. and Guttag, J. V. A framework for understanding sources of harm throughout the machine learning life cycle. In Proceedings of the 2021 ACM Conference on Fairness, Accountability, and Transparency , pp. 1–12. ACM, 2021. doi: 10.1145/3442188.3445922. Sustainalytics. Impact metrics: Analyze and report on the impact of your portfolio. https://www. sustainalytics.com/impact-reporting ,n.d. Accessed January 4, 2026. Toderas, M. Artificial intelligence for sustainability: A systematic review and critical analysis of ai applications, challenges, and future directions. Sustainability , 17(17): 8049, 2025. doi: 10.3390/su17178049. URL https: //doi.org/10.3390/su17178049 .Troshani, I. and Rowbottom, N. Corporate sustainability reporting and information infrastructure. Accounting, Au-diting & Accountability Journal , 2024. under review / forthcoming (qualitative evidence on infrastructure con-straints). Uma, A., Foroutan, N., Miller, T., and Gurevych, I. An-notator disagreement, label ambiguity, and model per-formance. In Proceedings of the 2021 Conference on Empirical Methods in Natural Language Processing , pp. 7560–7575, 2021. Vaccaro, M., Almaatouq, A., and Malone, T. W. When combinations of humans and ai are useful: A systematic review and meta-analysis. Nature Human Behaviour ,2024. doi: 10.1038/s41562-024-02024-1. Windolph, S. E. Assessing corporate sustainability through ratings: Challenges and their causes. Journal of En-vironmental Sustainability , 1(1):Article 5, 2011. doi: 10.14448/jes.01.0005. URL https://repository. rit.edu/jes/vol1/iss1/5 .Wong, C. and Petroy, E. Rate the raters 2020: Investor survey and interview results. SustainAbility (an ERM Group company), March 2020. Accessed 2025. Wu, Y., Hu, P., and Wang, D. D. The ai annotator: Large language models’ potential in scoring sustain-ability reports. Systems , 13(10):899, 2025. doi: 10. 3390/systems13100899. URL https://doi.org/ 10.3390/systems13100899 .Zajac, H. D., Avlona, R. N., Andersen, T. O., Kensing, F., and Shklovski, I. Ground truth or dare: Factors affecting the creation of medical datasets for training ai. In Proceedings of the 2023 AAAI/ACM Confer-ence on AI, Ethics, and Society (AIES ’23) , pp. 351– 362. Association for Computing Machinery, 2023. doi: 10.1145/3600211.3604766. Zhang, L. et al. Do commercial ties influence esg ratings? evidence on conflicts of interest in esg rating agencies. Journal of Accounting Research (as discussed via Wiley press release) ,2024. URL https://onlinelibrary.wiley. 
+
+12 Submission for International Conference on Machine Learning (ICML 2026) 
+
+com/doi/10.1111/1475-679X.12582 . Com-mercial relationships and acquisitions can bias ESG rat-ings, increasing scores for clients of parent firms. Zhang, Y. et al. Human-in-the-loop learning for robust neural networks. In Advances in Neural Information Processing Systems , 2021. Zhang, Z., Li, J., et al. Human-in-the-loop knowledge graph construction. IEEE Intelligent Systems , 34(6):44– 52, 2019. Zhong, L., Wu, J., Li, Q., Peng, H., and Wu, X. Automatic information extraction from unstructured documents: A survey. ACM Computing Surveys (CSUR) , 53(4):1–37, 2020. doi: 10.1145/3398034. Zou, Y., Shi, M., Chen, Z., Deng, Z., Lei, Z., Zeng, Z., Yang, S., Tong, H., Xiao, L., and Zhou, W. Esgreveal: An llm-based approach for extracting structured data from esg reports. arXiv preprint arXiv:2312.17264 , 2023. doi: 10.48550/arXiv.2312.17264. 13 Submission for International Conference on Machine Learning (ICML 2026) 
+
+# A. Limitations 
+
+The primary limitation of this research lies in its emphasis on establishing a methodological framework rather than delivering a fully implemented, end-to-end practical solution with validation. 1. Scope of Empirical Validation : This work focuses on establishing a methodological foundation rather than presenting a fully implemented, end-to-end system with large-scale empirical validation. Future work can focus on deploying an end-to-end STRIDE–SR-Delta system and performing validation across diverse rating providers, industries, and regulatory contexts. 2. Discrete Parameterization and Formula Robustness : A few formula elements are modeled as binary indicators in the current framework. While this simplifies presentation, it limits expressiveness. A more principled approach would represent these elements on a continuous scale (e.g., entropy or information-theoretic measures) to capture graded levels of informational content and uncertainty. In addition, some definitions remain vague. For example, under the criterion “AI-driven and human-governed,” human intervention can be interpreted either as a safeguard that strengthens system reliability or as an indicator of reduced automation. This ambiguity limits the evaluative value of the criterion. 3. Weight Assignment : This study does not formalize a methodology for estimating element-level weights within the STRIDE framework. Developing weighting schemes remains an important direction for future research. 4. Thresholds : In the current implementation, any strictly positive value of the STRIDE formula is treated as evidence of information in the dataset. However, no threshold function is defined to differentiate varying degrees of informational content or quality. Developing principled thresholding rules remains an important direction for future work, with implications for data set validity and downstream evaluation robustness. 14 Submission for International Conference on Machine Learning (ICML 2026) 
+
+# B. Equation 
+
+Human–Machine Trust Formulation 
+
+τ (x) = σ(αC C(x) + αRR(x) + αI I(x) − αS S(x)) , σ(z) = 11 + exp( −z) . (6) 
+
+C(x) = wC 
+
+> IM
+
+IM( x) + wC 
+
+> AT
+
+AT( x) + wC 
+
+> ER
+
+ER( x) + wC 
+
+> TR
+
+TR( x). (7) 
+
+R(x) = wR 
+
+> GT
+
+GT( x) + wR 
+
+> SM
+
+SM( x) + wR 
+
+> AG
+
+AG( x) + wR 
+
+> SS
+
+SS( x). (8) 
+
+I(x) = wI 
+
+> DE
+
+DE( x) + wI 
+
+> IF
+
+IF( x) + wI 
+
+> HG
+
+HG( x). (9) 
+
+S(x) = wS 
+
+> T
+
+T( x) + wS 
+
+> RS
+
+RS( x). (10) 
+
+Parameters. τ (x) ∈ (0 , 1) denotes the overall human–machine trust score for query instance x. C(x), R(x), I(x),and S(x) represent perceived credibility, reliability, human–AI intimacy, and self-served purpose, respectively, each normalized to [0 , 1] . Coefficients αC , α R, α I , α S ≥ 0 control the relative contribution of each perception factor. Weights 
+
+w(·) 
+
+> •
+
+≥ 0 define convex combinations of sub-metrics and sum to one within each component. 
+
+Sub-metrics. IM Inclusiveness and Materiality, AT Auditable and Traceable Data, ER Exemplary Reference, TR Time Relevance; GT Ground-Truth Annotation, SM Statistical Methodology, AG Agility with right trade-offs, SS Security and Safety; DE Domain-Expert-in-the-Loop, IF Iterative Feedback Loop, HG Human-Governed AI, T Transparency, 
+
+RS Role Separation and Independent Oversight. 
+
+Credibility Formulation 
+
+C(x) = wC 
+
+> IM
+
+IM( x) + wC 
+
+> AT
+
+AT( x) + wC 
+
+> ER
+
+ER( x) + wC 
+
+> TR
+
+TR( x). (11) 
+
+where C(x) ∈ [0 , 1] is the perceived credibility score for x. Weights satisfy wC 
+
+> •
+
+≥ 0 and wC 
+
+> IM
+
++wC 
+
+> AT
+
++wC 
+
+> ER
+
++wC 
+
+> TR
+
+= 1 .
+
+IM( x) = 
+
+ Cctry (x)
+
+Nctry 
+
+
+
+·
+
+ Iind (x)
+
+Nind 
+
+
+
+·
+
+ S(x)
+
+Nstd 
+
+
+
+·
+
+ 11 + exp( x − 0.5) 
+
+ 14
+
+. (12) 
+
+where Cctry (x), Iind (x), and S(x) denote the sets of countries, industries, and standard layers covered by the evidence used to answer x. Nctry , Nind , and Nstd represent the total numbers of countries, industries, and standard layers in scope. The variable x ∈ { 0, 1} is a binary indicator specifying if external data are incorporated ( x = 1 ) or not ( x = 0 ). 
+
+AT( x) = 1
+
+|E (x)|
+
+X
+
+> e∈E (x)
+
+aud( e) + tr( e)2 . (13) 
+
+where E(x) is the set of evidence items (e.g., report passages, tables, news snippets, knowledge-graph facts) actually used to generate τ (x).
+
+ER( x) = 1 − (1 − σ)nrec (x) , σ ∈ (0 , 1) . (14) 
+
+where σ is a predefined confidence level for a single recognition event, and nrec (x) denotes the number of recognized endorsements or certifications of the data source (or reporting organization) per year relevant to x.
+
+TR( x) = exp  −λ ∆t(x), λ > 0. (15) 
+
+where ∆t(x) denotes the time lag (e.g., in years) between the analysis time and the timestamp of the key input data used to answer x, and λ controls the recency decay rate. 
+
+15 Submission for International Conference on Machine Learning (ICML 2026) 
+
+Reliability Formulation 
+
+R(x) = wR 
+
+> GT
+
+GT( x) + wR 
+
+> SM
+
+SM( x) + wR 
+
+> AG
+
+AG( x) + wR 
+
+> SS
+
+SS( x). (16) 
+
+where R(x) ∈ [0 , 1] denotes the perceived reliability score for query instance x. GT , SM , AG , and SS correspond to Ground-Truth Annotation, Rigorous Statistical Methodology, Agility with right trade-offs, and Security and Safety, respectively. Weights satisfy wR 
+
+> •
+
+≥ 0 and wR 
+
+> GT
+
++ wR 
+
+> SM
+
++ wR 
+
+> AG
+
++ wR 
+
+> SS
+
+= 1 .
+
+SM( x) = wsat min 
+
+
+
+1, n(x)
+
+nsat 
+
+
+
++ wrep 
+
+
+
+1 − σp(x)
+
+
+
+, (17) where 
+
+σp(x) = 
+
+vuut 1
+
+K
+
+> K
+
+X
+
+> k=1
+
+ ˆpx,k − ˆpx
+
+2, ˆpx = 1
+
+K
+
+> K
+
+X
+
+> k=1
+
+ˆpx,k . (18) 
+
+where n(x) denotes the effective sample size relevant to x, nsat is a saturation threshold beyond which marginal gains from additional samples are negligible, ˆpx represents the empirical stratified sample distribution (e.g., by country, industry, or topic), p⋆ denotes the target population distribution, and σ(ˆ px, p ⋆) measures the normalized deviation between the sample and population distributions. The weights satisfy wsat , w rep ≥ 0 and wsat + wrep = 1 .
+
+GT( x) = wH , p human (x) + wT , min! 
+
+
+
+1, u(x)
+
+umax 
+
+
+
++ wHM , σ HM (x) + wM M , σ M M (x), (19) 
+
+where phuman (x) denotes the proportion of expert human annotations, u(x) is the average expert tenure (in years) with normalization cap umax , σHM (x) represents the standard deviation of human–machine agreement, and σM M (x) denotes the aggregated (summed) deviation across machine–machine agreement scores. Weights satisfy wH , w T , w HM , w M M ≥
+
+0 and wH + wT + wHM + wM M = 1 .
+
+AG( x) = min 
+
+
+
+1, max 
+
+
+
+0, ∆Acc( x)∆p(x) + ϵ
+
+ 
+
+, ϵ > 0. (20) 
+
+where ∆Acc( x) denotes the accuracy improvement after a benchmark or method update, ∆p(x) ∈ [0 , 1] is the normalized proportion of that update, and ϵ avoids division by zero. 
+
+SS( x) = 1 − Nharm (x)
+
+Ntotal (x) . (21) 
+
+where Nharm (x) denotes the number of extracted rows associated with harmful or sensitive information relevant to x,and Ntotal (x) denotes the total number of extracted rows. 
+
+16 Submission for International Conference on Machine Learning (ICML 2026) 
+
+Intimacy (Human–AI Collaboration) Formulation 
+
+I(x) = wI 
+
+> HG
+
+HG( x) + wI 
+
+> DE
+
+DE( x) + wI 
+
+> IF
+
+IF( x). (22) 
+
+where I(x) ∈ [0 , 1] denotes the perceived intimacy score for query instance x. Weights satisfy wI 
+
+> •
+
+≥ 0 and wI 
+
+> DE
+
++
+
+wI 
+
+> IF
+
++ wI 
+
+> HG
+
+= 1 .
+
+HG( x) = nintervene (x)
+
+ncases (x) . (23) 
+
+where nintervene (x) denotes the number of cases in which humans intervene (e.g., override, correct, or approve with edits), and ncases (x) denotes the total number of governed cases in the evaluation window relevant to x.
+
+DE( x) = 12
+
+ E(x)
+
+NE
+
++ S(x)
+
+NS
+
+
+
+. (24) 
+
+where E(x) denotes the set of domain experts involved in answering or validating x, S(x) denotes the set of AI pipeline stages in which domain experts participate (e.g., data curation, annotation, validation, evaluation, and governance), and 
+
+NE and NS denote the total numbers of experts and pipeline stages in scope, respectively. 
+
+IF( x) = 1
+
+T
+
+> T
+
+X
+
+> t=1
+
+∆Acc t(x), (25) 
+
+where T denotes the total number of feedback iterations, and ∆Acc t(x) denotes the accuracy-rate enhancement at iteration t resulting from human and/or automated feedback (e.g., ∆Acc t(x) = Acc t(x) − Acc t−1(x)). 
+
+Self-Served Purpose Formulation 
+
+S(x) = wS 
+
+> TL
+
+TL( x) + wS 
+
+> RS
+
+RS( x). (26) 
+
+where S(x) ∈ [0 , 1] denotes the perceived self-served purpose score (lower values indicate stronger transparency and governance). Weights satisfy wS 
+
+> •
+
+≥ 0 and wS 
+
+> TL
+
++ wS 
+
+> RS
+
+= 1 .T (x) = |A dis (x)||A req (x)| ∈ [0 , 1] . (27) 
+
+where Areq (x) denotes the set of required assumptions for building the benchmark dataset unit x, and Adis (x) ⊆ A req (x)
+
+denotes the set of explicitly disclosed assumptions. 
+
+RS (x) = |E sep (x)||E ⋆| ∈ [0 , 1] . (28) 
+
+where R = {H, M, HM }, and let E⋆ denote the set of all potential relations among roles. Let Esep (x) ⊆ E ⋆ be the subset of relations whose responsibilities and handoffs are explicitly separated in unit x.
+
+17 Submission for International Conference on Machine Learning (ICML 2026) 
+
+# C. A Case Study - Luxshare Precision Industry Co. Ltd ("Luxshare") 
+
+The STRIDE model generates two outputs: structured datasets and a quantitative readiness score for each dataset, computed using the defined formula. In this section, we demonstrate the general steps for constructing datasets using STRIDE and present an illustrative example of a dataset built under the STRIDE framework. We outline how SR-Delta can be applied to surface actionable insights. We selected Luxshare from the Fortune 500 list. It received a "BB" rating from MSCI from November 14th, 2023, to May 29th, 2024. We use Luxshare’s 2024 sustainability report as primary input, as it covers the majority of the analysis period. The final STRIDE score for the Luxshare dataset is 0.56. In our analysis using SR-Delta, ambiguities in disclosure definitions and over- or under-penalization could lead to rating adjustments. These adjustments include a potential upward adjustment of +1.2 for the former, a downward adjustment of –1.1 to -0.5 for the latter, with a net adjustment between +0.1 to +0.7. 
+
+C.1. Credibility - Raw Input Data Selection Inclusiveness and Materiality For values, it is important to capture signals across sectors and regions. Companies from the Fortune 500, as listed on kaggle.com for the year 2025 2, can serve as proxies. We gathered links to online sustainability reports from Fortune Global 500 companies for 2020-2024. The data set includes 2,000 reports covering 75 industries and companies headquartered in 35 countries. Although the sample is not evenly distributed across industries or regions, it captures substantial heterogeneity and offers coverage of representative firms across sectors and geographies (Figure 4).  
+
+> Figure 4. The Fortune Global 500 comprises firms with diversity across geographic regions and industry sectors.
+
+When constructing the metrics list, it is essential to include international, national, local, industry-specific, and firm-specific metrics. Luxshare, as an example, operates in at least 12 countries and is in the electronics manufacturing industry, according to Luxshare Precision’s sustainability reports. We use the standards and principles listed in Table 1 as inputs for the first four metric levels. As illustrated in Figure 5, we first use LLMs to integrate a predefined metrics list for the first four categories (Step 1). For company-specific metrics, we employ LLMs to generate a custom metric list in an unsupervised manner (Step 2). The two lists are then merged and de-duplicated (Step 3) using prompts (Step 4), followed by LLM-based verification to produce the final metric set (Step 5). This process yields a consolidated list of 527 metrics. We recommend incorporating human-in-the-loop safeguards for metric generation, prompt-based metric evaluation, and metric review, as indicated by the grey dashed box, particularly when additional oversight or risk mitigation is required. For the purposes of the case study, we do not use external data as metric inputs or value inputs.  
+
+> 2See https://www.kaggle.com/datasets/edgarhuichen/fortune-global-500
+
+18 Submission for International Conference on Machine Learning (ICML 2026)  
+
+> Table 1. Sustainability Reporting and Disclosure Frameworks Across Four Levels
+
+Level Description Frameworks and Standards Global International standards Global Reporting Initiative (GRI); Task Force on Climate-related Financial Disclosures (TCFD); IFRS Sustainability Disclosure Stan-dards (ISSB); UN Sustainable Development Goals (UN SDGs); 
+
+National Country-specific regulations UK Sustainability Reporting Standards; K-ESG Guidelines (Korea); SGX Core ESG Metrics (Singapore); Corporate Sustainability Dis-closure Standards (China) 
+
+Local Sub-national standards Implementation Guidance on Climate Information Disclosure under the Hong Kong Exchange Environmental, Social and Governance (ESG) Framework; Beijing Ecological Environment Status Report 
+
+Industry Sector-specific standards Criteria for the Sustainability Assessment of Network Equipment for the Global Electronics  
+
+> Figure 5. In our case study, metrics across all levels are consolidated and de-duplicated using LLMs. We recommend incorporating humans in the loop as suggested in the dashed box.
+
+Integrity Measure (IM) Luxshare Score 
+
+IM( x) = 
+
+ Cctry (x)
+
+Nctry 
+
+
+
+·
+
+ Iind (x)
+
+Nind 
+
+
+
+·
+
+ S(x)
+
+Nstd 
+
+
+
+·
+
+ 11 + exp( x − 0.5) 
+
+ 14
+
+. (29) 
+
+Illustrative Inputs (per Eq. (12)): 
+
+• Cctry (x) = 35 , number of countries covered; Nctry = 195 , total number of countries; • Iind (x) = 75 , number of industries covered; Nind = 163 , total number of industries; • S(x) = 5 , number of standard layers included; Nstd = 5 , total number of standard layers; • x = 0 , indicating that no external data are incorporated. 
+
+IM( x) = 
+
+ 35 195 
+
+
+
+·
+
+ 75 163 
+
+
+
+·
+
+ 55
+
+
+
+·
+
+ 11 + exp(0 − 0.5) 
+
+ 14
+
+≈ 0.48 .
+
+19 Submission for International Conference on Machine Learning (ICML 2026) 
+
+Auditable and Traceable Data The data and model process defined for Luxshare constitutes a limited-scope case study. Full traceability and auditability are not directly applicable in this setting because data inputs are manually curated, the analytical steps are explicitly defined, and the pipeline is linear rather than distributed. There is no complex provenance chain or system-level uncertainty that would require formal traceability or independent audit mechanisms. 
+
+Exemplary Reference During the 2024 fiscal year, Luxshare received 18 awards in its sustainability report. Assume that the confidence of earning the reward is 80% since they have been able to receive the same awards over years, 
+
+Exemplary Reference (ER) Score 
+
+ER( x) = 1 − (1 − σ)nrec (x) , σ ∈ (0 , 1) .
+
+Illustrative Inputs: 
+
+• nrec (x) = 18 , number of recognized awards; • σ = 0 .80 , confidence level (assumed). 
+
+ER( x) = 1 − (1 − 0.80) 18 = 1 − (0 .20) 18 ≈ 1.00 .
+
+Time Relevance The MSCI case-study report covers Novermber 14th 2023 to May 29th 2024, while the sustainability reports overs January 1st 2024 to December 31st, 2024, resulting in an overlap of approximately five months. 
+
+Time Relevance (TR) Score 
+
+TR( x) = exp  −λ ∆t(x), λ > 0.
+
+Illustrative Inputs: 
+
+• λ = 0 .1, decay parameter (assumed); • ∆t(x) = 512 , time lag in years (five months). 
+
+TR( x) = exp 
+
+
+
+−0.1 · 512 
+
+
+
+= exp  −0.4167  ≈ 0.96 .
+
+Given the above calculations, the total credibility score is calculated as follows. 
+
+Total Credibility (C) Score 
+
+C(x) = wC 
+
+> IM
+
+IM( x) + wC 
+
+> AT
+
+AT( x) + wC 
+
+> ER
+
+ER( x) + wC 
+
+> TR
+
+TR( x),
+
+Illustrative Inputs (Equal Weights and AT is not applicable): 
+
+• wC 
+
+> IM
+
+= wC 
+
+> ER
+
+= wC 
+
+> TR
+
+= 1 /3;• IM( x) = 0 .48 (Materiality and Inclusiveness); • AT( x) is not applicable; • ER( x) = 1 .00 (Evidence Recognition); • TR( x) = 0 .96 (Time Relevance). 
+
+C(x) = 1 /3 · 0.48 + 1 /3 · 1.00 + 1 /3 · 0.96 ≈ 0.81 .
+
+20 Submission for International Conference on Machine Learning (ICML 2026) 
+
+C.2. Reliability - Modele Performance Rigorous Statistical Methodology In the sampling process, if full datasets would be generated, ground-truth data denote a collection of manually annotated datasets, like the Luxshare dataset. They serve as supervisory input for training the LLM to generate the remaining datasets. Therefore, from the full cohort of selected companies that span four years, a representative subset are curated to reflect the broader population. To ensure the representativeness of the ground truth dataset, the sample selection process was guided by three core criteria in Table 2. Table 3 provides an overlook for all selected criterion metrics.  
+
+> Table 2. Conceptual Definitions of Core Dataset Criteria
+
+Criteria Definition 
+
+Data Properties It characterizes the structural, textual, and visual attributes of a document. These metrics serve as proxies for reporting depth, information richness, and disclosure quality. Company Diversity It represents core organizational characteristics, such as scale, workforce size, and maturity. It captures structural heterogeneity across firms that shapes reporting capacity, disclosure practices, and sustainability performance comparability. Domain Attributes It represents the extent to which a company’s sustainability reporting engages with environ-mental, social, and governance domains. It captures variation in topical focus, narrative depth, and standards alignment that shapes disclosure quality.  
+
+> Table 3. Dataset Criteria and Metric Definitions
+
+Criteria Metric Name Metric Definition Data Properties page_count Total number of pages in the sustainability report. word_count Total number of words in the report text. sentence_count Total number of sentences extracted from the report. avg_sentence_length Average number of words per sentence. file_size_mb File size of the report in megabytes (MB). image_count Total number of figures, charts, or visual elements. visual_elements_per_page Average number of visual elements (e.g., images, tables, graphs) per page. 
+
+Company Diversity region Primary geographical region of the reporting entity. industry Industry classification of the company. revenue_billions Annual company revenue measured in USD billions. employees_thousands Number of employees measured in thousands. years_since_founded Number of years since the company was founded. public Binary indicator denoting whether the company is publicly traded or privately held. 
+
+Domain Attributes env_keyword_count Frequency of environmental-related keywords (e.g., climate, car-bon, emissions) in the report text. social_keyword_count Frequency of social-related keywords (e.g., diversity, labor prac-tices, human rights) in the report text. gov_keyword_count Frequency of governance-related keywords (e.g., board oversight, compliance) in the report text. framework_count Number of recognized sustainability reporting frameworks refer-enced (e.g., GRI, SASB, TCFD, SDGs). frameworks List of sustainability reporting frameworks explicitly referenced in the report. 21 Submission for International Conference on Machine Learning (ICML 2026) 
+
+To assess sample size adequacy, we employ Jensen–Shannon divergence Figure 6 as a measure of distributional convergence. Empirically, the divergence decreases and plateaus as the sample size approaches approximately 300, indicating diminishing marginal information gain from additional samples. This stabilization suggests that a sample size of around 300 is sufficient. If all samples have been selected, the sample saturation rate is 1. We use these metrics to quantify the deviation of candidate samples from the target distribution and select the subset that minimizes the overall deviation from the population Figure 7. As this procedure was not applicable to the Luxshare case study, the corresponding scores SM(x) is not computed. 
+
+Ground Truth Annotation For the Luxshare case study, metric values were initially generated and evaluated by three independent AI agents. Their outputs were aggregated by averaging to obtain a preliminary score for each metric and to compute deviation-based agreement measures. Subsequently, a domain expert with over five years of relevant experience conducted a full-dataset human annotation covering 527 metrics, providing authoritative validation and serving as the reference for downstream analysis. 
+
+Ground Truth Annotation (GT) Score 
+
+GT( x) = wH phuman (x) + wT min 
+
+
+
+1, u(x)
+
+umax 
+
+
+
++ wHM σHM (x) + wM M σM M (x).
+
+Illustrative Inputs: 
+
+• wH = wT = wHM = wMM = 14 ;• phuman (x) = 527 527 = 1 ;• min 
+
+
+
+1, u(x)
+
+> umax
+
+
+
+= 1 ;• σHM = 1 .43 ;• σM M = 1 .24 .
+
+GT( x) = 14 (1 + 1 + 1 .43 + 1 .24) ≈ 1.17 .
+
+Agility with the Right Trade-off We deploy optimization agents that dynamically switch among multiple LLMs during the extraction and scoring process. In the Luxshare case study, the agents performed three model-switching iterations, adaptively balancing accuracy, reasoning capability, and computational efficiency. This process resulted in an average accuracy improvement of approximately 3.2% per switch across 527 metrics. The model pool consisted of GPT-4.1, Gemini 2.5 Pro, and Grok, allowing the system to leverage complementary strengths across models and mitigate systematic biases associated with any single architecture. 
+
+Agility (AG) with the Right Trade-off Score 
+
+AG( x) = min 
+
+
+
+1, max 
+
+
+
+0, ∆Acc( x)∆p(x) + ϵ
+
+ 
+
+.
+
+Illustrative Inputs: 
+
+• ∆Acc( x) = 3 .2% = 0 .032 ;• ∆p(x) = 10% = 0 .10 ;• ϵ = 10 −6.
+
+AG( x) = min 
+
+
+
+1, 0.032 0.10 + 10 −6
+
+
+
+≈ min(1 , 0.3199968) = 0 .32 .
+
+22 Submission for International Conference on Machine Learning (ICML 2026) 
+
+Figure 6. The largest divergence occurs in adopted sustainability frameworks and industry alignment. At a sample size of 300, their Jensen–Shannon Divergence drops to 0.013 and 0.012, indicating distributional stability and sample representativeness. 
+
+Figure 7. The graph illustrates, by way of example, the aggregate minimum deviation from the population for the selected samples. 
+
+23 Submission for International Conference on Machine Learning (ICML 2026) 
+
+Safety and Security After extracting all values, we manually reviewed the populated entries and did not find harmful or insecure information. 
+
+Safety and Security Score (SS) 
+
+SS( x) = 1 − Nharm (x)
+
+Ntotal (x) .
+
+Illustrative Inputs: 
+
+• Nharm (x) = 0 ;• Ntotal (x) = 527 .
+
+SS( x) = 1 − 0527 = 1 .
+
+Given the above calculations, the total reliability score is calculated as follows. 
+
+Total Reliability (R) Score 
+
+R(x) = wR 
+
+> GT
+
+GT( x) + wR 
+
+> SM
+
+SM( x) + wR 
+
+> AG
+
+AG( x) + wR 
+
+> SS
+
+SS( x).
+
+Illustrative Inputs (Equal Weights and SM is not applicable): 
+
+• wR 
+
+> GT
+
+= wR 
+
+> SM
+
+= wR 
+
+> SS
+
+= 1 /3;• SM( x) is not applicable; • GT( x) = 1 .17 (Ground Truth Annotation); • AG( x) = 0 .32 (Agility); • SS( x) = 1 .00 (Safety and Security Score). 
+
+R(x) = 13 · 1.17 + 13 · 0.32 + 13 · 1.00 ≈ 0.83 .
+
+C.3. Intimacy AI-Driven and Human-Govern An AI-driven, human-governed framework is used to assess the depth of human–AI collaboration. The Figure 8 maps the Luxshare workflow and classifies each step as human-only, machine-only, or hu-man–machine collaborative. For the Luxshare case, during dataset generation with ground-truth inputs, human interventions were introduced through prompt refinement, supplementary data injection, and rating output corrections for a total of 56 records. These interventions were concentrated in workflow stages 5, 12, and 13, which correspond to critical control points for extraction accuracy, data alignment, and scoring integrity. 
+
+Human-Governed Score (HG) 
+
+HG( x) = nintervene (x)
+
+ncases (x) .
+
+Illustrative Inputs: 
+
+• nintervene (x) = 56 ;• ncases (x) = 527 .
+
+HG( x) = 56 527 ≈ 0.106 .
+
+24 Submission for International Conference on Machine Learning (ICML 2026) 
+
+Figure 8. The figure illustrates the end-to-end workflow for metric selection, report selection and sampling for annotation, and modeling. Steps (1–5) consolidate and de-duplicate sustainability metrics across global, sub-national, local, industry, and company levels. Steps (6–10) define report selection, sampling strategy, and human ground-truth annotation. Steps (11–15) integrate annotated datasets with large language models for scalable population, iterative refinement, and data evaluation. 
+
+Domain Expert in the Loop For the Luxshare case study, one expert-level human was involved in total for metric validation during the workflow for one process, step 5, out of the 15 steps. 
+
+Domain Expert-in-the-Loop (DE) Score 
+
+DE( x) = 12
+
+ E(x)
+
+NE
+
++ S(x)
+
+NS
+
+
+
+.
+
+Illustrative Inputs: 
+
+• E(x) = 1 ;• NE = 1 ;• S(x) = 1 ;• NS = 15 .
+
+DE( x) = 12
+
+ 11 + 115 
+
+
+
+≈ 0.53 .
+
+Iterative Feedback Loop In the case of Luxshare, no iterative feedback loop is established, as the human annotation process is conducted as a one-off exercise and the resulting outputs are not fed back into the model. Consequently, this criterion is not applicable in the current setting. 25 Submission for International Conference on Machine Learning (ICML 2026) 
+
+Total Intimacy (I) Score 
+
+I(x) = wI 
+
+> DE
+
+DE( x) + wI 
+
+> IF
+
+IF( x) + wI 
+
+> HG
+
+HG( x).
+
+Illustrative Inputs (Equal Weights and IF is not applicable): 
+
+• wI 
+
+> DE
+
+= wI 
+
+> HG
+
+= 1 /2;• IF( x) is not applicable; • HG( x) ≈ 0.106 (Human-Governed); • DE( x) = 0 .53 (Domain Expert-in-the-Loop). 
+
+I(x) = 12 · 0.106 + 12 · 0.53 ≈ 0.32 .
+
+C.4. Self-Served Purpose Transparency As the Luxshare analysis is a single-case study within the population dataset, no generalization to the broader dataset is assumed. therefore, this criterion is not applicable. 
+
+Role Separation and Independent Oversight 
+
+> Research Human 2
+> Data Collection Human 3
+> Modeling Human 4
+> Testing Human 5
+> Evaluation Human 6
+
+Human Roles 
+
+> Oversight Human 1
+> Data Wrangling Agent 1
+> Model Agent 2
+> Model Optimization Agent 3
+> Model Evaluation Agent 4
+> Result Evaluation Agent 5
+
+Machine Roles 
+
+> Metric Evaluation Human 2 & Agent 1
+
+Human–Machine Collaboration 
+
+Figure 9. Human–Machine Role Allocation and Oversight Framework 
+
+Role Separation and Independent Oversight (RS) 
+
+RS (x) = |E sep (x)||E ⋆| ∈ [0 , 1] .
+
+Illustrative Inputs: 
+
+• Esep (x) = 12 ;• E⋆ = 12 .
+
+RS( x) = 12 12 = 1 .
+
+26 Submission for International Conference on Machine Learning (ICML 2026) 
+
+Total Self-Served Purpose (S) Score 
+
+S(x) = wS 
+
+> TL
+
+T( x) + wS 
+
+> RS
+
+RS( x).
+
+Illustrative Inputs (Equal Weights and T is not applicable): 
+
+• wI 
+
+> HG
+
+= 1 ;• T( x) is not applicable; • RS( x) = 1 (Role Separation and Independent Oversight); 
+
+S(x) = 1 · 1 = 1 .
+
+Human–Machine Trust Formulation 
+
+τ (x) = σ(αC C(x) + αRR(x) + αI I(x) − αS S(x)) , σ(z) = 11 + exp( −z) . (30) 
+
+Illustrative Inputs (Equal Weights): 
+
+• αC = αR = αI = αS = 14 ;• C(x) = 0 .85 (Credibility); • R(x) = 0 .83 (Reliability); • I(x) = 0 .32 (Intimacy); • S(x) = 1 .00 (Self-Served Purpose). 
+
+τ (x) = σ  14 · 0.82 + 14 · 0.83 + 14 · 0.32 − 14 · 1
+
+= 11 + exp( −0.2425) ≈ 0.56 .
+
+27 Submission for International Conference on Machine Learning (ICML 2026) 
+
+# D. SR-Delta 
+
+Based on the dataset extracted from Luxshare and the MSCI 2024 methodological guidelines, we identify two primary categories of discrepancies: ambiguities in disclosure definitions and over- or under-penalization. 
+
+D.1. Disclosure Definition Ambiguity Example MSCI Results: The Executive Pay Disclosure scored -1.2. 
+
+STRIDE-Guided Extraction Result: An extracted GRI-aligned metric "Has the company failed to disclose specific pay totals for its top executives, including the CEO?". The answer in our dataset is No, which means that -1.2 does not apply 
+
+Reference Definition from MSCI Methodology (Page 9): 
+
+Has the company failed to disclose specific pay totals for its top executives, including the CEO? Flagged if yes. This is the most basic test in this area, and as such, carries considerable weight when invoked, as it must serve in the place of several of the other metrics normally applied in this area. Disclosure must include, at minimum, pay for all executive members of the board of directors (or management board for companies with a two-tier board structure) on an individualized basis or, in cases where there are no executive members, the CEO. The individualized disclosure should include separate information on the amount of each of the following (where such a component is provided): salary, short-term incentives, long-term incentives, pensions, benefits, one-off payments (such as recruitment or retention awards). 
+
+Analysis: There are two plausible interpretations of how the scoring is applied: 1. Disclosure of an aggregate total would be considered sufficient, even if detailed breakdowns are missing. 2. Points be deducted whenever information is not provided for each compensation category even the total disclosed. 
+
+Conclusion: 
+
+The company disclosed the total compensation amount. Therefore, the methodologies description can be adjusted to account for potential alternative interpretations. 28 Submission for International Conference on Machine Learning (ICML 2026) 
+
+D.2. Scoring Errors MSCI Results: Chemical Safety scored 6.1 
+
+STRIDE-Guided Extraction Result: 
+
+Luxshare discloses compliance with major chemical regulations (RoHS, REACH), internal EHS management systems, supplier chemical audits, and incoming material inspections. However, the company does not disclose any chemical phase-out roadmap, named priority hazardous substances, quantitative substitution targets, public restricted substance lists (RSL/MRSL), consumer-facing chemical transparency, or time-bound elimination commitments. No supplier non-compliance rates or year-over-year chemical risk reduction metrics are reported. 
+
+Reference Definition from MSCI Methodology (Page 7): 
+
+"MSCI evaluates companies’ exposure to and management of chemical safety risks, including efforts to reduce or eliminate hazardous substances in products and supply chains. Strong management is characterized by robust chemical management systems, supplier controls, substitution strategies, disclosure of restricted substance lists, and proactive phase-out programs aligned with leading frameworks" 
+
+Analysis: Luxshare demonstrates baseline regulatory compliance and internal chemical controls, which support a mid-range score. However, the absence of disclosed substitution strategies, named priority chemicals, phase-out timelines, public RSL/MRSL, and quantitative performance indicators indicates that Luxshare does not meet MSCI’s criteria for “advanced” or “robust” chemical management. The current MSCI score (6.1) appears to reward compliance-level practices rather than best-practice leadership, creating a mismatch between disclosed evidence and scoring outcomes. 
+
+Conclusion: 
+
+Based on STRIDE-guided extraction and MSCI’s own methodological definitions, Luxshare’s Chemical Safety management should be classified as moderate rather than strong. A more defensible score range would be approximately 5–5.5 instead of 6.1, reflecting regulatory compliance and supplier oversight without advanced phase-out strategies or transparent chemical risk reduction programs. 
+
+# E. Call to Action 
+
+Sustainability and climate have a tight schedule. Sustainability performance continues to be recognized as a proxy for long-term resilience and organizational health of a firm. As a result, measurement and rating systems play a critical role in shaping investor perceptions, regulatory oversight, and corporate incentives. Developing a robust and consensus-driven sustainability rating framework is therefore essential to align decision-making with long-term sustainability goals and reduce fragmentation across existing methodologies. 1. We call on the community to contribute perspectives and evidence to iteratively refine and strengthen the STRIDE trust equation. 2. The proposed frameworks have not yet been tested at scale. We invite the research and practitioner community to participate in large-scale empirical experiments to validate, refine, and strengthen these approaches. 3. Sustainability is a collective-action problem and a rapidly evolving domain. We encourage a broad participation to foster open dialogue for developing comparable and actionable measurement. 29

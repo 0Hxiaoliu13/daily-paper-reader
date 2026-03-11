@@ -1,0 +1,832 @@
+Title: Jointly Optimizing Debiased CTR and Uplift for Coupons Marketing: A Unified Causal Framework
+
+URL Source: https://arxiv.org/pdf/2602.12972v1
+
+Published Time: Mon, 16 Feb 2026 02:06:46 GMT
+
+Number of Pages: 11
+
+Markdown Content:
+# Jointly Optimizing Debiased CTR and Uplift for Coupons Marketing: A Unified Causal Framework 
+
+# Siyun Yang 
+
+Kuaishou Technology Beijing, China yangsiyun@kuaishou.com 
+
+# Shixiao Yang 
+
+Beijing Institute of Technology Beijing, China ysx144_51@bit.edu.cn 
+
+# Jian Wang 
+
+Kuaishou Technology Beijing, China wangjian27@kuaishou.com 
+
+# Di Fan 
+
+Kuaishou Technology Beijing, China fandi@kuaishou.com 
+
+# Kehe Cai 
+
+Kuaishou Technology Beijing, China caikehe@kuaishou.com 
+
+# Haoyan Fu 
+
+Beijing Institute of Technology Beijing, China haoyan-fu@bit.edu.cn 
+
+# Jiaming Zhang 
+
+Kuaishou Technology Beijing, China zhangjiaming07@kuaishou.com 
+
+# Wenjin Wu 
+
+Kuaishou Technology Beijing, China wuwenjin@kuaishou.com 
+
+# Peng Jiang 
+
+Independent Researcher Beijing, China 13126980773@139.com 
+
+## Abstract 
+
+In online advertising, marketing interventions such as coupons introduce significant confounding bias into Click-Through Rate (CTR) prediction. Observed clicks reflect a mixture of users’ in-trinsic preferences and the uplift induced by these interventions. This causes conventional models to miscalibrate base CTRs, which distorts downstream ranking and billing decisions. Furthermore, marketing interventions often operate as multi-valued treatments with varying magnitudes, introducing additional complexity to CTR prediction. To address these issues, we propose the Uni fied Multi-Valued 
+
+Treatment Network (UniMVT). Specifically, UniMVT disentangles confounding factors from treatment-sensitive representations, en-abling a full-space counterfactual inference module to jointly recon-struct the debiased base CTR and intensity-response curves. To han-dle the complexity of multi-valued treatments, UniMVT employs an auxiliary intensity estimation task to capture treatment propensities and devise a unit uplift objective that normalizes the intervention effect. This ensures comparable estimation across the continuous coupon-value spectrum. UniMVT simultaneously achieves debi-ased CTR prediction for accurate system calibration and precise uplift estimation for incentive allocation. Extensive experiments on synthetic and industrial datasets demonstrate UniMVT’s supe-riority in both predictive accuracy and calibration. Furthermore, real-world A/B tests confirm that UniMVT significantly improves business metrics through more effective coupon distribution.  
+
+> Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page. Copyrights for components of this work owned by others than the author(s) must be honored. Abstracting with credit is permitted. To copy otherwise, or republish, to post on servers or to redistribute to lists, requires prior specific permission and/or a fee. Request permissions from permissions@acm.org.
+> Conference acronym ’XX, Woodstock, NY
+> ©2018 Copyright held by the owner/author(s). Publication rights licensed to ACM. ACM ISBN 978-1-4503-XXXX-X/2018/06 https://doi.org/XXXXXXX.XXXXXXX
+
+## CCS Concepts 
+
+• Information systems → Online advertising .
+
+## Keywords 
+
+Multi-valued Treatment, Debiased CTR Prediction, Causal Inference 
+
+ACM Reference Format: 
+
+Siyun Yang, Shixiao Yang, Jian Wang, Di Fan, Kehe Cai, Haoyan Fu, Jiaming Zhang, Wenjin Wu, and Peng Jiang. 2018. Jointly Optimizing Debiased CTR and Uplift for Coupons Marketing: A Unified Causal Framework. In 
+
+Proceedings of Make sure to enter the correct conference title from your rights confirmation email (Conference acronym ’XX). ACM, New York, NY, USA, 11 pages. https://doi.org/XXXXXXX.XXXXXXX 
+
+## 1 Introduction 
+
+Click-through rate (CTR) prediction [ 4 , 7, 8, 17 , 18 , 27 , 29 ] has evolved significantly through multi-task learning architectures [ 2,3 , 10 , 13 , 14 , 23 , 28 , 31 ], such as MMoE [ 15 ] and PLE [ 24 ], which ex-ploit correlations across diverse user behaviors. However, modern industrial systems increasingly deploy proactive marketing inter-ventions, such as discount coupons and personalized incentives, to further stimulate user engagement. As illustrated in Figure 1(a), the presence of coupons significantly shifts the observed click probabil-ity for identical user-item pairs compared to the untreated scenario. In these cases, the observed click signal is no longer a pure re-flection of a user’s intrinsic preference. As shown in Figure 1(b), user responses to such interventions are inherently heterogeneous. High-propensity users may engage with a specific advertisement based on baseline interest alone, regardless of the incentive level. Conversely, price-sensitive individuals typically require substantial discounts to be motivated. While increasing discount intensities generally correlates with higher conversion probabilities, it simulta-neously incurs escalating operational costs, necessitating a strategic balance between engagement uplift and budget expenditure. Uplift modeling provides the theoretical foundation for estimat-ing heterogeneous treatment effects. Specifically, S-Learner and T-Learner [ 12 ] serve as foundational meta-learning frameworks                      
+
+> arXiv:2602.12972v1 [cs.SI] 13 Feb 2026 Conference acronym ’XX, June 03–05, 2018, Woodstock, NY Yang et al. No Coupons Coupons
+> Differentiated CTR
+> (a) Comparison of CTR for identical user-item pairs with and without coupon inter-ventions. No need Will have atry
+> Not my type Still not my type
+> 30% off 50% off
+> Be sure to buy some
+> Will give it atry
+> (b) Heterogeneous user reactions to various discount intensities and associated cost tradeoffs. 1,000,000
+> 10,000,000
+> Sample Count (Log Scale)
+> 2000
+> 5000
+> 10000
+> 15000
+> 20000
+> 25000
+> 30000
+> 35000
+> 40000
+> 45000
+> 50000
+> Treatment Dose
+> 1
+> Raw CTR PCOC
+> Smoothed PCOC Curve
+> Ideal Calibration (PCOC=1)
+> Empirical PCOC Observations
+> Sample Count (Log Scale)
+> (c) Base CTR PCOC and sample density distribution across treatment intensities.
+
+Figure 1: Motivation analysis of causal marketing interventions and sensitivity estimation. 
+
+that utilize standard supervised models to isolate variations across different treatment groups. To mitigate selection bias in observa-tional data, CFRNet [ 22 ] introduces representation balancing to minimize the distribution discrepancy between treated and control populations in a latent space, while FlexTENet [ 6] adaptively shares information across potential outcomes to exploit structural simi-larities through flexible inductive biases. To handle continuous or multi-valued treatment intensities, DRNet [ 21 ] partitions the inten-sity space into discrete intervals for localized estimation, whereas VCNet [ 19 ] leverages varying coefficient networks to ensure the functional continuity of estimated intensity-response curves. Addi-tionally, CEVAE approximates latent factors that confound treat-ment assignments through variational autoencoders, and more re-cently, DESCN [ 32 ] employs cross-networks to perform estimation across the entire sample space to alleviate data sparsity. Despite these advancements, directly applying traditional uplift models to industrial CTR systems reveals a critical gap. Conven-tionally, uplift modeling is deployed as a standalone calibration module downstream of click-through rate predictors. However, if the primary CTR model is blind to the treatment during training, it inherently produces biased estimates across both treated and control samples. This lack of awareness often leads to failed coupon delivery, as the platform cannot justify incentives based on inaccu-rate baseline probabilities. Furthermore, existing uplift frameworks typically restrict training to the narrow sub-population of treated samples (i.e., the coupon-issuance range). This data sparsity limits the model’s ability to learn robust, generalized representations. By extending the scope to the entire click sample space, we can leverage significantly richer data to learn stronger, universal representations that better capture intrinsic user preferences. Consequently, we propose integrating CTR calibration and uplift modeling into a unified, entire-space framework. In practical coupon delivery, platforms must determine the spe-cific intensity before each item is exposed. We adopt a monotonic linear formulation for the intensity-response function, justified by economic rationality (higher discounts intrinsically drive higher conversion). By treating coupon delivery as the sole causal variable and focusing on identifying individuals with the highest sensitivity rather than modeling negative effects, we can maximize marketing efficiency. As demonstrated in Figure 1(c), while the aggregated response curve exhibits a clear global monotonic linearity, this macroscopic trend masks significant individual heterogeneity. Dif-ferent users display vastly different sensitivity levels to the same incentive. Without a unified framework capable of perceiving these local fluctuations across the entire intensity space, resource alloca-tion remains suboptimal. To address these challenges, we propose a unified causal model-ing paradigm named UniMVT ( Uni fied Multi-Valued Treatment Network). At the architectural level, UniMVT implements a bottom-layer extraction strategy to disentangle confounding variables—factors influencing both treatment assignment and outcomes—from treatment-sensitive representations. At the methodological level, we decouple the estimation of base CTR and incremental uplift by framing the prediction task as a counterfactual inference problem, enabling joint learning from both treated and untreated populations across the entire sample space. Furthermore, by positing a monotonic linear relationship between uplift and coupon value 𝑇 , UniMVT explicitly models the unit uplift, providing robust criteria for decision-making that allow for the calculation of net gains across different coupon values to determine the optimal issuance strategy. Our main contributions are summarized as follows: 
+
+• We propose a disentangled representation mechanism within a unified network architecture to effectively isolate confounding factors from treatment-sensitive signals, thereby ensuring the counterfactual consistency of the learned representations. 
+
+• We develop a causal full-space inference framework incorpo-rating monotonic constraints to capture the heterogeneity of user sensitivities across varying treatment intensities, enabling simultaneous global CTR debiasing and precise uplift estimation. Theoretical analysis demonstrates the framework’s convergence. 
+
+• We conduct comprehensive evaluations on both large-scale in-dustrial datasets and real-world online A/B tests, demonstrating significant improvements in marketing efficiency and validating the practical effectiveness of our proposed solution. 
+
+## 2 Related Works 
+
+Uplift modeling for CATE estimation has evolved from meta-learners to advanced deep learning architectures. Early representation-based methods, such as CFRNet [ 22 ] and FlexTENet [ 6 ], focused on mini-mizing distribution discrepancies, while X-learner [ 12 ] addressed Jointly Optimizing Debiased CTR and Uplift for Coupons Marketing: A Unified Causal Framework Conference acronym ’XX, June 03–05, 2018, Woodstock, NY 
+
+treatment imbalance. To mitigate biases in large-scale observational data, approaches like DESCN [ 32 ] and EUEN [ 11 ] employ entire-space modeling to jointly learn propensity and response functions. For continuous treatments, research has progressed from partition-based methods like DRNet [ 21 ] to functional continuity models like VCNet [ 19 ]. Furthermore, recent studies have extended these frame-works to handle complex industrial constraints, including temporal dynamics [ 30 ], revenue rankability [ 9 ], and robust estimation under covariate shifts [1, 25, 26]. 
+
+## 3 Preliminaries 3.1 Notations and Definitions 
+
+We formally define the observed dataset as D = {( x𝑖 , 𝑤 𝑖 , 𝑑 𝑖 , 𝑦 𝑖 )} 𝑁 𝑖 =1,where: 
+
+• x𝑖 ∈ X ⊆ R𝑘 denotes the context feature vector, encompassing user attributes and historical behaviors. 
+
+• 𝑤 𝑖 ∈ { 0, 1} is the binary treatment indicator, where 𝑤 𝑖 = 1
+
+signifies exposure to the intervention and 𝑤 𝑖 = 0 indicates the control status. 
+
+• 𝑡 𝑖 ∈ T ⊂ R+ represents the treatment intensity (e.g., coupon face value or discount magnitude). Note that 𝑡 𝑖 is observable and non-zero if and only if 𝑤 𝑖 = 1; otherwise, we define 𝑡 𝑖 = 0.
+
+• 𝑦 𝑖 ∈ { 0, 1} is the binary click label. 
+
+## 3.2 Causal Assumptions 
+
+To accurately quantify the impact of interventions on Click-Through Rate (CTR) variations, we frame the problem within the causal in-ference paradigm. We establish the identifiability of the Causal Average Treatment Effect (CATE) through standard assumptions and introduce a linearity constraint to model the intensity-response relationship effectively. 
+
+Assumption 3.1 (Consistency, unconfoundedness and overlap) .
+
+Following the standard potential outcomes framework [ 20 ], we adopt the following assumptions to ensure the identifiability of the treatment effect: 
+
+• Consistency : The observed outcome 𝑦 for a unit receiving treat-ment 𝑡 is identical to the potential outcome 𝑌 (𝑡 ); formally, 𝑌 =
+
+𝑌 (𝑡 ) if 𝑇 = 𝑡 .
+
+• Unconfoundedness : Given the covariate vector x, the treatment assignment 𝑇 is independent of the potential outcomes; formally, 
+
+{𝑌 (𝑡 )} 𝑡 ∈ T ⊥⊥ 𝑇 | 𝑋 .
+
+• Overlap : Every unit has a non-zero probability of receiving any treatment level within the domain; formally, 0 < 𝑃 (𝑇 = 𝑡 | 𝑋 =
+
+x) < 1 for all 𝑡 ∈ T and x ∈ X .
+
+Assumption 3.2 (Monotonic Linear Relationship) . Motivated by empirical statistics from randomized experiments1, we posit that the incremental uplift exhibits a monotonic linear relationship with the treatment intensity 𝑡 . Formally, for a user with features x, the CATE is proportional to the intensity: 
+
+𝜏 (x, 𝑡 ) ≈ 𝛼 (x) · 𝑡, where 𝛼 (x) > 0. (1) This assumption implies that the marginal gain is constant per unit of investment. This formulation not only aligns with the observed intensity-response patterns in industrial settings but also signifi-cantly simplifies the optimization landscape, allowing for the direct calculation of ROI and the efficient derivation of optimal coupon face values. 
+
+## 3.3 Problem Formulation 
+
+Our primary objective is to disentangle the intrinsic user preference (Base CTR) from the intervention effect within the observed data. Building upon this, we aim to accurately estimate the Conditional Average Treatment Effect (CATE) across continuous treatment in-tensities. We frame this problem under the Neyman-Rubin Potential Outcome framework[20]. 
+
+Definition 3.1 (Base & Treated CTR ). For a user instance with feature vector x, let 𝑌 (0) and 𝑌 (𝑡 ) denote the potential outcomes under the control state ( 𝑤 = 0) and intervention intensity 𝑡 (𝑤 =
+
+1), respectively. We define the Base CTR , denoted as 𝑝 0 (x), and the Treated CTR , denoted as 𝑝 𝑡 (x, 𝑡 ), as the expected potential outcomes conditional on the covariates: 
+
+𝑝 0 (x) = E[𝑌 (0) | 𝑋 = x], (2) 
+
+𝑝 𝑡 (x, 𝑡 ) = E[𝑌 (𝑡 ) | 𝑋 = x,𝑇 = 𝑡 ]. (3) 
+
+Definition 3.2 (Unit CATE ). The individual treatment effect is defined as the difference between the potential outcomes 𝑌 (𝑡 ) and 
+
+𝑌 (0). Drawing on Assumption 3.2, we decompose the Conditional Average Treatment Effect (CATE) for a specific intensity 𝑡 , denoted as 𝜏 (x, 𝑡 ), into the product of the dosage magnitude and a Unit CATE (uCATE), denoted as 𝜂 (x):
+
+𝜏 (x, 𝑡 ) = E[𝑌 (𝑡 ) − 𝑌 (0) | 𝑋 = x] = 𝑡 · 𝜂 (x). (4) Here, 𝜂 (x) represents the intrinsic marginal sensitivity of user 
+
+x to the intervention (i.e., the uplift generated per unit of dosage), while 𝑡 represents the intervention intensity. 
+
+## 4 Framework 
+
+In this section, we formally present the proposed Unified Multi-Valued Treatment Network (UniMVT), detailing its architectural components and the associated learning paradigm. 
+
+## 4.1 Overview 
+
+As illustrated in Figure 2, the framework is composed of two inte-gral modules: The first is a Deconfounded Causal Representation (DCR) Layer, which employs a Mixture-of-Experts (MoE) structure to encode input covariates and explicitly disentangle them into treatment-sensitive instrumental representations and treatment-invariant confounding representations. The second is a Heteroge-neous Treatment Effect (HTE) Network, which leverages these disentangled embeddings to jointly estimate the baseline CTR 
+
+𝑝 0 (x)—the counterfactual outcome under the control condition—and the intensity-dependent uplift 𝜏 (x, 𝑡 ) corresponding to a specific intervention intensity 𝑡 . The training strategy leverages the en-tirety of the observational data—encompassing both coupon and no-coupon populations—to facilitate learning across the full covariate-treatment space. Conference acronym ’XX, June 03–05, 2018, Woodstock, NY Yang et al. Advertisement  Feature                                            
+
+> Dense  Sparse
+> … …
+> …
+> Coupon  Feature
+> …
+> Coupon  Embedding
+> …
+> Embedding  Layer
+> 𝒙 𝒊
+> TA -Gate
+> 𝐖 𝑒
+> ×
+> +
+> 2
+> ×
+> 𝐛 𝑒 𝛿
+> 𝐞 𝑖
+> Treatment -Aware Gate
+> 𝜓 0Base Gate
+> 𝜓 𝑡 Treated Gate
+> Stop Gradient
+> 𝛿 Sigmoid function
+> Base Experts
+> Θ𝑏
+> Shared Experts
+> Θ𝑠
+> Treated Experts
+> Θ𝑡
+> 𝜓 0
+> 𝜓 𝑡
+> 𝑢 𝑖
+> 0
+> 𝑢 𝑖
+> 𝑡
+> Deconfounded Causal Representations
+> ℛ𝑜 Θ𝑠 ,Θ𝑏 ,Θ𝑡
+> Regularization
+> ℒ𝑏𝑎𝑠𝑒
+> ℒtreat
+> ℒt
+> bCTR Tower
+> tCTR
+> Tower
+> Dose Tower
+> Ƹ
+> 𝜂
+> Ƹ
+> 𝑡
+> 𝑝 𝑡
+> 𝒓 𝑖
+> Heterogeneous Treatment Effect Net
+> uCATE Tower
+> 𝛿 −1Logit function
+> Transform to logit space (add uplift)
+> 𝛿 −1
+> Ƹ
+> 𝜏
+> Ƹ
+> 𝜏 +𝛿
+> 𝑝 0𝛿 −1Ƹ𝜏
+> −𝛿
+> Transform to logit space (subtract uplift)
+> 𝑝 𝑑
+> Non -coupon Samples
+> Coupon Samples
+> Full
+> Samples
+> Concat Concat
+> ℒ𝑥 −𝑡𝑟𝑒𝑎𝑡
+> ℒx−base
+> Basic CTR
+> Ƹ
+> 𝑝 0
+> uCATE
+> Ƹ
+> 𝜂 𝑞
+> ×
+> +
+> Dose Candidates Grid
+> …
+> ROI Ranking
+> ROI 𝑞 =Ƹ𝑝 𝑑 𝑞 −Ƹ𝑝 0
+> Cost 𝑞
+> Online Real -time Intervention
+> 𝑝 0
+> Ƹ
+> 𝑝 𝑑
+> 𝑞 ∗=arg max ROI 𝑞
+> s.t.ROI >γ
+> No
+> coupon
+> Yes No
+> Issue 𝑞 ∗
+> Training Phase Inference Phase
+
+Figure 2: Overview of CENIF. The framework integrates two core modules: (i) a Deconfounded Causal Representation (DCR) layer utilizing Mixture-of-Experts (MoE) to disentangle intervention-sensitive from invariant features; and (ii) a Heterogeneous Treatment Effect (HTE) network estimating base CTR, Intensity value, and uplift. 
+
+## 4.2 Deconfounded Causal Representation 
+
+The Deconfounded Causal Representation (DCR) module func-tions as a feature encoder that transforms raw inputs into dis-entangled latent embeddings via a Multi-gate Mixture-of-Experts architecture[ 16 ]. For an instance 𝑖 , sparse categorical features are mapped to dense vectors via lookup tables and concatenated with numerical features to form the initial embedding x𝑖 . This embed-ding serves as the shared input for three distinct groups of experts: 
+
+Shared Experts (capturing treatment-invariant confounders), Base Experts (capturing global baseline preferences), and Treated Ex-perts (capturing intervention-sensitive features). Formally, the 𝑗 -th expert in each group is instantiated as a Multi-Layer Perceptron (MLP): 
+
+h𝑏 𝑗 = MLP 𝑏 𝑗 (x𝑖 ), h𝑠 𝑗 = MLP 𝑠 𝑗 (x𝑖 ), h𝑡 𝑗 = MLP 𝑡 𝑗 (x𝑖 ), (5) where h𝑏 𝑗 , h𝑠 𝑗 , and h𝑡 𝑗 denote the output representations of the basic, shared, and treatment experts, respectively. To synthesize these expert outputs, we employ two task-specific gating networks, 𝜓 0 and 𝜓 𝑡 , which generate soft attention weights for the base and treatment-aware representations: 
+
+g0 
+
+> 𝑖
+
+= softmax (𝜓 0 (x𝑖 )) , g𝑡 𝑖 = softmax (𝜓 𝑡 (x𝑖 )) . (6) The final disentangled representations, u0 
+
+> 𝑖
+
+and u𝑡 𝑖 , are constructed through a weighted combination of expert outputs. Crucially, we apply a Stop-Gradient ( SG ) operator to prevent gradient leakage between conflicting objectives while allowing information flow through the shared experts: 
+
+u0 
+
+> 𝑖
+
+= g0 
+
+> 𝑖
+
+· CONCAT (H𝑏 𝑖 , H𝑠 𝑖 , SG (H𝑡 𝑖 )) , (7) 
+
+u𝑡 𝑖 = g𝑡 𝑖 · CONCAT (SG (H𝑏 𝑖 ), H𝑠 𝑖 , H𝑡 𝑖 ), (8) where H(·)  
+
+> 𝑖
+
+denotes the stacked matrix of expert outputs for the respective group. This architectural design enforces the structural assumption that base CTR and treatment response are correlated via shared confounders ( H𝑠 ) yet possess distinct generative mecha-nisms. Consequently, u0 
+
+> 𝑖
+
+is fed into the Base CTR Tower to estimate 
+
+𝑝 0 (x𝑖 ), while u𝑡 𝑖 serves as the input for the Heterogeneous Treat-ment Effect Net (HTENet) to model the heterogeneous treatment effect. To explicitly enforce the disentanglement of confounding factors (which influence global outcomes) from treatment-specific hetero-geneity (which drives uplift), we introduce an orthogonal regu-larization constraint. Following FlexTENet [ 6 ], let Θ𝑏 𝑙 , Θ𝑡 𝑙 , and Θ𝑠 𝑙 
+
+denote the weight matrices of the 𝑙 -th layer for the basic, treatment, and shared expert groups, respectively. To prevent task-specific experts from degenerating into redundant replicas of the shared subspace, and to ensure they capture distinct informational signals, we impose the following orthogonality penalty: 
+
+R𝑜𝑟𝑡ℎ =
+
+> 𝐿
+
+∑︁ 
+
+> 𝑙 =1
+
+∑︁ 𝑖,𝑗 ∈ { 𝑠,𝑏,𝑡 },𝑖 < 𝑗 
+
+(Θ𝑙 𝑖 )⊤Θ𝑙 𝑗  
+
+> 2
+> 𝐹
+
+, (9) where ∥·∥ 2 
+
+> 𝐹
+
+denotes the squared Frobenius norm. This regularization minimizes the correlation between the parameter spaces of different expert groups, thereby encouraging the learning of orthogonal and non-overlapping feature representations. Jointly Optimizing Debiased CTR and Uplift for Coupons Marketing: A Unified Causal Framework Conference acronym ’XX, June 03–05, 2018, Woodstock, NY 
+
+## 4.3 Heterogeneous Treatment Effect Net 
+
+To prevent task interference and negative transfer between factual and counterfactual estimations, we employ a decoupled tower ar-chitecture. We formally define the Heterogeneous Treatment Effect (HTE) Network, consisting of two distinct prediction pathways and a specific mechanism for injecting treatment information. 
+
+4.3.1 Decoupled Prediction Towers. To isolate the baseline propen-sity from intervention-specific dynamics, we instantiate two inde-pendent MLP towers: 
+
+• Base Tower : Ingests the baseline-specific representation u0 
+
+> 𝑖
+
+from the DCR layer to estimate the intrinsic click probability 𝑝 0 (x𝑖 ).
+
+• Treatment Tower : Consumes the treatment-aware representa-tion u𝑡 𝑖 to predict the intervention-conditioned outcome 𝑝 𝑑 (x𝑖 , 𝑡 𝑖 ).To mitigate the signal dilution inherent in simple feature concate-nation, we introduce a Treatment-Aware Gate (TA-Gate), adapting the LHUC framework[ 5] for continuous interventions. For each hidden layer 𝑙 , we compute a context-dependent scaling vector 
+
+a(𝑙 ) 
+
+> 𝑖
+
+∈ ( 0, 2) derived from the treatment attributes e𝑡 𝑖 :
+
+a(𝑙 ) 
+
+> 𝑖
+
+= 2 · 𝜎 (W(𝑙 ) 
+
+> 𝑔
+
+e𝑡 𝑖 + b(𝑙 ) 
+
+> 𝑔
+
+), ˜h(𝑙 ) 
+
+> 𝑖
+
+= a(𝑙 ) 
+
+> 𝑖
+
+⊙ h(𝑙 ) 
+
+> 𝑖
+
+. (10) Here, 𝜎 (·) is the sigmoid function and ⊙ denotes the element-wise product. This mechanism is applied recursively to each hidden layer excluding the final output layer, ensuring that the treatment intensity dynamically modulates the feature processing pathway at multiple levels of abstraction. We formulate the optimization objective using the binary cross-entropy loss function, denoted as ℓ (· , ·) . Let C = {𝑖 | 𝑤 𝑖 = 0}
+
+and T = {𝑖 | 𝑤 𝑖 = 1} denote the control and treatment groups, respectively. The loss functions for the baseline and treatment heads are defined as: 
+
+L𝑏𝑎𝑠𝑒 =∑︁  
+
+> 𝑖 ∈ C
+
+ℓ (𝑦 𝑖 , ˆ𝑝 0 (x𝑖 )) , (11) 
+
+L𝑡𝑟𝑒𝑎𝑡 =∑︁  
+
+> 𝑖 ∈ T
+
+ℓ (𝑦 𝑖 , ˆ𝑝 𝑡 (x𝑖 , 𝑡 𝑖 )) . (12) While the DCR layer parameters are shared to facilitate structural knowledge transfer, the task-specific tower parameters (including the TA-Gate) remain disjoint. This joint end-to-end optimization strategy effectively transfers low-level representations across tasks while preserving the necessary heterogeneity between the baseline and treatment response surfaces. 
+
+4.3.2 Counterfactual X-Network. Inspired by X-learner[ 12 ], we in-stantiate an X-Network as a bridging module to estimate per-unit counterfactual uplift. The network is sharing the bottom layer u𝑡 𝑖 
+
+that captures the latent "sensitivity" of a sample to interventions, grounded in counterfactual reasoning: it infers hypothetical out-comes under alternative treatment regimes given observed facts. To enable counterfactual reasoning for the control group ( C)where intervention intensity 𝑡 𝑖 is unobserved, we introduce an aux-iliary Intensity Prediction Head. A critical challenge in continuous uplift modeling is ensuring that imputed intensities remain within feasible bounds. Standard regression approaches risks generating implausible values (e.g., negative or infinite value). To mitigate this, we strictly enforce domain constraints by projecting the latent representation into a normalized probability space via a Sigmoid ac-tivation, followed by an affine transformation to the valid physical range [𝑡 min , 𝑡 max ]:
+
+ˆ𝑡 𝑖 = 𝜎 (MLP (SG (u𝑡 𝑖 ))) · ( 𝑡 max − 𝑡 min ) + 𝑡 min , (13) 
+
+L𝑡 =∑︁  
+
+> 𝑖 ∈ T
+
+ 𝜆 1 ∥𝑡 𝑖 − ˆ𝑡 𝑖 ∥22 + 𝜆 2 ∥𝑡 𝑖 − ˆ𝑡 𝑖 ∥1
+
+ , (14) where 𝜎 (·) ensures the normalized prediction lies strictly within 
+
+(0, 1), guaranteeing that all counterfactual inquiries respect the intensity limits. The hyperparameters 𝜆 1,2 balance sensitivity to outliers. To explicitly decouple the magnitude of the intervention from the intrinsic sensitivity of the unit, we structurally enforce a de-composition of the total treatment effect ˆ𝜏 𝑖 . As the definition3.2, we model the CATE as the product of the intensity 𝑡 and the uCATE 𝜂 :
+
+ˆ𝜂 𝑖 = ReLU (MLP (u𝑡 𝑖 )) , ˆ𝜏 𝑖 = ˆ𝑡 𝑖 · ˆ𝜂 𝑖 . (15) We employ a ReLU activation for ˆ𝜂 𝑖 to structurally enforce non-negativity ( ˆ𝜂 𝑖 ≥ 0). This guarantees strict adherence to the mono-tonicity assumption, ensuring that increased dosage does not di-minish the estimated outcome. To operationalize counterfactuals while preserving probabilistic bounds, we transform predictions to logit space. Let 𝜎 (·) denote the sigmoid function and 𝜎 −1 (·) the logit function. We formulate the counterfactual estimators by injecting or removing the estimated uplift ˆ𝜏 𝑖 from the baseline estimates: 
+
+ˆ𝑝 ′ 
+
+> 𝑡
+
+(x𝑖 ; ˆ 𝑡 𝑖 ) = 𝜎  𝜎 −1 ( ˆ𝑝 0 (x𝑖 )) + ˆ𝑡 𝑖 · ˆ𝜂 𝑖 
+
+ , (16) 
+
+ˆ𝑝 ′ 
+
+> 0
+
+(x𝑖 ) = 𝜎  𝜎 −1 ( ˆ𝑝 𝑡 (x𝑖 ; ˆ 𝑡 𝑖 )) − ˆ𝑡 𝑖 · ˆ𝜂 𝑖 
+
+ . (17) where ˆ𝑝 0 (x𝑖 ) and ˆ𝑝 𝑡 (x𝑖 , ˆ𝑡 𝑖 ) represent the base and treatment CTR estimates derived from the bCTR and tCTR towers, respectively. These equations represent "what-if" scenarios: ˆ𝑝 ′ 
+
+> 𝑡
+
+simulates the treatment outcome by adding the effect to the baseline, while ˆ𝑝 ′ 
+
+> 0
+
+re-constructs the baseline by subtracting the effect from the treatment prediction. To enforce consistency between the counterfactual predictions and the observed labels, we employ Mean Squared Error (MSE) as the regularization objective: 
+
+Lx-treat =∑︁  
+
+> 𝑖 ∈ T
+
+|𝑦 𝑖 − ˆ𝑝 ′ 
+
+> 𝑡
+
+(x𝑖 ; ˆ 𝑡 𝑖 )| 22, (18) 
+
+Lx-base =∑︁  
+
+> 𝑖 ∈ C
+
+|𝑦 𝑖 − ˆ𝑝 ′ 
+
+> 0
+
+(x𝑖 )| 22. (19) This mutual regularization propagates supervision from treated to control (and vice versa) via uplift estimates, mitigates selection bias by bridging observational gaps, and implicitly calibrates ˆ𝜂 𝑖 
+
+to explain observed differences between 𝑝 0 and 𝑝 1 surfaces. The combined regularization loss is L𝑋 = Lx-treat + L x-base .The full HTENet is optimized end-to-end via the joint loss: 
+
+L = 𝜆 𝑏𝑎𝑠𝑒 L𝑏𝑎𝑠𝑒 + 𝜆 𝑡𝑟𝑒𝑎𝑡 L𝑡𝑟𝑒𝑎𝑡 + 𝜆 𝑡 L𝑡 + 𝜆 𝑋 L𝑋 + 𝜆 𝑜 R𝑜 , (20) Conference acronym ’XX, June 03–05, 2018, Woodstock, NY Yang et al. 
+
+where 𝜆 𝑏𝑎𝑠𝑒 , 𝜆 𝑡𝑟𝑒𝑎𝑡 , 𝜆 𝑡 , 𝜆 𝑋 , and 𝜆 𝑜 are non-negative hyperparame-ters that balance the trade-off between baseline accuracy, treatment estimation, intensity prediction, counterfactual regularization, and structural constraints. 
+
+## 4.4 Theoretical Analysis 
+
+To theoretically justify the effectiveness of our proposed framework, we analyze the convergence properties of the unit uplift estima-tor. We show that under mild assumptions regarding the dosage distribution and the consistency of base estimators, the proposed counterfactual calibration loss guarantees the identification of the true unit uplift. 
+
+Assumption 4.1 (Non-trivial Intensity and Common Support) .
+
+The treatment intensity 𝑡 is bounded away from zero, i.e., there ex-ists a constant 𝑡 min > 0 such that |𝑡 | ≥ 𝑡 min almost surely for all valid interventions. Furthermore, we assume distributional consistency: the conditional distribution of feasible intensities 𝑃 (𝑡 | x) depends solely on the feature set x (e.g., item price, marketing strategy). This implies that the dosage mechanism learned from the treated population T generalizes to the full sample space S = T ∪ C . For-mally, for any user-item pair x, the support of the potential intensity distribution in the control group is contained within the support of the treated group: supp (𝑃 (𝑡 | x, 𝑖 ∈ C)) ⊆ supp (𝑃 (𝑡 | x, 𝑖 ∈ T )) . (21) 
+
+Assumption 4.2 (Consistency of Base Estimators) . The estima-tors for the treated outcome ˆ𝑦 𝑡 and the intensity ˆ𝑡 are consistent, meaning that as the sample size 𝑁 → ∞ , ˆ𝑝 𝑡 𝑝 
+
+−→ 𝑝 𝑡 and ˆ𝑡 𝑝 
+
+−→ 𝑡 .Based on these assumptions, we establish the following theorem regarding the convergence of the unit uplift estimator ˆ𝜂 .
+
+Theorem 4.1 (Convergence of Unit Uplift) . Under Assumptions 4.1 and 4.2, minimizing the counterfactual calibration loss L𝑥 −𝑡𝑟𝑒𝑎𝑡 
+
+and L𝑥 −𝑏𝑎𝑠𝑒 ensures that the estimated unit uplift ˆ𝜂 converges in probability to the true unit uplift 𝜂 .
+
+Proof Sketch . We take L𝑥 −𝑡𝑟𝑒𝑎𝑡 as an example; L𝑥 −𝑏𝑎𝑠𝑒 can be proven in the same manner. Recall the Assumption3.2 that the counterfactual calibration loss for the control group enforces the constraint: 𝑝 0 (x𝑖 ) + 𝜂 · 𝑡 ≈ 𝑝 𝑡 (x𝑖 , 𝑡 𝑖 ).Let Δ = | ˆ𝜂 − 𝜂 | be the objective to be minimized. Substituting the true 𝑝 𝑡 (x𝑖 , 𝑡 𝑖 ), we analyze the error term: 
+
+Lx-treat = |( ˆ𝑝 0 (x𝑖 ) + ˆ𝜂 ˆ𝑡 ) − ( 𝑝 0 (x𝑖 ) + 𝜂 · 𝑡 )| (22) By the triangle inequality and adding the cross-term ˆ𝜂𝑡 , we have: 
+
+Lx-treat = |( ˆ𝑝 0 (x𝑖 ) − 𝑝 0 (x𝑖 )) + ( ˆ𝜂 ˆ𝑡 − 𝜂𝑡 )| (23) 
+
+= |( ˆ𝑝 0 (x𝑖 ) − 𝑝 0 (x𝑖 )) + ˆ𝜂 (ˆ𝑡 − 𝑡 ) + 𝑡 ( ˆ𝜂 − 𝜂 )| (24) Minimizing Lx-treat implies Δ → 0.By Assumption 4.2, the terms | ˆ𝑝 0 (x𝑖 )− 𝑝 0 (x𝑖 )| and |ˆ𝑡 −𝑡 | converge to 0. Thus, the convergence of the loss relies on the term 𝑡 ( ˆ𝜂 −𝜂 ) → 
+
+0. By Assumption 4.1, since |ˆ𝑡 | → | 𝑡 | ≥ 𝑡 min > 0, the intensity is non-degenerate. Therefore, the only solution for the term to vanish is ˆ𝜂 − 𝜂 → 0. This completes the proof that ˆ𝜂 𝑝 
+
+−→ 𝜂 . For a more detailed proof, see the Appendix A. □
+
+## 4.5 Inference 
+
+At inference, UniMVT directly outputs the unit uplift ˆ𝜂 𝑖 and es-timated base CTR ˆ𝑝 0 (𝑥 𝑖 ). To guide coupon decisions, we simu-late outcomes over a discrete grid of candidate coupon values 
+
+𝑞 ∈ [ 𝑞 min , 𝑞 max ]:
+
+ˆ𝑝 𝑡 (𝑥 ; 𝑞 ) = ˆ𝑝 0 (𝑥 𝑖 ) + ˆ𝜂 𝑖 · 𝑞. (25) For each 𝑞 , compute the expected uplift-to-cost ratio (e.g., in-cremental CTR gain per unit cost). If this exceeds a predefined threshold, issue the voucher at intensity 𝑞 ∗; otherwise, the voucher should be withheld. This approach enables real-time, personalized intervention leveraging offline-learned causal effects. 
+
+## 5 Experiment 
+
+In this section, we aim to address the following three key questions through empirical evaluation. 
+
+• RQ1 : How does our UniMVT perform compared to the baselines? 
+
+• RQ2 : What is the contribution of each module in the UniMVT architecture? 
+
+• RQ3 : How effective is the UniMVT in an online deployment? 
+
+## 5.1 Evaluation Setup 
+
+5.1.1 Dataset. We evaluate our approach on both synthetic and realworld datasets to prove its effectiveness. Public datasets are excluded due to misalignment with the online platform’s require-ments, limiting their suitability for industrial-scale RS evaluation. 
+
+Table 1: Statistics of Synthetic Benchmarks.                 
+
+> Dataset Distribution Coupon Ratio Mode Avg. CTR
+> Syn-1 Unimodal 34.78% [2.5] 0.208
+> Syn-2 Unimodal 35.17% [1.5] 0.183
+> Syn-3 Multimodal 35.23% [1.0, 1.6, 2.4, 4.0] 0.209
+
+Synthetic Datasets : To rigorously evaluate the performance of our proposed model under ground-truth conditions, we construct three controlled synthetic benchmark that mimics a real-world promotional environment. Specific details are provided in Table1. Each dataset comprises 80,000 training samples and 8,000 testing samples. The test set consists exclusively of RCT samples. Each instance consists of an 8-dimensional feature vector X ∈ R8 with in-duced inter-feature correlations. We design the treatment intensity variable 𝑇 to follow a multimodal distribution, simulating common marketing strategies where intervention intensities cluster around specific "tiers" (e.g., discount levels at 0.9, 0.8 units). To introduce realistic selection bias, the assignment of 𝑇 in the observational subset is confounded by X: high-value users (characterized by spe-cific feature patterns) have a higher propensity to be assigned to high-dosage modes. And all the individualized intensity-response curves follow Linear Monotonicity. 
+
+Real-world Dataset : We curate a slice of live-stream coupon traffic from the Kuaishou platform, totaling 100,000 samples. The data in-clude both non-intervened interactions and intervened interactions with heterogeneous intervention intensities. The inputs encompass user features, live-stream room features, and coupon descriptors Jointly Optimizing Debiased CTR and Uplift for Coupons Marketing: A Unified Causal Framework Conference acronym ’XX, June 03–05, 2018, Woodstock, NY 
+
+(e.g., intensity, style). This process yields a task for predicting the CTR, incorporating multi-value intervention effects that reflect the production conditions. 
+
+5.1.2 Baselines. We compare UniMVT with leading causal infer-ence methods: S-Learner [ 12 ], T-Learner [ 12 ], FlexTENet [ 6 ], CFR-Net [ 22 ], DRNet [ 21 ], VCNet [ 19 ], and DESCN [ 32 ]. For binary-treatment baselines, we extend their applicability to the multi-valued setting by treating the intervention intensity 𝑡 as a dis-tinct input feature. For all models predicting full uplift, we gen-erate comparable unit uplift estimates by setting the intensity to 1 ( ˆ𝜏 𝑢𝑛𝑖𝑡 = Model (𝑋, 𝑡 = 1)), maintaining a consistent evaluation framework across all multi-value scenarios. 
+
+5.1.3 Evaluation Metrics. To comprehensively assess model per-formance, we employ distinct metrics for the debiasing task (CTR) and the decision-making task (Uplift). 
+
+Basic CTR Prediction: To evaluate the accuracy of the baseline CTR prediction, we utilize the standard AUC (Area Under ROC Curve) and LogLoss. These metrics measure the model’s ability to rank and calibrate the counterfactual probability of user conversion under the "no-treatment" condition. 
+
+Multi-valued Uplift Estimation: Given the continuous nature of multi-valued treatments, traditional binary uplift metrics are insuf-ficient. We extend them to the Cumulative Slope (CS) framework. Let O denote the test dataset with size 𝑁 . We sort all samples 𝑥 ∈ O 
+
+in descending order based on the predicted unit uplift ˆ𝜏 (𝑥 ). Let O𝜙 
+
+represent the top 𝜙 -percentile of users, where 𝜙 ∈ [ 0, 1]. We define 
+
+ˆ𝛽 (𝜙 ) as the realized regression coefficient (slope) of the outcome 𝑌 
+
+on the treatment dosage 𝑇 , computed within the subset D𝜙 .
+
+Definition 5.1 (CS-AUUC) . The Cumulative Slope Area Under the Uplift Curve (CS-AUUC) quantifies the total rank-ordered sensitivity captured by the model. It is defined as the area under the cumulative slope curve formed by the realized slope ˆ𝛽 (𝜙 ) scaled by the population size: CS-AUUC =
+
+∫ 10
+
+ˆ𝛽 (𝜙 ) · ( 𝜙𝑁 ) 𝑑𝜙 (26) A higher CS-AUUC indicates that the model effectively prioritizes users with higher intensity-response sensitivity at the top of the ranking list. 
+
+Definition 5.2 (CS-Qini) . The Cumulative Slope Qini (CS-Qini) 
+
+measures the ranking gain of the model relative to a randomized targeting strategy. Let 𝛽 𝑔𝑙𝑜𝑏𝑎𝑙 denote the global average slope esti-mated over the entire dataset D. The CS-Qini is defined as: CS-Qini =
+
+∫ 10
+
+ ˆ𝛽 (𝜙 ) − 𝛽 𝑔𝑙𝑜𝑏𝑎𝑙 
+
+
+
+· ( 𝜙𝑁 ) 𝑑𝜙 (27) This metric explicitly quantifies the incremental uplift gain achieved by the model’s targeting strategy compared to a non-personalized random allocation policy. 
+
+## 5.2 Main Results (RQ1) 
+
+Table 2 presents a comprehensive comparison between UniMVT and seven baselines. The results underscore the unique strengths of our unified causal architecture. The T-learner demonstrates su-perior performance compared to the S-learner, suggesting that a 0 0.5 1             
+
+> Ratio p
+> 0
+> 200
+> 400
+> CS-AUUC
+> Syn-1
+> 00.5 1
+> Ratio p
+> Syn-2
+> 00.5 1
+> Ratio p
+> Syn-3
+> VCNet FlexTENet DRNet DESCN CFRNet UniMVT Global Slope
+
+Figure 3: CS-AUUC comparison of different methods across three synthetic datasets. All curves start from the origin (0,0) and are compared against the Global Slope. 
+
+shared bottom architecture facilitates the learning of the base CTR. In terms of prediction accuracy, UniMVT consistently outperforms other baselines on both AUC and LogLoss metrics; this indicates that the underlying Disentangled Context Representation (DCR) structure effectively identifies confounded features and successfully decouples treatment-invariant representations. As show in Figure 3, while all evaluated methods yield improvements in CS-AUUC, both VCNet and DRNet exhibit near-random performance on the CS-Qini metric (which accounts for the global average gain). This discrepancy suggests that these models are excessively confounded by the coupon value 𝑑 , resulting in uplift predictions dominated by treatment magnitude rather than accurately distinguishing hetero-geneous user sensitivity to identical discount levels. Table 3 reports performance on a large-scale industrial dataset. Notably, UniMVT achieves superior performance on base CTR metrics within the industrial dataset. This indicates that the multi-expert DCR architecture effectively captures baseline CTR patterns even in sparse industrial environments, thereby furnishing a more robust latent representation for uplift estimation. Futhermore, our model consistently maintains the highest performance in unit uplift prediction, demonstrating its capability to accurately differentiate heterogeneous user sensitivities to coupon treatments in real-world industrial scenarios. 
+
+## 5.3 Ablation Analysis (RQ2) 
+
+Table 4 validates the DCR and X-Network as essential, with their removal consistently degrading performance. Notably, omitting the auxiliary Treatment Tower preserves Base CTR AUC but yields a negative CS-Qini. This confirms that without explicit causal con-straints, the model overfits observational biases, maximizing pre-dictive accuracy at the expense of true uplift estimation. 
+
+## 5.4 Online A/B Test (RQ3) 
+
+We evaluate our approach on a large-scale coupon intervention setting in the Kuaishou advertising platform-a short-video app with over 400 million daily active users. 
+
+5.4.1 System Overview. As Figure4, in the serving engine, each app visit triggers a request that flows through recall and coarse ranking to select relevant items from an item pool. These candi-dates are fed to a fine-ranking CTR model. The model outputs both the base CTR and the per-user, per-item unit uplift attributable to issuing a coupon. A downstream strategy module then chooses the Conference acronym ’XX, June 03–05, 2018, Woodstock, NY Yang et al. 
+
+Table 2: Model Performance Comparison on Synthetic Datasets     
+
+> Method Dataset Base CTR Evaluation Uplift Evaluation AUC
+
+↑ LogLoss ↓ CS-AUUC ↑ CS-QINI ↑                                                                                                
+
+> T-Learner [12] Syn-1 0.6918 0.3892 245.05 31.66 Syn-2 0.6932 0.3855 247.27 19.93 Syn-3 0.7067 0.3799 257.37 56.61 S-Learner [12] Syn-1 0.6937 0.3879 219.84 6.45 Syn-2 0.7032 0.3813 225.22 -2.12 Syn-3 0.7098 0.3784 219.03 18.27 CFRNet [22] Syn-1 0.6936 0.3863 196.87 -16.52 Syn-2 0.6998 0.3810 231.26 3.92 Syn-3 0.7101 0.3767 159.14 -41.62 FlexTENet [6] Syn-1 0.6938 0.3868 221.84 8.45 Syn-2 0.7026 0.3805 195.21 -32.14 Syn-3 0.7113 0.3757 171.99 -28.77 DESCN [32] Syn-1 0.6851 0.3910 235.92 22.52 Syn-2 0.6958 0.3823 251.70 24.36 Syn-3 0.7050 0.3785 236.96 36.20 DRNet [21] Syn-1 0.6944 0.3864 251.51 38.12 Syn-2 0.7028 0.3799 270.12 42.78 Syn-3 0.7112 0.3759 194.31 -6.45 VCNet [19] Syn-1 0.6942 0.3862 212.26 -1.14 Syn-2 0.7018 0.3801 225.31 -2.04 Syn-3 0.7117 0.3757 200.75 -0.01
+> UniMVT (Ours)
+> Syn-1 0.6945 0.3865 316.48 103.09
+> Syn-2 0.7025 0.3801 311.29 83.94
+> Syn-3 0.7122 0.3756 301.10 100.34
+
+Table 3: Performance Comparison on Production Dataset 
+
+Method Base CTR Evaluation Uplift 
+
+(Production) AUC ↑ LogLoss ↓ CS-QINI ↑
+
+T-Learner [12] 0.9109 0.2678 0.0177 S-Learner [12] 0.9011 0.2855 0.0001 CFRNet [22] 0.9097 0.2730 0.0178 FlexTENet [6] 0.8870 0.2997 0.0166 DESCN [32] 0.9394 0.2161 0.0170 DRNet [21] 0.9374 0.2155 -0.0003 VCNet [19] 0.9401 0.2100 0.0005 
+
+UniMVT (Ours) 0.9471 0.1776 0.0293 
+
+Table 4: Ablation study of our UniMVT on production dataset. 
+
+Metrics Base CTR Evaluation Uplift Evaluation 
+
+AUC ↑ LogLoss ↓ CS-QINI ↑
+
+w/o DCR 0.9393 0.1973 0.0084 w/o X-Network 0.9444 0.1868 0.0042 w/o Treatment Tower 0.9472 0.1807 -0.0086 
+
+UniMVT 0.9471 0.1776 0.0293 
+
+coupon with the maximum predicted revenue gain minus cost un-der platform constraints. Our method operates on the CTR model, improving the base CTR estimation and the uplift guidance simul-taneously. 
+
+5.4.2 Online Experimental Results. We run an online A/B test for UniMVT on randomly sampled 10% of traffic. Treatment and control buckets are mutually exclusive and do not interfere. All models are trained on pre-experiment data, and no post-intervention or leakage features are used in online inference. We compare against two production baselines: 
+
+• Treatment-Agnostic Model : A two-stage approach that inde-pendently trains learners for the base CTR and the residual uplift to explicitly model the treatment effect. 
+
+• T-Learner (Shared-Bottom) : A unified framework utilizing a shared encoder to extract common representations, with separate towers to jointly estimate base CTR and uplift. As for metrics, we report revenue in coupon and non-coupon scenarios. Table 5 reports performance relative to the baseline. Compared to the Treatment-Agnostic Model, the proposed method delivers consistent improvements across all online metrics, indicat-ing that jointly optimizing base click-through rate and intervention uplift yields higher-quality coupon allocation decisions. Relative to the T-Learner (Shared-Bottom), it achieves further gains, sug-gesting that full-space causal modeling enables more accurate CTR estimation and superior allocation quality. Following online A/B experiments, the system has been deployed to production for live-stream, direct-response coupon ad slots, with ongoing expansion to additional scenarios. 
+
+Table 5: Online A/B Test Results Comparison Rev (Coupon) Rev (No-Coupon) 
+
+vs. Treatment-Agnostic +17.234% -vs. T-Learner +10.615% +0.367% Coupon Strategy     
+
+> Coupon CTR = sigmoid(Base Logit
+> + Coupon Amount × Unit Uplift)
+> User
+> Request
+> Core Model Section
+> Show No-Coupon
+> Page
+> Downstream Strategy Engine
+> Show Coupon
+> Page
+> +
+> Yes,
+> ROI ＞Threshold
+> No,
+> ROI ≤Threshold
+> Decision: ROI Threshold Check
+> Response to User
+> Unified CTR Prediction
+> (UniMVT)
+> Unit Uplift (logit) Base CTR (logit)
+
+Figure 4: Illustration of the online pipeline. 
+
+## 6 Conclusion 
+
+We proposed UniMVT to resolve confounding bias in multi-valued treatment settings. By unifying disentangled representation learn-ing with full-space counterfactual inference, UniMVT robustly estimates debiased CTRs and heterogeneous uplift. Extensive of-fline and online evaluations, supported by theoretical convergence proofs, demonstrate significant gains in both predictive accuracy and marketing efficiency. While linear monotonicity offers a straight-forward implementation for industrial deployment, future work will explore modeling techniques that better align with complex intensity-response curves. Jointly Optimizing Debiased CTR and Uplift for Coupons Marketing: A Unified Causal Framework Conference acronym ’XX, June 03–05, 2018, Woodstock, NY 
+
+## References 
+
+[1] Meng Ai, Zhuo Chen, Jibin Wang, Jing Shang, Tao Tao, and Zhen Li. 2024. Improve roi with causal learning and conformal prediction. In 2024 IEEE 40th International Conference on Data Engineering (ICDE) . IEEE, 598–610. [2] Qiwei Bi, Jian Li, Lifeng Shang, Xin Jiang, Qun Liu, and Hanfang Yang. 2022. Mtrec: Multi-task learning over bert for news recommendation. In Findings of the association for computational linguistics: ACL 2022 . 2663–2669. [3] Rich Caruana. 1997. Multitask learning. Machine learning 28 (1997), 41–75. [4] Jianxin Chang, Chenbin Zhang, Zhiyi Fu, Xiaoxue Zang, Lin Guan, Jing Lu, Yiqun Hui, Dewei Leng, Yanan Niu, Yang Song, et al . 2023. TWIN: TWo-stage interest network for lifelong user behavior modeling in CTR prediction at kuaishou. In 
+
+Proceedings of the 29th ACM SIGKDD Conference on Knowledge Discovery and Data Mining . 3785–3794. [5] Jianxin Chang, Chenbin Zhang, Yiqun Hui, Dewei Leng, Yanan Niu, Yang Song, and Kun Gai. 2023. PEPNet: Parameter and Embedding Personalized Network for Infusing with Personalized Prior Information. In Proceedings of the 29th ACM SIGKDD Conference on Knowledge Discovery and Data Mining (Long Beach, CA, USA) (KDD ’23) . Association for Computing Machinery, New York, NY, USA, 3795–3804. [6] Alicia Curth and Mihaela Van der Schaar. 2021. On inductive biases for hetero-geneous treatment effect estimation. Advances in Neural Information Processing Systems 34 (2021), 15883–15894. [7] Zichuan Fu, Xiangyang Li, Chuhan Wu, Yichao Wang, Kuicai Dong, Xiangyu Zhao, Mengchen Zhao, Huifeng Guo, and Ruiming Tang. 2025. A unified frame-work for multi-domain ctr prediction via large language models. ACM Transac-tions on Information Systems 43, 5 (2025), 1–33. [8] Huifeng Guo, TANG Ruiming, Yunming Ye, Zhenguo Li, and Xiuqiang He. 2017. DeepFM: A Factorization-Machine based Neural Network for CTR Prediction. In 
+
+Proceedings of the Twenty-Sixth International Joint Conference on Artificial Intelli-gence . International Joint Conferences on Artificial Intelligence Organization. [9] Bowei He, Yunpeng Weng, Xing Tang, Ziqiang Cui, Zexu Sun, Liang Chen, Xi-uqiang He, and Chen Ma. 2024. Rankability-enhanced revenue uplift modeling framework for online marketing. In Proceedings of the 30th ACM SIGKDD Confer-ence on Knowledge Discovery and Data Mining . 5093–5104. [10] Shen Jiang, Guanghui Zhu, Yue Wang, Chunfeng Yuan, and Yihua Huang. 2024. Automatic Multi-Task Learning Framework with Neural Architecture Search in Recommendations. In Proceedings of the 30th ACM SIGKDD Conference on Knowledge Discovery and Data Mining . 1290–1300. [11] Wenwei Ke, Chuanren Liu, Xiangfu Shi, Yiqiao Dai, Philip S Yu, and Xiaoqiang Zhu. 2021. Addressing exposure bias in uplift modeling for large-scale online advertising. In 2021 IEEE International Conference on Data Mining (ICDM) . IEEE, 1156–1161. [12] Sören R Künzel, Jasjeet S Sekhon, Peter J Bickel, and Bin Yu. 2019. Metalearners for estimating heterogeneous treatment effects using machine learning. Proceedings of the national academy of sciences 116, 10 (2019), 4156–4165. [13] Danwei Li, Zhengyu Zhang, Siyang Yuan, Mingze Gao, Weilin Zhang, Chaofei Yang, Xi Liu, and Jiyan Yang. 2023. Adatt: Adaptive task-to-task fusion network for multitask learning in recommendations. In Proceedings of the 29th ACM SIGKDD Conference on Knowledge Discovery and Data Mining . 4370–4379. [14] Haoxuan Li, Kunhan Wu, Chunyuan Zheng, Yanghao Xiao, Hao Wang, Zhi Geng, Fuli Feng, Xiangnan He, and Peng Wu. 2023. Removing hidden confounding in recommendation: a unified multi-task learning approach. Advances in Neural Information Processing Systems 36 (2023), 54614–54626. [15] Jiaqi Ma, Zhe Zhao, Xinyang Yi, Jilin Chen, Lichan Hong, and Ed H Chi. 2018. Modeling task relationships in multi-task learning with multi-gate mixture-of-experts. In Proceedings of the 24th ACM SIGKDD international conference on knowledge discovery & data mining . 1930–1939. [16] Jiaqi Ma, Zhe Zhao, Xinyang Yi, Jilin Chen, Lichan Hong, and Ed H. Chi. 2018. Modeling Task Relationships in Multi-task Learning with Multi-gate Mixture-of-Experts. [17] Xiao Ma, Liqin Zhao, Guan Huang, Zhi Wang, Zelin Hu, Xiaoqiang Zhu, and Kun Gai. 2018. Entire space multi-task model: An effective approach for estimating post-click conversion rate. In The 41st International ACM SIGIR Conference on Research & Development in Information Retrieval . 1137–1140. [18] Kelong Mao, Jieming Zhu, Liangcai Su, Guohao Cai, Yuru Li, and Zhenhua Dong. 2023. FinalMLP: an enhanced two-stream MLP model for CTR prediction. In 
+
+Proceedings of the AAAI conference on artificial intelligence , Vol. 37. 4552–4560. [19] Lizhen Nie, Mao Ye, Qiang Liu, and Dan Nicolae. 2021. Vcnet and functional targeted regularization for learning causal effects of continuous treatments. arXiv preprint arXiv:2103.07861 (2021). [20] Donald B Rubin. 2005. Causal Inference Using Potential Outcomes. J. Amer. Statist. Assoc. 100, 469 (2005), 322–331. [21] Patrick Schwab, Lorenz Linhardt, Stefan Bauer, Joachim M Buhmann, and Walter Karlen. 2020. Learning counterfactual representations for estimating individ-ual dose-response curves. In Proceedings of the AAAI Conference on Artificial Intelligence , Vol. 34. 5612–5619. [22] Uri Shalit, Fredrik D Johansson, and David Sontag. 2017. Estimating individual treatment effect: generalization bounds and algorithms. In International conference on machine learning . PMLR, 3076–3085. [23] Liangcai Su, Junwei Pan, Ximei Wang, Xi Xiao, Shijie Quan, Xihua Chen, and Jie Jiang. 2024. STEM: unleashing the power of embeddings for multi-task recommendation. In Proceedings of the AAAI Conference on Artificial Intelligence ,Vol. 38. 9002–9010. [24] Hongyan Tang, Junning Liu, Ming Zhao, and Xudong Gong. 2020. Progressive layered extraction (ple): A novel multi-task learning (mtl) model for personalized recommendations. In Proceedings of the 14th ACM conference on recommender systems . 269–278. [25] Wanjie Tao, Huihui Liu, Xuqi Li, Qun Dai, Hong Wen, and Zulong Chen. 2023. Event-Aware Adaptive Clustering Uplift Network for Insurance Creative Ranking. In Proceedings of the 46th International ACM SIGIR Conference on Research and Development in Information Retrieval . 1966–1970. [26] Fan Wang, Lianyong Qi, Weiming Liu, Bowen Yu, Jintao Chen, and Yanwei Xu. 2025. Inter-and intra-similarity preserved counterfactual incentive effect estimation for recommendation systems. ACM Transactions on Information Systems 43, 6 (2025), 1–24. [27] Fangye Wang, Yingxu Wang, Dongsheng Li, Hansu Gu, Tun Lu, Peng Zhang, and Ning Gu. 2022. Enhancing CTR prediction with context-aware feature repre-sentation learning. In Proceedings of the 45th International ACM SIGIR Conference on Research and Development in Information Retrieval . 343–352. [28] Yejing Wang, Zhaocheng Du, Xiangyu Zhao, Bo Chen, Huifeng Guo, Ruiming Tang, and Zhenhua Dong. 2023. Single-shot feature selection for multi-task recommendations. In Proceedings of the 46th International ACM SIGIR Conference on Research and Development in Information Retrieval . 341–351. [29] Haizhi Yang, Tengyun Wang, Xiaoli Tang, Qianyu Li, Yueyue Shi, Siyu Jiang, Han Yu, and Hengjie Song. 2021. Multi-task learning for bias-free joint ctr prediction and market price modeling in online advertising. In Proceedings of the 30th ACM International Conference on Information & Knowledge Management . 2291–2300. [30] Xin Zhang, Kai Wang, Zengmao Wang, Bo Du, Shiwei Zhao, Runze Wu, Xudong Shen, Tangjie Lv, and Changjie Fan. 2024. Temporal Uplift Modeling for Online Marketing. In Proceedings of the 30th ACM SIGKDD Conference on Knowledge Discovery and Data Mining . 6247–6256. [31] Zhe Zhao, Lichan Hong, Li Wei, Jilin Chen, Aniruddh Nath, Shawn Andrews, Aditee Kumthekar, Maheswaran Sathiamoorthy, Xinyang Yi, and Ed Chi. 2019. Recommending what video to watch next: a multitask ranking system. In Pro-ceedings of the 13th ACM conference on recommender systems . 43–51. [32] Kailiang Zhong, Fengtong Xiao, Yan Ren, Yaorong Liang, Wenqing Yao, Xiaofeng Yang, and Ling Cen. 2022. Descn: Deep entire space cross networks for individual treatment effect estimation. In Proceedings of the 28th ACM SIGKDD conference on knowledge discovery and data mining . 4612–4620. 
+
+## A Theoretical Analysis A.1 Proof of Theorem 4.1 
+
+We aim to show that minimizing the counterfactual regularization loss Lx-base and Lx-treat guarantees the convergence of the estimated unit uplift ˆ𝜂 to the true structural uplift 𝜂 .
+
+A.1.1 Proof of Convergence for Lx-treat .
+
+Proof. We now demonstrate that minimizing the counterfactual regularization loss for the treated group, Lx-treat , similarly guaran-tees the identification of the unit uplift. Let Lx-treat denote the discrepancy between the estimated coun-terfactual treated outcome ˆ𝑝 ′
+
+𝑡 (x𝑖 , 𝑡 𝑖 ) and the true observed treated outcome 𝑝 𝑡 (x𝑖 , 𝑡 𝑖 ).The estimated counterfactual treated outcome is derived by adding the estimated treatment effect to the predicted baseline: 
+
+ˆ𝑝 ′
+
+𝑡 (x𝑖 , ˆ𝑡 𝑖 ) = ˆ𝑝 0 (x𝑖 ) + ˆ𝜂 𝑖 · ˆ𝑡 𝑖 . (28) The true structural relationship between the treated and baseline outcomes is given by: 
+
+𝑝 𝑡 (x𝑖 , 𝑡 𝑖 ) = 𝑝 0 (x𝑖 ) + 𝜂 𝑖 · 𝑡 𝑖 . (29) Conference acronym ’XX, June 03–05, 2018, Woodstock, NY Yang et al. 
+
+We define the error term Δ𝑖 as the absolute difference between the estimated and true treated outcome: 
+
+Δ𝑖 = | ˆ𝑝 ′ 
+
+> 𝑡
+
+(x𝑖 , ˆ𝑡 𝑖 ) − 𝑝 𝑡 (x𝑖 , 𝑡 𝑖 )| 
+
+= |( ˆ𝑝 0 (x𝑖 ) + ˆ𝜂 𝑖 ˆ𝑡 𝑖 ) − ( 𝑝 0 (x𝑖 ) + 𝜂 𝑖 𝑡 𝑖 )| . (30) To isolate the uplift error term ( ˆ𝜂 𝑖 − 𝜂 𝑖 ), we rearrange the terms and introduce the cross-term ˆ𝜂 𝑖 𝑡 𝑖 − ˆ𝜂 𝑖 𝑡 𝑖 = 0:
+
+Δ𝑖 = |( ˆ𝑝 0 (x𝑖 ) − 𝑝 0 (x𝑖 )) + ( ˆ𝜂 𝑖 ˆ𝑡 𝑖 − 𝜂 𝑖 𝑡 𝑖 )| 
+
+= |( ˆ𝑝 0 − 𝑝 0) + ( ˆ𝜂 𝑖 ˆ𝑡 𝑖 − ˆ𝜂 𝑖 𝑡 𝑖 + ˆ𝜂 𝑖 𝑡 𝑖 − 𝜂 𝑖 𝑡 𝑖 )| 
+
+= | ( ˆ𝑝 0 − 𝑝 0)
+
+| {z }
+
+> Base Error
+
++ ˆ𝜂 𝑖 (ˆ𝑡𝑖 − 𝑡 𝑖 )
+
+| {z }
+
+> Intensity Error
+
++ 𝑡 𝑖 ( ˆ𝜂 𝑖 − 𝜂 𝑖 )
+
+| {z }
+
+> Uplift Error
+
+|. (31) By the Triangle Inequality ( |𝑎 + 𝑏 | ≤ | 𝑎 | + | 𝑏 |), we bound the error magnitude: 
+
+Δ𝑖 ≤ | ˆ𝑝 0 − 𝑝 0 | + | ˆ𝜂 𝑖 | · | ˆ𝑡 𝑖 − 𝑡 𝑖 | + | 𝑡 𝑖 | · | ˆ𝜂 𝑖 − 𝜂 𝑖 |. (32) By assumption 4.1, the true treatment intensity is bounded away from zero ( |𝑡 𝑖 | ≥ 𝑡 𝑚𝑖𝑛 > 0). Therefore, the factor |𝑡 𝑖 | is strictly positive. For the product to vanish, it must be that the uplift error vanishes: 
+
+| ˆ𝜂 𝑖 − 𝜂 𝑖 | 𝑝 
+
+−→ 0. (33) This confirms that minimizing the counterfactual regularization loss on the treated group also guarantees that the estimated unit uplift ˆ𝜂 𝑖 converges in probability to the true structural uplift 𝜂 𝑖 . □
+
+A.1.2 Proof of Convergence for Lx-base .
+
+Proof. Let Lx-base denote the discrepancy between the esti-mated counterfactual baseline ˆ𝑝 ′ 
+
+> 0
+
+(x𝑖 ) and the true observed baseline 
+
+𝑝 0 (x𝑖 ).The estimated counterfactual baseline is derived by subtracting the estimated treatment effect from the predicted treated outcome: 
+
+ˆ𝑝 ′ 
+
+> 0
+
+(x𝑖 ) = ˆ𝑝 𝑡 (x𝑖 , ˆ𝑡 𝑖 ) − ˆ𝜂 𝑖 · ˆ𝑡 𝑖 . (34) The true structural relationship between the baseline and treated outcomes is given by: 
+
+𝑝 0 (x𝑖 ) = 𝑝 𝑡 (x𝑖 , 𝑡 𝑖 ) − 𝜂 𝑖 · 𝑡 𝑖 . (35) We define the error term Δ𝑖 as the absolute difference between the estimated and true baseline: 
+
+Δ𝑖 = | ˆ𝑝 ′ 
+
+> 0
+
+(x𝑖 ) − 𝑝 0 (x𝑖 )| 
+
+= |( ˆ𝑝 𝑡 (x𝑖 , ˆ𝑡 𝑖 ) − ˆ𝜂 𝑖 ˆ𝑡 𝑖 ) − ( 𝑝 𝑡 (x𝑖 , 𝑡 𝑖 ) − 𝜂 𝑖 𝑡 𝑖 )| . (36) To isolate the uplift error term (𝜂 𝑖 − ˆ𝜂 𝑖 ), we rearrange the terms and introduce the cross-term 𝜂 𝑖 ˆ𝑡 𝑖 − 𝜂 𝑖 ˆ𝑡 𝑖 = 0:
+
+Δ𝑖 = |( ˆ𝑝 𝑡 (x𝑖 , ˆ𝑡 𝑖 ) − 𝑝 𝑡 (x𝑖 , 𝑡 𝑖 )) + ( 𝜂 𝑖 𝑡 𝑖 − ˆ𝜂 𝑖 ˆ𝑡 𝑖 )| 
+
+= |( ˆ𝑝 𝑡 (x𝑖 , ˆ𝑡 𝑖 ) − 𝑝 𝑡 (x𝑖 , 𝑡 𝑖 )) + ( 𝜂 𝑖 𝑡 𝑖 − 𝜂 𝑖 ˆ𝑡 𝑖 + 𝜂 𝑖 ˆ𝑡 𝑖 − ˆ𝜂 𝑖 ˆ𝑡 𝑖 )| 
+
+= | ( ˆ𝑝 𝑡 (x𝑖 , ˆ𝑡 𝑖 ) − 𝑝 𝑡 (x𝑖 , 𝑡 𝑖 )) 
+
+| {z }
+
+> Outcome Error
+
++ 𝜂 𝑖 (𝑡 𝑖 − ˆ𝑡 𝑖 )
+
+| {z }
+
+> intensity Error
+
++ ˆ𝑡 𝑖 (𝜂 𝑖 − ˆ𝜂 𝑖 )
+
+| {z }
+
+> Uplift Error
+
+|. (37) By the Triangle Inequality ( |𝑎 + 𝑏 | ≤ | 𝑎 | + | 𝑏 |), we bound the error magnitude: 
+
+Δ𝑖 ≤ | ˆ𝑝 𝑡 (x𝑖 , ˆ𝑡 𝑖 ) − 𝑝 𝑡 (x𝑖 , 𝑡 𝑖 )| + | 𝜂 𝑖 | · | 𝑡 𝑖 − ˆ𝑡 𝑖 | + | ˆ𝑡 𝑖 | · | 𝜂 𝑖 − ˆ𝜂 𝑖 |. (38) To prove the convergence of ˆ𝑝 𝑡 (x𝑖 , ˆ𝑡 𝑖 ) − 𝑝 𝑡 (x𝑖 , 𝑡 𝑖 ) term, we ap-ply the triangle inequality to decompose the error term into two components: the estimation error of the density model and the approximation error caused by the treatment perturbation. 
+
+ˆ𝑝 𝑡 (x𝑖 , ˆ𝑡 𝑖 ) − 𝑝 𝑡 (x𝑖 , 𝑡 𝑖 ) = ˆ𝑝 𝑡 (x𝑖 , ˆ𝑡 𝑖 ) − 𝑝 𝑡 (x𝑖 , ˆ𝑡 𝑖 ) + 𝑝 𝑡 (x𝑖 , ˆ𝑡 𝑖 ) − 𝑝 𝑡 (x𝑖 , 𝑡 𝑖 )
+
+≤ ˆ𝑝 𝑡 (x𝑖 , ˆ𝑡 𝑖 ) − 𝑝 𝑡 (x𝑖 , ˆ𝑡 𝑖 ) + 𝑝 𝑡 (x𝑖 , ˆ𝑡 𝑖 ) − 𝑝 𝑡 (x𝑖 , 𝑡 𝑖 )
+
+(39) Based on Assumption 4.2, as the model training converges (sam-ple size 𝑁 → ∞ ), the estimator ˆ𝑝 𝑡 approaches 𝑝 𝑡 uniformly over the domain. Therefore, for any input (x𝑖 , ˆ𝑡 𝑖 ), we have: 
+
+lim   
+
+> 𝑁 →∞
+
+ˆ𝑝 𝑡 (x𝑖 , ˆ𝑡 𝑖 ) − 𝑝 𝑡 (x𝑖 , ˆ𝑡 𝑖 ) = 0 (40) Based on Assumption 4.1, we can bound the perturbation error by the distance between the estimated treatment ˆ𝑡 𝑖 and the true treatment 𝑡 𝑖 :
+
+𝑝 𝑡 (x𝑖 , ˆ𝑡 𝑖 ) − 𝑝 𝑡 (x𝑖 , 𝑡 𝑖 ) ≤ 𝐿 𝑝 ∥ˆ𝑡 𝑖 − 𝑡 𝑖 ∥2
+
+Since it is given that the treatment estimation (e.g., via LHUC GateNet) converges, i.e., ∥ˆ𝑡 𝑖 − 𝑡 𝑖 ∥2 → 0, it follows that: 
+
+lim    
+
+> ∥ˆ𝑡 𝑖 −𝑡 𝑖 ∥→ 0
+
+𝑝 𝑡 (x𝑖 , ˆ𝑡 𝑖 ) − 𝑝 𝑡 (x𝑖 , 𝑡 𝑖 ) = 0 (41) Therefore, we conclude that: 
+
+ˆ𝑝 𝑡 (x𝑖 , ˆ𝑡 𝑖 ) − 𝑝 𝑡 (x𝑖 , 𝑡 𝑖 ) → 0 (42) By assumption4.1, the true intensity is bounded away from zero (|𝑡 𝑖 | ≥ 𝜖 > 0). Since ˆ𝑡 𝑖 is consistent ( ˆ𝑡 𝑖 → 𝑡 𝑖 ), it follows that for sufficiently large 𝑁 , |ˆ𝑡 𝑖 | is also bounded away from zero. Therefore, the only solution for the product to vanish is for the uplift error to vanish: 
+
+|𝜂 𝑖 − ˆ𝜂 𝑖 | 𝑝 
+
+−→ 0. (43) This concludes the proof that the estimated unit uplift ˆ𝜂 𝑖 con-verges in probability to the true structural uplift 𝜂 𝑖 .
+
+□Jointly Optimizing Debiased CTR and Uplift for Coupons Marketing: A Unified Causal Framework Conference acronym ’XX, June 03–05, 2018, Woodstock, NY 
+
+## B Experiment Details B.1 Implementation Details 
+
+Figure 5: The illustration of coupon scenario. These pre-click promotional details can significantly influence user click-through rates. 
+
+The scenario is illustrated in Figure 5. Marketing in this scenario launches different coupon campaigns for different customer seg-ments to motivate more users to click and complete purchases on the platform. The treatments are promoted to some group of users once user shows interest in specific items or categories. Interven-tions include multiple coupon styles (e.g., full-reduction coupons, percentage discount coupons) and denominations (e.g., 0.7x, 0.9x discounts). Coupons are surfaced in the lower area of the screen to attract user attention and increase overall click-through rate (CTR). The delivery policy follows a greedy strategy that assigns a coupon to users with the highest expected net gain, defined as predicted revenue lift minus coupon cost.

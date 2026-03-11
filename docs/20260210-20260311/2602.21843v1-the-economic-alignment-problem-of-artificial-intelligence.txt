@@ -1,0 +1,1592 @@
+Title: 2602.21843v1.pdf
+
+URL Source: https://arxiv.org/pdf/2602.21843v1
+
+Published Time: Thu, 26 Feb 2026 01:52:07 GMT
+
+Number of Pages: 18
+
+Markdown Content:
+– 1 –
+
+# The economic alignment problem of artificial intelligence 
+
+Daniel W. O’Neill 1,2,* , Stefano Vrizzi 1, Noemi Luna Carmeno 1, Felix Creutzig 3,4 , Jefim Vogel 1,5  
+
+> 1
+
+UB School of Economics, Universitat de Barcelona, Barcelona, Spain  
+
+> 2
+
+Sustainability Research Institute, School of Earth and Environment, University of Leeds, Leeds, UK  
+
+> 3
+
+Bennett Chair for Innovation and Policy Acceleration, University of Sussex Business School, Falmer, UK  
+
+> 4
+
+Potsdam Institute for Climate Impact Research, Potsdam and Berlin, Germany  
+
+> 5
+
+Leeds University Business School, University of Leeds, Leeds, UK 
+
+*e -mail:  oneill@ub.edu 
+
+# Abstract 
+
+Artificial intelligence (AI) is advancing exponentiall y and is likely to have profound imp acts on 
+
+human wellbeing, social equity , and environmental sustainability . Here we argue that t he 
+
+“alignment problem ” in AI research is also an economic alignment problem , as developing 
+
+advanced AI inside a growth -based system is likely to increase social, environmental, and 
+
+existential risks. We show that p ost -growth research offers concepts and policies that c ould 
+
+substantially reduce AI risks , such as by replacing optimisation with satisficing, using the 
+
+Doughnut of social and planetary boundaries to guide development , and curbing systemic 
+
+rebound with resource caps. We propose governance and business reforms that treat AI as a 
+
+commons and prioritise tool -like autonomy -enhancing systems over agentic AI. Finally, we 
+
+argue that the development of artificial general intelligence (AGI) may require a new economics, 
+
+for which post -growth scholarship provides a strong foundation. 
+
+# Introduction 
+
+Artificial intelligence (AI) is reshaping human, social, and economic systems, with impacts that 
+
+could range from highly beneficial 1 to potentially catastrophic 2. While recent research has 
+
+emphasise d the need to align AI with human and planetary wellbeing 3, less attention has been 
+
+paid to the economic context in which AI is being developed. Crucially, alignment is not only a 
+
+technical challenge: it is conditioned by the values, incentives, and power structures of the 
+
+prevailing growth -oriented economic system. We argue that this system undermines the social 
+
+and environmental goals AI that should serve, creating what we call the economic alignment 
+
+problem .
+
+Three types of risks and associated research highlight the urgency to act upon and regulate AI. 
+
+The first is safety. AI systems now match or exceed the average human being on a range of tasks 
+
+such as image classification, reading comprehension, PhD -level science questions, visual 
+
+reasoning, and competition -level mathematics 4. Many warn that “artificial general intelligence” 
+
+(AGI) could be just around the corner 5,6 , or that it has already arrived (see Box 1)7. While about 
+
+two thirds of computer scientists think good outcomes from advanced AI are more likely than 
+
+bad, 38% estimate at least a 10% chance of catastrophic outcomes such as human extinction 8.
+
+Second, social -science scholarship emphasises structural risks, including concentration of 
+
+power, automated persuasion, epistemic fragmentation, and the erosion of democratic 
+
+governance 9, which in turn reduces institutional capacity to manage technological shocks 10 . A
+
+recent systematic literature review highlights the impact that AI could have on various aspects 
+
+of human wellbeing , with roughly half of studies expressing a positive view on the impact of AI 
+
+and half expressing a negative view 11 . The areas where sentiment is most positive relate to 
+
+income, cognitive capabilities, and health. The areas where sentiment is most negative relate to 
+
+inequality, social relationships, and employment 11 .– 2 –
+
+Environmental analyses add a third important domain. Researchers have started to explore the 
+
+impact that AI could have on the environment , including the UN Sustainable Development 
+
+Goals 12 , climate change mitigation 13 , and sustainability science 14 . A recent review found that 
+
+over 80% of studies portray the impacts of AI on the environment as positive 11 . However, m ost 
+
+studies focus on ways that AI can be applied to help solve specific environmental problems ,
+
+and neglect systemic effects that AI itself could cause 11 . These effects could have far greater 
+
+implications for sustainability 15,16 . Scaling computational energy demand, supply -chain 
+
+material intensity, and AI -enabled acceleration of production, extraction, and consumption 
+
+amplif y ecological overshoot despite localised efficiency gains 13,17,18 .
+
+Recent work increasingly treats these three areas as coupled risks. For instance , AI 
+
+misinformation weakens institutions which in turn degrades safety oversight 10 . Th e risks from AI 
+
+appear at a time when humanity is already transgressing 7 of the 9 planetary boundaries that 
+
+define a safe space for development on this planet 19 , while billions of people are unable to meet 
+
+their essential needs 20 .
+
+To address th e coupled socio -ecological crisis, p ost -growth researchers have argue d that 
+
+countries need to move beyond the pursuit of GDP growth, which is a poor measure of societal 
+
+progress, and instead focus on improving human wellbeing within ecological limits (see Box 2)21 .
+
+Research on demand -side approaches shows that a focus on wellbeing can improve human life 
+
+while reducing planetary pressures 22,23 . Yet these insights have only recently begun to be 
+
+connected to the rapidly evolving field of AI. 
+
+This raises the question of how post ‑growth research might inform the economic alignment 
+
+problem . Although there is a small but important literature that considers the role of technology 
+
+in a post -growth society 24 –26 , this research has yet to engage with the topic of AI. Except for an 
+
+early study by Pueyo 27 , which warns of the dangers of superintelligent AI emerging in a 
+
+neoliberal regime, and a recent study by Meyers et al. 28 , which evaluates a specific type of 
+
+machine learning against a conviviality framework, post -growth and AI research have yet to 
+
+intersect .
+
+In this article , we argue that if advanced AI systems are developed in a n economy where the 
+
+goal i s endless economic growth, then they may pose a much greater danger to humanity than if 
+
+they are developed in a n economy where the goal is enough for all within planetary boundaries .
+
+We show that post -growth research provides many ideas that would help to address the safety, 
+
+social, and planetary risks of advanced AI. We present a post -growth policy roadmap for AI , and 
+
+suggest that the development of AGI may necessi tate new economic theories a nd models , for 
+
+which post -growth provides a strong foundation .– 3 –
+
+Box 1: What is artificial intelligence? 
+
+Artificial intelligence today refers to the development of computer systems capable of performing 
+
+tasks that typically require human intelligence, such as learning, problem -solving, and decision -
+
+making. It is helpful to distinguish between three levels of capability: artificial narrow intelligence (ANI), 
+
+artificial general intelligence (AGI), and artificial superintelligence (ASI). 
+
+ANI refers to a system that can perform a single narrow function at human level or better. It lacks the 
+
+human ability to adapt and generalise to novel goals and contexts. M ost experts argue that ANI is the 
+
+type of AI we still have at present (e.g. Siri, Alexa, ChatGPT) , although some suggest current models 
+
+already exceed this level 7.
+
+AGI refers to a system that can learn and perform almost any intellectual task that a human can do. 
+
+Researchers have developed a quantifiable framework to assess artificial intelligence across ten 
+
+cognitive domains 29 . Current AI models like ChatGPT exhibit a “jagged” profile on this framework, 
+
+excelling in some domains (reading/writing, mathematics, and general knowledge), but doing poorly in 
+
+others (long -term memory storage and speed). However, model performance is i mproving, with GPT -4
+
+(a 2023 model) scoring 27% on the framework overall, and GPT -5 (a 2025 model) scoring 57% 29 .
+
+ASI refers to a system with cognitive abilities that surpass human beings in virtually all domains, and 
+
+that can potentially set its own goals 30 . ASI could emerge if AGI undergoes recursive self -improvement, 
+
+a pathway that has been likened to a “singularity” in which the pace of technological change becomes 
+
+so rapid that “human life will be irreversibly transformed” 31 . Some authors therefore treat ASI as an 
+
+existential risk, arguing that developing superintelligent machines that can self -improve and pursue 
+
+their own goals would likely lead to human extinction 2.
+
+Box 2: What is post -growth? 
+
+Post -growth is an umbrella term for sustainability visions that are critical of the pursuit of GDP growth 
+
+as a goal in wealthy nations 32 . It draws on ideas from ecological economics, and includes visions such 
+
+as degrowth 33 , steady -state economics 34 , Doughnut economics 35 , and the wellbeing economy 36 .
+
+There are three main reasons that post -growth scholars criticise the pursuit of GDP: (1) economic 
+
+activity is tightly coupled to energy and material use 37 ; (2) beyond the point where people’s needs are 
+
+met, additional money does not significantly improve human wellbeing 38 ; and (3) growth rates have 
+
+been steadily falling in wealthy nations 32 . Post -growth envisions redesigning the economy so that its 
+
+development is guided by the three goals of human wellbeing, social equity, and environmental 
+
+sustainability, rather than GDP growth 39 .
+
+Technological innovation has been important to post -growth visions as far back as The Limits to 
+
+Growth report 40 . Both the wellbeing economy and the Doughnut see technology as a tool that can be 
+
+used to help improve human wellbeing and environmental sustainability 35,36 , while degrowth has a 
+
+more conflicted view on technology 24 .
+
+Overall, post -growth calls for selective, context -sensitive adoption of technologies that are convivial, 
+
+appropriate, and democratically governed 24 . Post -growth challenges technological determinism (the 
+
+idea that technological change is inevitable and bound to increase indefinitely) and productivism (the 
+
+idea that technological development is always good and desirable) 25 . Importantly, in post -growth 
+
+visions, better technology is not enough on its own. Social change is also needed to achieve 
+
+sustainability 26 .– 4 –
+
+# The Economic Alignment Problem 
+
+The “alignment problem” in AI research is the challenge of ensuring that AI systems behave in a 
+
+way that is consistent with human intentions and values, and that they do not produce 
+
+unintended or harmful outcomes 41 . It is a major AI safety problem, which does not currently 
+
+have a solution. 
+
+We argue that t he alignment problem is also an economic alignment problem . Aligning AI with 
+
+human values means first aligning our economic system with these values. If we build AI in an 
+
+economic system that is not aligned with human wellbeing and environmental sustainability, we 
+
+can hardly expect AI to be aligned with these goals . Developing AGI within an economy where 
+
+the goal is growth could go badly wrong, as w e would be training the AI to pursue exponential 
+
+growth as a goal. The opportunity cost of this growth could be humanity itself .
+
+Although AI holds tremendous p otential to improve human wellbeing and advance scientific 
+
+understanding, if developed in the current economic system, it could instead lead to major 
+
+safety, social, and planetary risks. 
+
+## The exponential growth of AI model capabilities 
+
+The physicist Albert Bartlett famously argued that “The greatest shortcoming of the human race 
+
+is our inability to understand the exponential function” 42 . Exponential growth appears slow 
+
+initially , but becomes explosive — and ultimately unsustainable — because each doubling 
+
+brings as much growth as the entire previous history combined. Human beings tend to predict 
+
+that change will follow a linear trajectory, not an exponential trajectory. AI may be another 
+
+example of humanity not understanding the exponential function. Society and policymakers risk 
+
+underestimating how rapid and disruptive change will be. 
+
+AI is experiencing unprecedented exponential growth across multiple dimensions, far exceeding 
+
+the pace of traditional technological advancement. Multiple measures of AI technical 
+
+performance, research and development, and investment are increasing faster than Moore’s 
+
+law , the observation that the number of transistors on a microchip doubles about every two 
+
+years (Figure 1a ). Over the period from 2010 to 2024, the training compute of frontier AI models 
+
+has grown by a factor of 4 –5 times per year 43 . This means it is doubling every 5 –6 months. Th e
+
+acceleration in computational resources dedicated to AI training has been a key driver behind 
+
+recent breakthroughs in model capabilities. The minimal size of model that can solve a difficult 
+
+technical challenge is halving every 3 months, while the task difficulty that models can 
+
+complete is doubling every 7 months (Figure 1a) .– 5 –                 
+
+> Figure 1: The exponential growth of AI model capabilities. a,Doubling times for selected AI technical
+> performance, research and development, and investment metrics that exhibit exponential growth, shown in
+> comparison to Moore’s law. Doubling times are estimated by fitting exponential curves to historical data for each
+> indicator; error bars denote 95% confidence intervals. MMLU =Massive Multitask Language Understanding. Source:
+> Authors ,based on multiple data sources (see Supplementary Information). b,Projection of AI capabilities to 2030
+> based on historical data for 2019 –2025. Values represent the task difficulty that AI models can complete with an 80%
+> success probability. Results are displayed on a logarithmic scale and normalised to GPT -4. The fitted curve
+> corresponds to a doubling time of approximately 7months. Selected OpenAI models are highlighted in red. Source:
+> Based on historical data from Kwa et al. 44 .
+
+The trend of AI capabilities doubling every 7 months represents an annual growth rate of over 
+
+200%, meaning AI systems are becom ing over three times more capable each year (Figure 1b) .
+
+At this rate, within 6 years, AI systems will be over 1000 times as capable as they are today 
+
+(roughly an order of magnitude improvement every two years). An extrapolation of this 
+
+exponential trend foresees AI to be roughly 5000 times more capable than GPT -4 by 2030 , and 
+
+200 times more capable than GPT -5 (Fig ure 1b). However, whether th is exponential trend 
+
+applies to real -world tasks remains to be seen 44 .
+
+In a large survey of computer scientists, conducted in 2023, respondents predict ed a 10% 
+
+chance of unaided machines outperforming humans in all cognitive and physical tasks by 2027, 
+
+rising to a 50% chance by 2047 8. In a smaller survey of AI researchers conducted in 2024, 63% 
+
+of respondents thought AGI would be achieved within 20 years 5. Howeve r, e stimates of when we 
+
+will achieve AGI keep getting closer. The median prediction on the forecasting platform 
+
+Metaculus for when the first “general AI system” will be launched was 2062 in 2020. As of 
+
+February 2026 , the prediction wa s 2033 45 .
+
+## Unconstrained technological development 
+
+AI has four features that are likely to make it transformative : (1) AI is a “general -purpose 
+
+technology” 46 , like the steam engine, electricity, or printing press, which can be embedded in 
+
+virtually every sector of the economy. (2) Unlike past technological revolutions , which primarily 
+
+replaced physical labour, AI directly substitutes for cognitive functions like writing, reasoning, 
+
+creativity, and problem -solving 47 . (3) AI can make decisions , with “agentic” AI systems already 
+
+able to act autonomously without human intervention 48 . (4) AI has the potential for recursive 
+
+self -improvement — to learn, adapt, and improve on its own — creating the possibility of an 
+
+“intelligence explosion” 6,31 . No previous technology ha s ha d the capacity to autonomously 
+
+accelerate its own development in this way. 
+
+At present, AI development is being influenced by the ideology of accelerationism. 
+
+Accelerationism argues that the only way out of the problems created by capitalism, 
+
+technology, and modernity is through them — by intensifying or “accelerating” their dynamics 
+
+rather than resisting or reversing them 49 . In Silicon Valley, this idea has recently gained – 6 –
+
+popularity in the form of “effective accelerationism” , which promotes fast, unconstrained 
+
+technological development — especially in AI — as the way to solve global problems 50 . Some of 
+
+its main arguments include that everything good comes from growth, free markets are the most 
+
+effective way to organise a technological society, human needs and wants are infinite, and 
+
+intelligence and energy use should be placed in a positive feedback loop to drive both to 
+
+infinity 51 .
+
+The thing that is arguably most concerning about effective accelerationism is not the blind faith 
+
+in technology , but the blind faith in markets to guide technological development. Proponents of 
+
+effective accelerationism are essentially arguing that 21 st century technology should be 
+
+managed by an 18 th century socioeconomic system (i.e. free -market capitalism). The 
+
+accelerationist approach completely neglects social innovation. We argue that technological 
+
+innovation is not enough on its own. We also need social innovation. 
+
+## The impact on economic growth and the environment 
+
+Given the wide range in possible AI futures , which range from benefic ent superintelligence 6 to 
+
+human extinction 2, the impact that AI could have on the economy, and GDP, is extremely 
+
+uncertain (Figure 2). Low estimates predict that AI will likely have only marginal effects on global 
+
+GDP and employment, but will increase inequality between countries 52 , or that AI will increase 
+
+GDP by a few percent over the course of a decade 53,54 . Others speculate on “explosive” or super -
+
+exponential growth if AI accelerates idea generation and replaces human labour 6,55 .
+
+Figure 2: The wide r ange of AI future s in the literature and their implications for global GDP per capita . The 
+
+dashed black line shows the long -term trend in global GDP per capita , determine d based on historical data for 1950 –
+
+2024 (grey line) . The coloured lines show five alternative scenarios for 2025 –2050 , which we derived from the 
+
+quantitative and qualitative descriptions of five studies , labelled as : Intelligence explosion 6, Baseline AGI 55 ,
+
+Widespread adoption 54 , Modest growth 53 , and Human extinction 56 . Scenario trajectories were constructed by 
+
+applying the average annual GDP per capita growth rate implied by each study , relative to the historical trendline. All 
+
+values are expressed in constant 2011 US dollars. Source: Authors (see Supplementary Information). 
+
+The results are so different largely because AI researchers anticipate the creation of AGI, while 
+
+economists (with a few notable exceptions ) generally do not. The high estimates assume AGI 
+
+and recursive self -improvement lead to explosive productivity growth, while the low estimates 
+
+assume incremental gains that are constrained by factors such as adoption frictions and 
+
+demand saturation. Moreover, t he low estimates only consider the capabilities of recent models 
+
+(e.g. GPT -4), rather than future ones. 
+
+If AI leads to explosive economic growth , as some predict , the net result could be catastrophic 
+
+for the environment , given the difficulty of decoupling economic activity from its environmental 
+
+impacts 37 . Although AI could allow us to develop new technologies that improve resource 
+
+efficiency, the rebound effect demonstrates that if we find some way to make a factory 10 times 0          
+
+> 10,000
+> 20,000
+> 30,000
+> 40,000
+> 50,000
+> 60,000
+> 70,000
+> 80,000
+> 90,000
+> 100,000
+> 1950 1960 1970 1980 1990 2000 2010 2020 2030 2040 2050
+> Global GDP per capita ($)
+> Intelligence explosion (Aschenbrenner)
+> Baseline AGI (Korinek and Suh)
+> Widespread adoption (Goldman Sachs)
+> Modest growth (Acemoglu)
+> Human extinction (Yudkowsky)
+> Historical data
+> Trendline
+
+– 7 –
+
+more efficient, we don ’t just bank th e savings. We produce and consume substantially more 57 .
+
+Any improvements in resource efficiency would likely be dwarfed by the sheer scale of 
+
+economic activity. 
+
+## Inequality and employment 
+
+The impact s that AI could have on social outcomes are more difficult to evaluate 11 . On the one 
+
+hand, AI could lead to breakthroughs in medical science, dramatically improving human health 
+
+and wellbeing. On the other hand, AI could exacerbate social problems , by displacing labour 
+
+and intensifying inequality. 
+
+A key question is whether AI will substitute or augment human labour. Many economists argue 
+
+that the impact AI will have on jobs will be similar to previous technological transitions , like the 
+
+Industrial Revolution . While some jobs will be displaced, new ones will be created 58 . By 
+
+contrast, many AI researchers argue that artificial general intelligence capable of performing all 
+
+(or most) cognitive tasks could substitute human labour, lead ing to mass unemployment 59,60 . If 
+
+this is the case, then r edistributive policies of the kind proposed by post -growth scholars —
+
+such as a wealth tax and a universal basic income 32,61,62 — would be needed to prevent rising 
+
+inequality and sustain aggregate demand for the goods produced by AI. 
+
+The real danger may not be AI, but the economic system in which it is developed, namely 
+
+capitalism. According to Nobel laureate Geoffrey Hinton , who is often called one of the 
+
+godfathers of AI, “What’s actually going to happen is rich people are going to use AI to replace 
+
+workers. It’s going to create massive unemployment and a huge rise in profits. It will make a few 
+
+people much richer and most people poorer. That’s not AI’s fault, that is the capitalist system” 59 .
+
+Developing artificial general intelligence within a neoliberal, capitalist economy could be a 
+
+recipe for disaster 27 . The incentives driving AI development — competition, profit, speed — are 
+
+misaligned with safety , ethics, and sustainability. 
+
+Moreover, within the current global economic system, AI may exacerbate power asymmetries 
+
+between the Global North and Global South . AI already contributes to ecologically unequal 
+
+exchange through the extraction of materials for hardware , the use of water and electricity for 
+
+data centres , and the production of e -waste 63 . Its supply chains rely heavily on precarious data 
+
+work and gig work that is concentrated in the Global South , while value is captured by a few 
+
+companies in the Global North 64 . Moreover , AI systems trained on Western data can marginalise 
+
+non ‑Western cultures and languages, embedding Global North values into Global South 
+
+contexts 65 . The development of AGI could further centralis e geopolitical power and knowledge 
+
+provision — creating a form of “algorithmic colonialism ”65 — unless ownership models and 
+
+economic incentives change. 
+
+## Meaning, i dentity , and purpose 
+
+In his 1930 essay “Economic possibilities for our grandchildren” , John Maynard Keynes famously 
+
+wondered what human beings would do when the economic problem of scarcity was solved ,
+
+warning that mankind would be “deprived of its traditional purpose” 66 .
+
+Previous studies have found that jobs that are more automatable also tend to have lower job 
+
+satisfaction, in part because they involve less creativity and more repetitive tasks 67,68 . However, 
+
+these findings rely on estimates of occupational automatability that are based on data from 
+
+around 2010 69 , predating generative AI. 
+
+To update this picture, we conducted a new analysis using the latest estimates of occupational 
+
+exposure to automation. We find that while th e negative relationship holds for 2010 data 
+
+(Figure 3a), it weakens — or even reverses — with the most recent data (Figure 3b) . AI now 
+
+threaten s to automate tasks in occupations with high job satisfaction and meaning, including 
+
+professions such as teachers, therapists, and senior executives. – 8 –
+
+Figure 3: Job satisfaction and meaning in relation to occupational exposure to automation. a, Data from 201 0
+
+suggest that the jobs that are mo st automatable are those with lower job satisfaction and perceived meaning . b,
+
+More recent from 2023 suggest that this relationship no longer holds: l arge language models and generative AI now 
+
+threaten to automate many jobs that bring meaning and satisfaction to people’s lives. Each point represents an 
+
+occupation; the same set of 417 jobs is shown in both panels. Source: Automation data for 2010 are from Frey and 
+
+Osborne 69 , while automation data for 2023 are from Eloundou et al. 46 . Job satisfaction and meaning is measured as 
+
+the average of two survey -based indicators obtained from Payscale. See Supplementary Information for further 
+
+details. 
+
+If machines are ultimately able to outperform humans at all tasks, then what is left for 
+
+humanity? The non -economic effects of job loss include less social involvement in the 
+
+community, poorer health, lower self -esteem, and increased chance of divorce and suicide 47 .
+
+Even if people continue to work, they may feel a sense of social uselessness .
+
+If A GI creates “radical abundance” 70 and makes goods and services extremely cheap, then it 
+
+could lead to hyper -materialism, with consumption being the substitute for meaning and 
+
+purpose . The increase in resource use could lead to ecological collapse. 
+
+These concerns highlight that human wellbeing, social equity, and environmental sustainability 
+
+may become even more important in the age of AI. This makes it critical to explore economic 
+
+frameworks — such as post -growth — that prioritise wellbeing within planetary boundaries. 
+
+# The Post -Growth Solution 
+
+We argue that s everal core post -growth ideas would substantially reduce AI risks as they would 
+
+constrain runaway dynamics (growth, rebound, arms races) and help redirect AI development 
+
+toward s improving human wellbeing . Post -growth, by emphasising social thresholds and 
+
+environmental limits 71 , collective self -limitation 72,73 , and simply slowing down 74 , offers a positive 
+
+alternative to the ideology of accelerationism .
+
+## Optimising vs satisficing 
+
+AI is often trained to optimise. However, optimisation can lead to perverse outcomes . In a 
+
+famous thought experiment, known as the “paperclip maximiser”, Nick Bostrom proposed a 
+
+scenario in which an AI was given the sole objective of making as many paperclips as possible, 
+
+leading it to convert all available matter — including humans — into paperclips to achieve its 
+
+goal 30 . Several leading AI scientists have argued that making machines maximise reward is not a 
+
+good idea, and that the misalignment of AI systems with human intentions and values is caused 
+
+by optimisation 48,75 .y = -0.166x + 0.699             
+
+> R² = 0.27
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> 0.0 0.2 0.4 0.6 0.8 1.0
+> Job satisfaction and meaning
+> Exposure to automation
+> a2010 Data y = 0.046x + 0.597
+> R² = 0.01
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> 0.0 0.2 0.4 0.6 0.8 1.0
+> Job satisfaction and meaning
+> Exposure to automation
+> b2023 Data
+
+– 9 –
+
+Post -growth offers an alternative idea: satisficing . Satisfi cing means sufficiently meeting needs ,
+
+while respecting limits, rather than maximising or optimising outputs 34 . Satisficing does not 
+
+mean merely solving a feasibility problem or stopping optimisation once minima are met. 
+
+Instead, it refers to meeting multiple non ‑substitutable thresholds simultaneously, without 
+
+pursuing any single objective to the extreme. 
+
+The Doughnut of social and planetary boundaries, developed by economist Kate Raworth 35 , is a 
+
+framework for satisficing. It visualises sustainability in terms of a doughnut -shaped space 
+
+where resource use is high enough to meet people’s needs, but not so high that it transgresses 
+
+planetary boundaries. The Doughnut provides a clear compass that could be used to guide AI 
+
+development (Figure 4).                       
+
+> Figure 4:Applying the Doughnut of social and planetary boundaries to assess and guide AI development. The
+> Doughnut framework conceptualises sustainability as a “safe and just space” between a social foundation (inner
+> ring) and ecological ceiling (outer ring). The inner ring depicts key social dimensions, where shortfall indicate sunmet
+> human needs, while the outer ring represents Earth -system processes, where overshoot indicates transgression of
+> planetary boundaries. The figure contrasts the global situation in 2022 with a hypothetical AI development scenario .
+> In this scenario, AI deployment contributes to improvements in some social dimensions ( health, education, energy
+> access, and connectivity )while exacerbating shortfalls in others (employment, equality, and social cohesion ).At the
+> same time , AI helps to reduce pressures on some planetary boundaries (land conversion and nutrient pollution) while
+> intensif ying others (climate change and freshwater use ).Source: O’Neill and Creutzig 76 ,using global data from
+> Fanning and Raworth 20 .
+
+The Doughnut provides an indicator framework to operationalise the recently proposed “Earth 
+
+alignment principle” , which aims to align the “development, deployment and use of AI to 
+
+promote planetary stability and stewardship for the benefit of humankind” 3. In the context of AI 
+
+development, the goal should be to use AI to help eliminate social shortfalls and reduce 
+
+resource use to be within planetary boundaries. We should prioritise socially and 
+
+environmentally beneficial applications of AI (e.g. healthcare, environmental monitoring ), while 
+
+restricting harmful or unnecessary uses (e.g. fossil fuel exploration, micro -targeted 
+
+advertising) 77 . This approach is consistent with findings from demand ‑side studies, which show 
+
+that prioritising need ‑satisfying activities can simultaneously lower resource use and improve 
+
+wellbeing 22,23 .
+
+If AI were tasked with “getting us into the Doughnut” — ensuring everyone has enough without 
+
+overshooting planetary boundaries — it’s harder to imagine a dystopian paper clip maximiser 
+
+outcome than if it were tasked with maximising GDP. – 10 –
+
+In fact, w e think that training AI on the idea of endless growth, rather than the idea of enough, 
+
+creates a large existential threat. A future superintelligent AI could continue to pursue this 
+
+growth at the expense of humanity, seeing human beings as little more tha n additional 
+
+resources to be exploited for its own expansion. 
+
+To respond to the dangers of escalating resource use, and issues like the rebound effect, post -
+
+growth provides policy solutions like resource caps and Pigouvian taxes 78 . Resource caps set 
+
+physical limits on energy or material use, applied at production or consumption. For AI, this 
+
+could involve restricting data centre energy use or implementing “compute budgets” 77 . These 
+
+caps guarantee sustainability by preventing resource use beyond the set limit. Pigouvian taxes 
+
+use pricing instead of quantity limits. By internalising environmental costs, high taxes ensure 
+
+resource -intensive AI applications are only viable when they deliver proportional social 
+
+benefits 77 .
+
+## Governing AI 
+
+Many authors claim that AI will help us solve major challenges like climate change, poverty, or 
+
+clean energy 12,70,79 . But the reason we haven’t solved climate change isn’t a lack of technology .
+
+We already have the technologies we need , and r enewables are cheaper than fossil fuels. The 
+
+real barriers are social , economic, and political . They include e conomic structures, 
+
+misinformation, and vested interests that prioritise profit over sustainability. 
+
+AI may offer new solutions, but that doesn’t guarantee we’ll use them. We already know how to 
+
+solve climate change — stop burning fossil fuels — yet we don’t. The issue isn’t knowledge, it’s 
+
+action. 
+
+As technology accelerates, our social systems struggle to keep pace. Thorstein Veblen observed 
+
+over a century ago that technology evolves faster than institutions, leading to social and 
+
+economic tensions 80 . We should not be governing 21 st century technology with 18 th century 
+
+institutions. To manage powerful technologies like AI, we need equally sophisticated social 
+
+systems. 
+
+Post -growth calls for a deepening of democracy through approaches such as direct democracy, 
+
+economic democracy, and public deliberation 81 . Redistribution of income, on its own, is not 
+
+sufficient to achieve economic democracy, because it does not deal with disparities in wealth, 
+
+and hence power 82 , which are likely to be critical issues for AI. Public deliberation means going 
+
+beyond expert ‑only AI policy, and drawing on approaches such as citizens’ assemblies 83 and 
+
+participatory workshops 84 .
+
+Beyond deepening democracy, post -growth also offers important ideas on how to govern AI. We 
+
+argue that AI should be governed as a global common s85 , with coordinated interventions across 
+
+social, planetary, and safety domains. Data, energy, and compute are three important 
+
+dimensions where regulations should be applied 10 . Polycentric governance, advanced by Elinor 
+
+Ostrom, offers an alternative to both centralised control and market mechanisms for managing 
+
+complex, high -stakes systems 86 . AI fits this model: it is global, fast -moving, multi ‑stakeholder, 
+
+and characterised by collective ‑action problems and externalities. 
+
+## Re structuring business 
+
+At present , AI is being developed by Big Tech companies like Google and OpenAI , who are 
+
+locked in an arms race with one another. These companies are incentivised by growth — in 
+
+profits, data extraction , and market dominance 85 . A post -growth economy would foster 
+
+business models that focus on improving human wellbeing and meeting societal needs , rather 
+
+than pursuing profit as a goal 38,87,88 .
+
+Two features of post -growth businesses are especially relevant to AI: democratic ownership and 
+
+decision -making (e.g. worker cooperatives) and no t-for -profit /social -benefit business – 11 –
+
+structures . Research suggests that companies with these features are more likely to satisfy 
+
+people’s real needs and respond to environmental issues than shareholder -owned for -profit 
+
+corporations 25,89 .
+
+Given what is at stake, there is a strong ar gument for changing the ownership structure and 
+
+relationship -to -profit of the Big Tech companies . AI research and development must be 
+
+decoupled from the profit motive and align ed with societal wellbeing. Core AI labs could be 
+
+converted to not -for -profit entities with a social benefit purpose and collective ownership. As AI 
+
+becomes increasingly powerful, who owns the “means of computation” 90 is going to become 
+
+increasingly important. A shift towards cooperatives would help reduce job losses from 
+
+automation. 
+
+However, g iven that the stakeholders in this technology are all of humanity, not just the 
+
+employees of particular companies, there is also a strong argument for nationali sing AI 
+
+development, or internationali sing it , by creating a collaborative research and development 
+
+institution modelled on something like CERN. Leopol d Aschenbrenner , a former OpenAI 
+
+employee, writes: “I find it an insane proposition that the US government will let a random SF 
+
+startup develop superintelligence. Imagine if we had developed atomic bombs by letting Uber 
+
+just improvise ”6. AI safety is a governance and political economy problem as much as it is a 
+
+technical one. 
+
+## Convivial technologies 
+
+In his book Tools for Conviviality , Ivan Illich distinguish es between “industrial tools” , which 
+
+create dependency and radical monopolies , and “convivial tools” , which enhance individual 
+
+autonomy and can be controlled by the user 91 . More recent research has propose d the concept 
+
+of “convivial technologies” and a matrix to assess the compatibility of different technologies 
+
+with degrowth 92 .
+
+Building on this work , w e argue that AI functions as a convivial technology when it operates as a 
+
+tool , but not when it takes an agentic form that diminishes human autonomy. This implies 
+
+prioritis ing “tool AI” (specialised systems that humans use to solve specific problems) over 
+
+“agentic AI” (autonomous systems that make decisions on our behalf). The distinction is crucial 
+
+as it determines whether AI extends human agency or replaces it. 
+
+This concern is not merely philosophical. The current trajectory towards increasingly agentic AI 
+
+potentially poses catastrophic risks, including deception and irreversible loss of human 
+
+control 93 . In response, Yoshua Bengio and colleag ues propose developing “s cientist AI ” — a
+
+non -agentic system designed to explain the world rather than act to change it 48 . They argue that 
+
+a non -agentic scientist AI could be used to assist human researchers and accelerat e scientific 
+
+progress , as AlphaFold has already done for the prediction of protein structures 94 . Non -agentic 
+
+scientist AI would provide the benefits of AI for scientific discovery, without the existential risks .
+
+Such a system would also preserve human autonomy and be a convivial technology, consistent 
+
+with post -growth principles .
+
+Post -growth research provides two additional strategies to help provide meaning and purpose in 
+
+an AI future . The first is to re -anchor identity beyond paid work. Retirees provide a good 
+
+example. When identity is not tied to employment, people lean into community, care, learning, 
+
+nature, and civic roles 95 . Moreover, o nce people’s basic needs are met, non -material aspects 
+
+like social relationships become a much stronger predictor of human wellbeing than additional 
+
+consumption 38 .
+
+The second strategy is collective self -limitation . Our brains evolved in an age of scarcity, and 
+
+thus radical abundance could counterintuitively make people worse off, rather than better off. 
+
+The unlimited pursuit of pleasure has been shown to lead to anhedonia — the inability to take 
+
+pleasure in anything at all 96 . Post -growth argues that true freedom requires consciously setting 
+
+limits on our desires , rather than allowing these to be determined by technology. Collective self -– 12 –
+
+limitation can be achieved through direct democracy, with communities together deci ding what 
+
+is “enough” 72,73 .
+
+## A post -growth policy roadmap for AI 
+
+According to the European Union’s Artificial Intelligence Act , AI should be “a tool for people, 
+
+with the ultimate aim of increasing human well -being” 97 . But this will only happen if we define 
+
+high -level societal goals first , and define them democratically. We can then use AI to help 
+
+achieve the se goals .
+
+There is a policy decision to be made about what we allow AI to do, and what we do not. The 
+
+tasks that people enjoy doing include c reative, empathetic, and socially meaningful work (e.g. 
+
+teaching, caregiving, arts, research). These roles provide purpose, autonomy, and human 
+
+connection. The tasks that people dislike include r epetitive, dangerous, and monotonous work 
+
+(e.g. data entry, hazardous labour, routine logistics) 67 . We must use AI to do the tasks that 
+
+people don’t like to do, rather than the things that bring joy and meaning to people’s lives .
+
+Instead of paying a universal basic income — which would provide financial security but risks 
+
+creating a “meaning vacuum” — we could use AI -driven productivity gains to fund socially 
+
+valuable jobs (a job guarantee ). The idea of a job guarantee is a well -established policy proposal 
+
+in the post -growth literature 32,38 . It creates jobs that markets historically undervalue but society 
+
+needs (e.g. mental health support, environmental restoration, education) — and that people 
+
+enjoy doing. 
+
+It seems unlikely that AI will deliver outcomes that improve human wellbeing if it is aligned with 
+
+growth and the profit motive, and if development is driven by competition between companies 
+
+in an arms race . But in a post -growth economy, it becomes much more realistic. 
+
+In this article , we have examined some of the challenges posed by AI. Many post -growth polic y
+
+proposals respond directly to the se challenges 32,61,62 . For example, t he top eight degrowth policy 
+
+proposals, in descending order of how frequently they are cited in the literature, are: a universal 
+
+basic income, working -time reduction, a job guarantee, maximum income caps, declining caps 
+
+on resource use and emissions, not -for -profit cooperatives, deliberative forums, and reclaiming 
+
+the commons 62 .
+
+In Table 1, we present a summary of the main challenges, and corresponding post -growth policy 
+
+solutions, that we have discussed. Although there are many issues associated with AI 
+
+development that this roadmap does not consider, we believe it offers importa nt insights on 
+
+how to address the social, environmental, and existential challenges posed by AI.                     
+
+> Table 1: A post -growth policy roadmap to respond to the c hallenges posed by AI .
+> Challenge posed by AI Post -growth policy solution
+> Replacement of human labour Job guarantee; Working -time reduction; Universal basic income
+> or universal public services .
+> Rising i nequality Progressive taxation; Maximum income/wealth.
+> Rebound effect Resource caps; Pigouvian taxes.
+> Arms race between Big Tech companies Democratic ownership of companies ; No t-for -profit busines s
+> models.
+> Power asymmetries and unequal exchange
+> between countries
+> Govern AI as a global commons; Internationalise AI
+> development; New measures of progress (e.g. the Doughnut).
+> Undemocrati c decision -making Direct democracy; Economic democracy; Public participation;
+> Polycentric governance.
+> Loss of meaning, identity, and purpose Job guarantee; Increase social capital; Collective self -limitation;
+> Re -anchor identity beyond paid work.
+> The alignment problem Align the economic system with human wellbeing and
+> environmental sustainability; Satisficing not optimising ;
+> Prioritise tool AI over agentic AI.
+
+– 13 –
+
+# The Economics of AGI 
+
+In this article, we have argued that AI research and development face an economic alignment 
+
+problem. AI researchers are trying to align AI systems with human goals and values, but the 
+
+economic system within which they are developing the technology is not a ligned with these 
+
+goals and values. This creates substantial barriers to achieving AI alignment, and exacerbates 
+
+safety, social, and planetary risks. Overall, there is a need for new interdisciplinary research on 
+
+the economics of AGI , and better connection between the post -growth and AI safety 
+
+communities. 
+
+## Connecting research communities 
+
+AI researchers should engage with post -growth scholarship . The alignment problem in AI 
+
+research is not just a technical problem; it is also an economic problem. Post -growth offers the 
+
+solution of satisficing over optimising, which would help reduce AI risks, and frameworks such 
+
+as the Doughnut, which could be us ed to guide AI development. It also offers insights into what 
+
+humans might do in an AI future, and the policies needed to get there (e.g. universal public 
+
+services, a job guarantee, wealth taxation). Beyond policies, post -growth brings a systemic 
+
+perspective, democratic governance approaches, and tools to evaluate AI development 
+
+scenarios. 
+
+At the same time, post -growth researchers should engage with AI. AI capabilities are growing 
+
+exponentially, and change will happen faster than people expect. AI potentially presents an 
+
+existential risk that could be greater than climate change , biodiversity loss, or any other socio -
+
+ecological problem to date . It poses challenges for all three of post -growth’s goals: wellbeing, 
+
+equity, and sustainability. The development of AGI could make human labour unnecessary, 
+
+leading to massive inequality in one extreme , or radical abundance for all in another. The first 
+
+alternative seems more likely under capitalism. The second more likely with post -growth. 
+
+Without resource caps , demand -side measures, or other post -growth policies, AI could lead to 
+
+higher environmental pressures — directly via economic growth or indirectly via the rebound 
+
+effect. 
+
+Demis Hassabis , the CEO and co -founder of Google DeepMind , has argued that AGI will allow 
+
+us to enter a world of radical abundance in which people no longer feel trapped in a zero -sum 
+
+game. Hassabis argues that if economists believed AGI was as close as the AI scientists do ,
+
+then they would be thinking more seriously about the economics of AGI — that a new 
+
+economics is needed 70 .
+
+We believe that e conomists, AI researchers, and other scientists who are concerned with 
+
+human wellbeing, social equity, and environmental sustainability should begin to work on the 
+
+economics of AGI — what we might also call “post -AGI economics”. This task is urgent. AGI is 
+
+coming, and society is dangerously unprepared. Although AGI holds enormous potential to 
+
+improve the human condition, with in the current economic system , the advent of AGI could be a
+
+disaster, leading to rising inequality, environmental de gradation, and existential risks. 
+
+## Towards the economics of AGI 
+
+Although it is far too early to outline a full economics of AGI, we suggest that insights from 
+
+post ‑growth research may offer a useful starting point. As we have argued, if AI were developed 
+
+in a post -growth economy, the risks would likely be much less :
+
+• AI would be developed in an economic system that is aligned with human wellbeing and 
+
+environmental sustainability ;
+
+• The development and use of technology would be driven by what is socially and 
+
+environmentally beneficial; 
+
+• The goal would be sufficiency rather than exponential growth ;– 14 –
+
+• The arms race between companies pursuing profit would be mitigated; 
+
+• There would be s trong policies to limit inequality and ensure the benefits of AI are shared. 
+
+Taken together, these ideas outline how a post -growth economy might reduce AGI -related risks. 
+
+Yet they are only part of the picture. Additional questions arise around the role of models, 
+
+markets, and democratic governance . Macroeconomic models of AI are still in their 
+
+infancy 52,55,98,99 , and focus mainly on labour automation. These models do not include the wider 
+
+environmental and social impacts that that AGI is likely to have. However, e cological 
+
+macroeconomic models, such as EUROGREEN 100 or the COMPASS model of the Doughnut of 
+
+social and planetary boundaries 101 , do include the se variables . They could be used to assess AI 
+
+scenarios and help guide its development towards a good life for all people within planetary 
+
+boundaries. 
+
+Empirical studies suggest that meeting the basic needs of all people at a sustainable level of 
+
+resource use requires substantial changes to provisioning systems 71,102 . However, t here is little 
+
+reason to believe that contemporary capitalist economies are the most efficient way to achieve 
+
+this outcome 95 . Markets allocate resources based on people’s ability to pay, which is often 
+
+highly unequal, while a significant share of economic activity is diverted toward s profit -seeking 
+
+activities, rather than need -satisfying activities 89 . Moreover, markets reflect wants, not needs ,
+
+and these wants are heavily influenced by advertising 103 . P eople do not always want — or even 
+
+recognise — the things that are most likely to improve their long -term wellbeing, and the pursuit 
+
+of short -term rewards can undermine it 96 .
+
+A long -standing critique of alternatives to capitalist market -based economies is the 
+
+computational difficulty of efficient top -down decision -making 51 . However, w ith AGI, the 
+
+constraint on computational complexity might no longer apply . Advanced AI models might 
+
+understand human needs better than current institutions do , and the most resource -efficient 
+
+ways to satisfy them. With AGI, it is possible that we could move beyond the price mechanism 
+
+to allocate resources in the economy. Resources could be allocated based on people’s genuine 
+
+needs , through universal public services. AGI could facilitate a new form of democratic 
+
+socialism in which advanced AI too ls provided a wide range of policy options that were 
+
+consistent with environmental and social sustainability. Human agency could be increased 
+
+through public deliberation on these options, with decisions made via direct democracy .
+
+These possibilities illustrate the opportunities AGI could open , but they also highlight the need 
+
+for clarity about the ultimate purpose of such technologies. Ultimately, AI must be a means to 
+
+an end — not an end in itself. Just as GDP growth was never meant to b e society’s goal, neither 
+
+is AI development. If AI is developed safely, and the benefits are distributed equitably, then it 
+
+could potentially improve human wellbeing dramatically . However, if AI is not developed safely, 
+
+or the benefits accrue only to a privileged few, then the result could be a d ystopian future of 
+
+rising inequality , environmental collapse, or even human extinction. We still have the agency to 
+
+choose our future. 
+
+# Acknowledgements 
+
+We are grateful to Giorgos Kallis, Philipp Wiesner, and Michael O’Neill for their insightful 
+
+comments, which helped improve the manuscript. We also thank the participants in the special 
+
+session on post -growth and artificial intelligence at the ISEE –Degrowth 2025 Conference in 
+
+Oslo, as well as attendees of the AI + Environment Summit 2025 in Zurich, for their thoughtful 
+
+feedback. This research was supported by the European Union’s Horizon Europe Research and 
+
+Innovation Programme under grant agreement No. 101 137914 (MAPS : Models, Assessment , and 
+
+Policies for Sustainability ).– 15 –
+
+# References 
+
+1. Amodei, D. Machines of Loving Grace: How AI Could Transform the World for the Better (2024); 
+
+https://www.darioamodei.com/essay/machines -of -loving -grace 
+
+2. Yudkowsky, E. & Soares, N. If Anyone Builds It, Everyone Dies: Why Superhuman AI Would Kill Us All 
+
+(Little, Brown and Company, 2025). 
+
+3. Gaffney, O. et al. The Earth alignment principle for artificial intelligence. Nat. Sustain. 8, 467 –469 
+
+(2025). 
+
+4. Maslej, N. et al. The AI Index 2025 Annual Report (Institute for Human -Centered AI, Stanford 
+
+University, 2025); https://hai.stanford.edu/assets/files/hai_ai_index_report_2025.pdf 
+
+5. Feng, T. et al. How far are we from AGI: Are LLMs all we need? Preprint at 
+
+https://doi.org/10.48550/arXiv.2405.10313 (2024). 
+
+6. Aschenbrenner, L. Situational Awareness: The Decade Ahead (2024); https://situational -
+
+awareness.ai/ 
+
+7. Chen, E. K., Belkin, M., Bergen, L. & Danks, D. Does AI already have human -level intelligence? The 
+
+evidence is clear. Nature 650 , 36 –40 (2026). 
+
+8. Grace, K. et al. Thousands of AI authors on the future of AI. Preprint at 
+
+https://doi.org/10.48550/arXiv.2401.02843 (2024). 
+
+9. Bengio, Y. et al. International Scientific Report on the Safety of Advanced AI: Interim Report (UK 
+
+Department for Science, Innovation and Technology, 2024); 
+
+https://www.gov.uk/government/publications/international -scientific -report -on -the -safety -of -
+
+advanced -ai 
+
+10. Creutzig, F. et al. Governing artificial intelligence for planetary health. Lancet Planet. Health 
+
+https://doi.org/10.1016/j.lanplh.2025.101408 (2026). 
+
+11. Carmeno, N. L., O’Neill, D. W. & Domingos, T. The impacts of artificial intelligence on environmental 
+
+sustainability and human wellbeing. (2026). 
+
+12. Vinuesa, R. et al. The role of artificial intelligence in achieving the Sustainable Development Goals. 
+
+Nat. Commun. 11 , 233 (2020). 
+
+13. Kaack, L. H. et al. Aligning artificial intelligence with climate change mitigation. Nat. Clim. Change 
+
+12 , 518 –527 (2022). 
+
+14. Galaz, V. & Schewenius, M. (eds). AI for a Planet Under Pressure (Stockholm Resilience Centre, 
+
+Potsdam Institute for Climate Impact Research, 2025). 
+
+15. Creutzig, F. et al. Digitalization and the Anthropocene. Annu. Rev. Environ. Resour. 47 , 479 –509 
+
+(2022). 
+
+16. Luccioni, A. S., Strubell, E. & Crawford, K. From efficiency gains to rebound effects: The problem of 
+
+Jevons’ paradox in AI’s polarized environmental debate. Preprint at 
+
+https://doi.org/10.48550/arXiv.2501.16548 (2025). 
+
+17. Luers, A. et al. Will AI accelerate or delay the race to net -zero emissions? Nature 628 , 718 –720 
+
+(2024). 
+
+18. Strubell, E., Ganesh, A. & McCallum, A. Energy and policy considerations for deep learning in NLP. 
+
+Preprint at https://doi.org/10.48550/arXiv.1906.02243 (2019). 
+
+19. Sakschewski, B. et al. Planetary Health Check 2025: A Scientific Assessment of the State of the 
+
+Planet (Potsdam Institute for Climate Impact Research, 2025); 
+
+https://doi.org/10.48485/pik.2025.017 
+
+20. Fanning, A. L. & Raworth, K. Doughnut of social and planetary boundaries monitors a world out of 
+
+balance. Nature 646 , 47 –56 (2025). 
+
+21. Costanza, R., Eastoe, J., Hoekstra, R., Kubiszewski, I. & O’Neill, D. W. Beyond growth — why we 
+
+need to agree on an alternative to GDP now. Nature 647 , 589 –591 (2025). 
+
+22. Creutzig, F. et al. Demand -side solutions to climate change mitigation consistent with high levels of 
+
+well -being. Nat. Clim. Change 12 , 36 –46 (2022). 
+
+23. Creutzig, F. et al. Demand -side strategies key for mitigating material impacts of energy transitions. 
+
+Nat. Clim. Change 14 , 561 –572 (2024). 
+
+24. Kerschner, C., Wächter, P., Nierling, L. & Ehlers, M. H. Degrowth and technology: Towards feasible, 
+
+viable, appropriate and convivial imaginaries. J. Clean. Prod. 197 , 1619 –1636 (2018). 
+
+25. Pansera, M. & Fressoli, M. Innovation without growth: Frameworks for understanding technological 
+
+change in a post -growth era. Organization 28 , 380 –404 (2021). 
+
+26. Sharma, A., Jiménez, A., Smith, A. & Boni, A. Rethinking innovation for a post -growth society. Sci. 
+
+Technol. Soc. 30 , 327 –342 (2025). – 16 –
+
+27. Pueyo, S. Growth, degrowth, and the challenge of artificial superintelligence. J. Clean. Prod. 197 ,
+
+1731 –1736 (2018). 
+
+28. Meyers, M. Artificial intelligence in a degrowth context: A conviviality perspective on machine 
+
+learning. GAIA - Ecol. Perspect. Sci. Soc. 33 , 186 –192 (2024). 
+
+29. Hendrycks, D. et al. A definition of AGI. Preprint at https://doi.org/10.48550/arXiv.2510.18212 
+
+(2025). 
+
+30. Bostrom, N. Superintelligence: Paths, Dangers, Strategies (Oxford University Press, 2014). 
+
+31. Kurzweil, R. The Singularity Is Near: When Humans Transcend Biology (Viking, 2005). 
+
+32. Kallis, G. et al. Post -growth: the science of wellbeing within planetary boundaries. Lancet Planet. 
+
+Health 9, e62 –e78 (2025). 
+
+33. D’Alisa, G., Demaria, F. & Kallis, G. (eds). Degrowth: A Vocabulary for a New Era (Routledge, 2015). 
+
+34. Daly, H. E. Steady -State Economics: The Economics of Biophysical Equilibrium and Moral Growth 
+
+(W.H. Freeman, 1977). 
+
+35. Raworth, K. Doughnut Economics: Seven Ways to Think Like a 21st -Century Economist (Random 
+
+House, 2017). 
+
+36. Fioramonti, L. et al. Wellbeing economy: An effective paradigm to mainstream post -growth 
+
+policies? Ecol. Econ. 192 , 107261 (2022). 
+
+37. Haberl, H. et al. A systematic review of the evidence on decoupling of GDP, resource use and GHG 
+
+emissions, part II: synthesizing the insights. Environ. Res. Lett. 15 , 1 –43 (2020). 
+
+38. Dietz, R. & O’Neill, D. W. Enough Is Enough: Building a Sustainable Economy in a World of Finite 
+
+Resources (Berrett -Koehler, 2013). 
+
+39. Van Eynde, R., Dillman, K. J., Vogel, J. & O’Neill, D. W. What is required for a post -growth model? 
+
+Ecol. Econ. 243 , 108928 (2026). 
+
+40. Meadows, D. H., Meadows, D., Randers, J. & Behrens III, W. W. The Limits to Growth. A Report for 
+
+the Club of Rome’s Project on the Predicament of Mankind (Earth Island, 1972). 
+
+41. Ji, J. et al. AI alignment: A comprehensive survey. Preprint at 
+
+https://doi.org/10.48550/arXiv.2310.19852 (2023). 
+
+42. GrowthBusters. Limits to Growth: Bacteria in a Bottle (2012); 
+
+https://youtu.be/A8ILwueoMoE?si=iP6Z_QTjFT8UFpUy 
+
+43. Sevilla, J. & Roldán, E. Training Compute of Frontier AI Models Grows by 4 -5x Per Year (Epoch AI, 
+
+2024); https://epoch.ai/blog/training -compute -of -frontier -ai -models -grows -by -4-5x -per -year 
+
+44. Kwa, T. et al. Measuring AI ability to complete long tasks. Preprint at 
+
+https://doi.org/10.48550/arXiv.2503.14499 (2025). 
+
+45. Metaculus. When will the first general AI system be devised, tested, and publicly announced? 
+
+(2026); https://www.metaculus.com/questions/5121/date -of -artificial -general -intelligence/ 
+
+46. Eloundou, T., Manning, S., Mishkin, P. & Rock, D. GPTs are GPTs: Labor market impact potential of 
+
+LLMs. Science 384 , 1306 –1308 (2024). 
+
+47. Peppiatt, C. The future of work: Inequality, artificial intelligence, and what can be done about it. A 
+
+literature review. Preprint at https://doi.org/10.48550/arXiv.2408.13300 (2024). 
+
+48. Bengio, Y. et al. Superintelligent agents pose catastrophic risks: Can scientist AI offer a safer path? 
+
+Preprint at https://doi.org/10.48550/arXiv.2502.15657 (2025). 
+
+49. Damiani, J. What is Accelerationism? A Primer on the Defining Philosophy of Our Time, Including 
+
+Effective Accelerationism (e/acc), the Dark Enlightenment, & More (2025); 
+
+https://www.realitystudies.co/p/what -is -accelerationism -effective -eacc -nick -land -mark -fisher 
+
+50. e/acc newsletter. what the f* is e/acc (2022); 
+
+https://effectiveaccelerationism.substack.com/p/what -the -f-is -eacc 
+
+51. Andreessen, M. The Techno -Optimist Manifesto (2023); https://a16z.com/the -techno -optimist -
+
+manifesto/ 
+
+52. Freire, C. Is this time different? Impact of AI in output, employment and inequality across low, 
+
+middle and high -income countries. Struct. Change Econ. Dyn. 73 , 136 –157 (2025). 
+
+53. Acemoglu, D. The simple macroeconomics of AI. Econ. Policy 40 , 13 –58 (2025). 
+
+54. Goldman Sachs. The Potentially Large Effects of Artificial Intelligence on Economic Growth 
+
+(Goldman Sachs, 2023); 
+
+https://www.gspublishing.com/content/research/en/reports/2023/03/27/d64e052b -0f6e -45d7 -
+
+967b -d7be35fabd16.html 
+
+55. Korinek, A. & Suh, D. Scenarios for the Transition to AGI (National Bureau of Economic Research, 
+
+2024); https://doi.org/10.3386/w32255 
+
+56. MIRI. Yudkowsky and Christiano discuss “Takeoff Speeds” (2021); 
+
+https://intelligence.org/2021/11/22/yudkowsky -and -christiano -discuss -takeoff -speeds/ – 17 –
+
+57. Polimeni, J. M., Mayumi, K., Giampietro, M. & Alcott, B. The Jevons Paradox and the Myth of 
+
+Resource Efficiency Improvements (Earthscan, 2008). 
+
+58. Acemoglu, D. & Restrepo, P. Automation and new tasks: How technology displaces and reinstates 
+
+labor. J. Econ. Perspect. 33 , 3 –30 (2019). 
+
+59. Criddle, C. Computer scientist Geoffrey Hinton: ‘AI will make a few people much richer and most 
+
+people poorer’. Financial Times (2025); https://www.ft.com/content/31feb335 -4945 -475e -baaa -
+
+3b880d9cf8ce 
+
+60. Hazra, S., Majumder, B. P. & Chakrabarty, T. Position: AI safety should prioritize the future of work. 
+
+Preprint at https://doi.org/10.48550/arXiv.2504.13959 (2025). 
+
+61. Cosme, I., Santos, R. & O’Neill, D. W. Assessing the degrowth discourse: A review and analysis of 
+
+academic degrowth policy proposals. J. Clean. Prod. 149 , 321 –334 (2017). 
+
+62. Fitzpatrick, N., Parrique, T. & Cosme, I. Exploring degrowth policy proposals: A systematic mapping 
+
+with thematic synthesis. J. Clean. Prod. 365 , 132764 (2022). 
+
+63. Lehuedé, S. An elemental ethics for artificial intelligence: water as resistance within AI’s value 
+
+chain. AI Soc. 40 , 1761 –1774 (2025). 
+
+64. Altenried, M. The platform as factory: Crowdwork and the hidden labour behind artificial 
+
+intelligence. Cap. Cl. 44 , 1 –14 (2020). 
+
+65. Birhane, A. Algorithmic colonization of Africa. SCRIPTed 17 , 389 –409 (2020). 
+
+66. Keynes, J. M. Economic possibilities for our grandchildren in Essays in Persuasion 358 –373 (W. W. 
+
+Norton & Co., 1963). 
+
+67. Jacobs, A., Verhofstadt, E. & Van Ootegem, L. Unravelling the link between automatability and job 
+
+satisfaction. J. Labor Res. 44 , 199 –227 (2023). 
+
+68. Liu, L. Job quality and automation: Do more automatable occupations have less job satisfaction 
+
+and health? J. Ind. Relat. 65 , 72 –87 (2023). 
+
+69. Frey, C. B. & Osborne, M. A. The future of employment: How susceptible are jobs to 
+
+computerisation? Technol. Forecast. Soc. Change 114 , 254 –280 (2017). 
+
+70. Wired. Demis Hassabis on the Future of Work in the Age of AI (2025); 
+
+https://youtu.be/CRraHg4Ks_g?si=Jzp3WL_JEZvLPK03 
+
+71. O’Neill, D. W., Fanning, A. L., Lamb, W. F. & Steinberger, J. K. A good life for all within planetary 
+
+boundaries. Nat. Sustain. 1, 88 –95 (2018). 
+
+72. Asara, V., Profumi, E. & Kallis, G. Degrowth, democracy and autonomy. Environ. Values 22 , 217 –239 
+
+(2013). 
+
+73. Kallis, G. Limits: Why Malthus Was Wrong and Why Environmentalists Should Care (Stanford 
+
+University Press, 2019). 
+
+74. Victor, P. A. Managing without Growth: Slower by Design, Not Disaster (Edward Elgar, 2019). 
+
+75. Zhuang, S. & Hadfield -Menell, D. Consequences of misaligned AI. Preprint at 
+
+https://doi.org/10.48550/arXiv.2102.03896 (2021). 
+
+76. O’Neill, D. W. & Creutzig, F. A strong sustainability approach to AI development. (2026). 
+
+77. Wiesner, P., O’Neill, D. W., Larosa, F. & Kao, O. Efficiency will not lead to sustainable reasoning AI. 
+
+Preprint at https://doi.org/10.48550/arXiv.2511.15259 (2025). 
+
+78. Alcott, B. Impact caps: why population, affluence and technology strategies should be abandoned. 
+
+J. Clean. Prod. 18 , 552 –560 (2010). 
+
+79. Rolnick, D. et al. Tackling climate change with machine learning. ACM Comput. Surv. 55 , 42 (2022). 
+
+80. Veblen, T. The Theory of the Leisure Class (Prometheus Books, 1998). 
+
+81. Cattaneo, C., D’Alisa, G., Kallis, G. & Zografos, C. Degrowth futures and democracy. Futures 44 ,
+
+515 –523 (2012). 
+
+82. Johanisova, N. & Wolf, S. Economic democracy: A path for the future? Futures 44 , 562 –570 (2012). 
+
+83. Koch, M. Deepening the degrowth planning debate: division of labor, complexity, and the roles of 
+
+markets and digital tools. Sustain. Sci. Pract. Policy 20 , (2024). 
+
+84. Cattaneo, C. et al. Ecological economics into action: Lessons from the Barcelona city doughnut. 
+
+Ecol. Econ. 236 , 108667 (2025). 
+
+85. Verdegem, P. Dismantling AI capitalism: the commons as an alternative to the power concentration 
+
+of Big Tech. AI Soc. 39 , 727 –737 (2024). 
+
+86. Ostrom, E. Polycentric systems for coping with collective action and global environmental change. 
+
+Glob. Environ. Change 20 , 550 –557 (2010). 
+
+87. Khmara, Y. & Kronenberg, J. Degrowth in business: An oxymoron or a viable business model for 
+
+sustainability? J. Clean. Prod. 177 , 721 –731 (2018). 
+
+88. Nesterova, I. Degrowth business framework: Implications for sustainable development. J. Clean. 
+
+Prod. 262 , 121382 (2020). – 18 –
+
+89. Hinton, J. B. Fit for purpose? Clarifying the critical role of profit for sustainability. J. Polit. Ecol. 27 ,
+
+236 –262 (2020). 
+
+90. Doctorow, C. The Internet Con: How to Seize the Means of Computation (Verso, 2023). 
+
+91. Illich, I. Tools for Conviviality (Fontana/Collins, 1973). 
+
+92. Vetter, A. The Matrix of Convivial Technology – Assessing technologies for degrowth. J. Clean. Prod. 
+
+197 , 1778 –1786 (2018). 
+
+93. Bengio, Y. et al. Managing extreme AI risks amid rapid progress. Science 384 , 842 –845 (2024). 
+
+94. Jumper, J. et al. Highly accurate protein structure prediction with AlphaFold. Nature 596 , 583 –589 
+
+(2021). 
+
+95. Jackson, T. Prosperity without Growth: Foundations for the Economy of Tomorrow (Routledge, 
+
+2017). 
+
+96. Lembke, A. Dopamine Nation: Finding Balance in the Age of Indulgence (Dutton, 2021). 
+
+97. European Union. Artificial Intelligence Act (Official Journal of the European Union, 2024); 
+
+https://eur -lex.europa.eu/eli/reg/2024/1689/oj 
+
+98. Berg, A., Buffie, E. F. & Zanna, L. -F. Should we fear the robot revolution? (The correct answer is yes). 
+
+J. Monet. Econ. 97 , 117 –148 (2018). 
+
+99. Erdil, E. et al. GATE: An integrated assessment model for AI automation. Preprint at 
+
+https://doi.org/10.48550/arXiv.2503.04941 (2025). 
+
+100. D’Alessandro, S., Cieplinksi, A., Distefano, T. & Dittmer, K. Feasible alternatives to green growth. 
+
+Nat. Sustain. 3, 329 –335 (2020). 
+
+101. Vogel, J. et al. COMPASS: A Social -Ecological Macroeconomic Model for Guiding Pathways to 
+
+Equitable Human Wellbeing within Planetary Boundaries (ToBe Research Project, 2025); 
+
+https://doi.org/10.5281/zenodo.15655594 
+
+102. McElroy, C. & O’Neill, D. W. The labour and resource use requirements of a good life for all. Glob. 
+
+Environ. Change 92 , 103008 (2025). 
+
+103. Pappalardo, L. et al. A survey on the impact of AI -based recommenders on human behaviours: 
+
+methodologies, outcomes and future directions. Preprint at 
+
+https://doi.org/10.48550/arXiv.2407.01630 (2024).
