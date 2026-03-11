@@ -25,3 +25,106 @@ subscriptions:
     stage: A
     diff_threshold_pct: 15
   keyword_recall_mode: or
+  intent_profiles:
+    - tag: SR RES
+      description: 公司治理、数字化视角、营销创新以及AI对数字鸿沟影响的研究文章检索
+      enabled: true
+      keywords:
+        - keyword: Strategic change
+          keyword_cn: 战略变革
+          query: Strategic change
+        - keyword: Corporate performance
+          keyword_cn: 公司绩效
+          query: Corporate performance
+        - keyword: corporate governance
+          keyword_cn: 公司治理
+          query: corporate governance mechanisms and structures
+        - keyword: Intelligent marketing
+          keyword_cn: 智能营销
+          query: Intelligent marketing
+        - keyword: Managerial ownership
+          keyword_cn: 管理层持股
+          query: Managerial ownership
+        - keyword: Executive compensation
+          keyword_cn: 高管薪酬
+          query: Executive compensation
+        - keyword: technological innovation
+          keyword_cn: 技术创新
+          query: innovation
+        - keyword: innovation
+          keyword_cn: 创新
+          query: innovation
+        - keyword: AI telemarketing
+          keyword_cn: AI电销
+          query: AI telemarketing
+        - keyword: CEO tenure
+          keyword_cn: CEO任期
+          query: CEO tenure
+        - keyword: equity incentive
+          keyword_cn: 股权激励
+          query: equity incentive
+        - keyword: AI divide
+          keyword_cn: ''
+          query: A
+      intent_queries:
+        - query: impact of corporate governance on firm performance
+          query_cn: 公司治理对企业绩效的影响
+          enabled: true
+          source: manual
+          note: ''
+        - query: digitalization perspectives in modern business management
+          query_cn: 现代企业管理中的数字化视角
+          enabled: true
+          source: manual
+          note: ''
+        - query: relationship between marketing innovation and brand equity
+          query_cn: 营销创新与品牌资产的关系
+          enabled: true
+          source: manual
+          note: ''
+        - query: role of AI in bridging the digital divide
+          query_cn: 人工智能在缩小数字鸿沟中的作用
+          enabled: true
+          source: manual
+          note: ''
+        - query: AI as a driver of social inequality or inclusion
+          query_cn: 人工智能作为社会不平等或包容的驱动力
+          enabled: true
+          source: manual
+          note: ''
+        - query: synergy between digital transformation and corporate innovation
+          query_cn: 数字化转型与企业创新的协同效应
+          enabled: true
+          source: manual
+          note: ''
+        - query: impact of corporate governance on digital transformation success
+          query_cn: 公司治理对数字化转型成功的影响
+          enabled: true
+          source: manual
+          note: ''
+        - query: how artificial intelligence exacerbates or bridges the digital divide
+          query_cn: 人工智能如何加剧或弥合数字鸿沟
+          enabled: true
+          source: manual
+          note: ''
+        - query: innovative marketing strategies in the era of artificial intelligence
+          query_cn: 人工智能时代的创新营销策略
+          enabled: true
+          source: manual
+          note: ''
+        - query: relationship between digital governance and firm performance
+          query_cn: 数字治理与企业绩效之间的关系
+          enabled: true
+          source: manual
+          note: ''
+        - query: social implications of AI driven marketing on digital inequality
+          query_cn: AI驱动的营销对数字不平等的社会影响
+          enabled: true
+          source: manual
+          note: ''
+        - query: corporate responsibility in mitigating the digital divide through AI
+          query_cn: 企业在通过AI缓解数字鸿沟中的责任
+          enabled: true
+          source: manual
+          note: ''
+      updated_at: '2026-03-11T11:56:00.392Z'
